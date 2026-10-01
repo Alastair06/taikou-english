@@ -1,0 +1,1530 @@
+/* ==========================================================================
+   太阁英语立志传: 盛唐晴和弹窗样式 (Bright Modals)
+   明媚高对比度、圆润大卡片
+   ========================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(18, 14, 11, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+  animation: modal-fade 0.2s ease-out;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-container {
+  background: #ffffff;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: modal-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #0f172a;
+}
+
+/* 针对 iPad 大屏平板弹窗自适应 */
+@media (min-width: 768px) {
+  .modal-container {
+    max-width: 820px;
+    border-radius: 28px;
+  }
+  .modal-header {
+    padding: 20px 30px;
+  }
+  .modal-header h3 {
+    font-size: 24px;
+  }
+  .modal-close {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .modal-body {
+    padding: 26px 32px;
+    font-size: 18px;
+  }
+}
+
+/* 针对手机横屏视口自适应 (高度 <= 520px) */
+@media (max-height: 520px) {
+  .modal-container {
+    max-height: 96vh;
+    border-radius: 16px;
+  }
+  .modal-header {
+    padding: 10px 18px;
+  }
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  .modal-close {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+  .modal-body {
+    padding: 12px 18px;
+    gap: 12px;
+    max-height: calc(96vh - 52px);
+    overflow-y: auto;
+  }
+}
+
+@keyframes modal-pop {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1.5px solid #e2e8f0;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-family: var(--font-simplified-cn);
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-close {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-size: 16px;
+  color: #64748b;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: scale(1.08);
+}
+
+.modal-body {
+  padding: 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+/* ============================================================
+   光荣特库摩式武将对话框与立绘体系 (Koei Dialogue System)
+   ============================================================ */
+.koei-dialogue-box {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  background: linear-gradient(180deg, #28201a 0%, #19130f 100%);
+  border: 2px solid #8c672b;
+  outline: 1px solid #d4a359;
+  outline-offset: -3px;
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.koei-portrait-wrap {
+  width: 96px;
+  min-width: 96px;
+  height: 96px;
+  position: relative;
+  border: 2px solid #d4a359;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #111;
+  flex-shrink: 0;
+}
+
+.koei-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.koei-portrait-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(140, 31, 25, 0.94);
+  color: #fff;
+  font-size: 13px;
+  font-family: var(--font-simplified-cn);
+  font-weight: 900;
+  text-align: center;
+  padding: 3px 0;
+  letter-spacing: 1px;
+  border-top: 1px solid #d4a359;
+}
+
+.koei-speech-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  background: #fbf6ec;
+  border: 1.5px solid #a68453;
+  border-radius: 4px;
+  padding: 12px 16px;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.koei-speaker-title {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--font-simplified-cn);
+  color: #8c1f19;
+  letter-spacing: 0.5px;
+  border-bottom: 1px dashed #d1c0a5;
+  padding-bottom: 4px;
+}
+
+.koei-speech-text {
+  font-size: 16.5px;
+  color: #261912;
+  line-height: 1.65;
+  font-family: var(--font-simplified-cn);
+}
+
+/* 家长进度滑块调节 */
+.progress-adjust-box {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 10px;
+  border-radius: 6px;
+  background: #cbd5e1;
+  outline: none;
+  accent-color: var(--red-oda);
+  cursor: pointer;
+}
+
+.slider-preview {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 14px;
+  border: 2px dashed var(--gold-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.slider-count-tag {
+  font-size: 15px;
+  color: #78350f;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.slider-word-text {
+  font-size: 16px;
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+/* 南蛮商馆装备卡 */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.shop-card {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.shop-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.shop-card.tier-common { border-color: #94a3b8; }
+.shop-card.tier-rare { border-color: #3b82f6; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15); }
+.shop-card.tier-epic { border-color: #a855f7; box-shadow: 0 4px 16px rgba(168, 85, 247, 0.18); }
+.shop-card.tier-legend { border-color: #f59e0b; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.25); background: #fffdf5; }
+
+.shop-card.equipped {
+  border: 2.5px solid #16a34a !important;
+  background: #f0fdf4 !important;
+}
+
+.shop-item-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+}
+
+.badge-common { background: #e2e8f0; color: #475569; }
+.badge-rare { background: #dbeafe; color: #1d4ed8; }
+.badge-epic { background: #f3e8ff; color: #7e22ce; }
+.badge-legend { background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; }
+
+.shop-item-icon-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.tier-legend .shop-item-icon-wrap {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #fbbf24;
+}
+
+.shop-item-icon {
+  font-size: 34px;
+}
+
+.shop-item-name {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.shop-item-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.shop-item-footer {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.shop-item-footer .btn {
+  width: 100%;
+}
+
+/* 评定胜利结算 · 天守阁大捷军功感状 */
+.victory-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  background: #fffdf5;
+  padding: 12px;
+  border-radius: 20px;
+}
+
+.nobunaga-crest {
+  font-size: 13px;
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  color: #fff;
+  padding: 5px 20px;
+  border-radius: 20px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  border: 1.5px solid #fbbf24;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.victory-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #78350f;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.victory-stage-tag {
+  display: inline-block;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-top: -6px;
+}
+
+.victory-eval-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  color: #78350f;
+  font-weight: 900;
+  font-size: 15px;
+  padding: 6px 22px;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.2);
+}
+
+.victory-promo-box {
+  width: 100%;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 2.5px solid #f59e0b;
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin: 6px 0;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+  animation: promoPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes promoPop {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.promo-badge {
+  font-size: 13px;
+  font-weight: 900;
+  color: #b45309;
+  letter-spacing: 2px;
+}
+
+.promo-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #78350f;
+  margin: 5px 0;
+}
+
+.promo-house {
+  font-size: 14px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.promo-desc {
+  font-size: 13px;
+  color: #475569;
+  margin-top: 6px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.promo-bonus {
+  font-size: 13px;
+  font-weight: 800;
+  color: #047857;
+  margin-top: 8px;
+  background: #ecfdf5;
+  padding: 4px 14px;
+  border-radius: 12px;
+  display: inline-block;
+  border: 1px solid #a7f3d0;
+}
+
+.victory-claimed-box {
+  width: 100%;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #22c55e;
+  border-radius: 16px;
+  padding: 14px 20px;
+  margin: 6px 0;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+
+.claimed-badge {
+  font-size: 16px;
+  font-weight: 900;
+  color: #15803d;
+}
+
+.claimed-info {
+  font-size: 13px;
+  color: #166534;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.claimed-rank {
+  font-size: 12px;
+  color: #14532d;
+  margin-top: 2px;
+}
+
+.btn-next-stage {
+  animation: pulseNext 1.8s infinite;
+}
+
+@keyframes pulseNext {
+  0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(16,185,129,0.35); }
+  50% { transform: scale(1.03); box-shadow: 0 6px 22px rgba(16,185,129,0.6); }
+}
+
+.victory-sub {
+  font-size: 15px;
+  color: #334155;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.victory-rewards-box {
+  display: flex;
+  gap: 14px;
+  margin: 6px 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.v-reward-col {
+  flex: 1;
+  background: linear-gradient(180deg, #fffef7 0%, #fef3c7 100%);
+  border: 2px solid #f59e0b;
+  padding: 12px 14px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.12);
+}
+
+.v-val {
+  font-size: 22px;
+  font-weight: 900;
+  color: #78350f;
+}
+
+.v-lbl {
+  font-size: 12px;
+  color: #b45309;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.v-word-box {
+  width: 100%;
+  text-align: left;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.v-word-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #0369a1;
+  margin-bottom: 10px;
+}
+
+.v-words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.v-word-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1.5px solid #cbd5e1;
+  transition: all 0.15s;
+}
+
+.v-word-card:active {
+  background: #f1f5f9;
+}
+
+.v-emoji { font-size: 18px; }
+.v-en { font-size: 14px; font-weight: 900; color: var(--text-main); }
+.v-cn { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.v-voice { font-size: 13px; color: var(--blue-sky); margin-left: auto; font-weight: 700; }
+
+.modal-footer-actions {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.modal-footer-actions .btn {
+  padding: 11px 24px;
+  font-size: 15px;
+  border-radius: 18px;
+}
+
+/* 4大单元一键直达卡片网格 */
+.unit-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.unit-quick-btn {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+}
+
+.unit-quick-btn:hover {
+  border-color: #f59e0b;
+  transform: translateY(-2px);
+}
+
+.unit-quick-btn.active {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  border: 2.5px solid #d97706;
+  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.2);
+}
+
+.unit-q-tag {
+  font-size: 13px;
+  font-weight: 900;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.unit-q-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.unit-q-range {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* 微调步进器控制行 */
+.stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.stepper-row .btn {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+.stepper-row .progress-slider {
+  flex: 1;
+}
+
+/* 每日大世界冒险连环路线指引 */
+.daily-loop-box {
+  background: linear-gradient(135deg, #fef3c7 0%, #ffedd5 100%);
+  border: 2.5px solid #f59e0b;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 14px rgba(180, 83, 9, 0.1);
+}
+
+.daily-loop-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #78350f;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.daily-loop-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.flow-step {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 6px;
+  text-align: center;
+  border: 1.5px solid #fed7aa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.flow-badge {
+  font-size: 12px;
+  font-weight: 900;
+  color: #c2410c;
+  background: #ffedd5;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 3px;
+}
+
+.flow-role {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.flow-goal {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.flow-arrow {
+  color: #ea580c;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* 章节战役总览 */
+.campaign-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: #334155;
+  padding: 4px 2px;
+}
+
+.campaign-tip {
+  font-size: 12px;
+  color: #d97706;
+  font-weight: 700;
+}
+
+.chapters-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chapter-card {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.chapter-card:hover {
+  border-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(180, 83, 9, 0.12);
+}
+
+.chapter-card.current {
+  background: linear-gradient(135deg, #fffdf5 0%, #fffbeb 100%);
+  border: 2.5px solid #d97706;
+}
+
+.chap-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.chap-icon {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  background: #fef3c7;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chap-meta h4 {
+  font-size: 15px;
+  font-weight: 900;
+  color: #1e293b;
+  margin-bottom: 3px;
+}
+
+.chap-meta p {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.chap-stats {
+  font-size: 12px;
+  font-weight: 700;
+  color: #d97706;
+  display: flex;
+  gap: 12px;
+}
+
+.chap-action {
+  flex-shrink: 0;
+}
+
+@media (max-width: 650px) {
+  .unit-quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stepper-row {
+    flex-wrap: wrap;
+  }
+  .daily-loop-flow {
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================================================
+   2024秋季人教版 PEP 三年级上册 178 词生词对照总表样式
+   ========================================================================== */
+.words-table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.unit-filter-tabs .tab-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.unit-filter-tabs .tab-btn:hover {
+  border-color: #f59e0b;
+}
+
+.unit-filter-tabs .tab-btn.active {
+  background: #b45309;
+  color: #ffffff;
+  border-color: #92400e;
+}
+
+.words-list-scrollable {
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.word-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.15s;
+}
+
+.word-item-card:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.word-item-card.is-active {
+  background: #fef3c7;
+  border-color: #d97706;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+}
+
+.word-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.word-idx-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 7px;
+  border-radius: 6px;
+  min-width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.word-item-card.is-active .word-idx-badge {
+  background: #d97706;
+  color: #ffffff;
+}
+
+.word-unit-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.word-en-text {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.word-cn-text {
+  font-size: 13px;
+  color: #64748b;
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.word-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-mini-audio {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.btn-mini-audio:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.btn-mini-select {
+  background: #ffffff;
+  border: 1.5px solid #d97706;
+  color: #b45309;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  transition: all 0.15s;
+}
+
+.btn-mini-select:hover {
+  background: #d97706;
+  color: #ffffff;
+}
+
+.word-item-card.is-active .btn-mini-select {
+  background: #059669;
+  border-color: #047857;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   南蛮商馆 · 掌柜辨词砍价对决 (Nanban Bargain Modal)
+   ========================================================================== */
+.bargain-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.bargain-merchant-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 18px;
+  padding: 14px 18px;
+  width: 100%;
+}
+
+.merchant-avatar {
+  font-size: 38px;
+  background: #ffffff;
+  border: 2px solid #d97706;
+  border-radius: 50%;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
+}
+
+.merchant-dialog-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.merchant-dialog-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #78350f;
+}
+
+.merchant-dialog-text {
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.45;
+}
+
+.bargain-deal-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #10b981;
+  border-radius: 16px;
+  padding: 10px 18px;
+  width: 100%;
+}
+
+.deal-item-name {
+  font-size: 16px;
+  font-weight: 900;
+  color: #065f46;
+}
+
+.deal-price-compare {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.deal-price-original {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.deal-price-discount {
+  color: #dc2626;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.bargain-question-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.bargain-audio-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+  transition: transform 0.15s;
+}
+
+.bargain-audio-btn:active {
+  transform: scale(0.96);
+}
+
+.bargain-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.bargain-choice-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bargain-choice-btn:hover {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+
+.bargain-choice-btn:active {
+  transform: scale(0.98);
+}
+
+.bargain-footer-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   城门暗号机关与柴犬训宠 (Gate Passphrase & Pet Modals)
+   ========================================================================== */
+.gate-box, .pet-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  text-align: center;
+}
+
+.gate-icon, .pet-icon {
+  font-size: 48px;
+  margin-bottom: -6px;
+}
+
+.gate-title, .pet-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #78350f;
+}
+
+.gate-desc, .pet-desc {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   战役关卡 1~60 网格与学校教学对齐 (Stage Select 1~60 & School Alignment)
+   ========================================================================== */
+.stage-school-status-banner {
+  background: #fdf8ed;
+  border: 1.5px solid #d4a359;
+  border-left: 5px solid #a62820;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.stage-school-status-banner .banner-main-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.stage-school-status-banner .banner-tag {
+  background: #8a1f19;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-family: var(--font-simplified-cn);
+}
+
+.stage-school-status-banner .banner-sub-tip {
+  font-size: 14.5px;
+  color: #5c432d;
+  line-height: 1.5;
+  font-family: var(--font-simplified-cn);
+}
+
+.stage-filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.stage-tab-btn {
+  background: #28201a;
+  color: #d4a359;
+  border: 1px solid #8c672b;
+  border-radius: 4px;
+  padding: 7px 14px;
+  font-size: 14.5px;
+  font-family: var(--font-simplified-cn);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.stage-tab-btn:hover {
+  background: #382d24;
+  border-color: #f6c876;
+}
+
+.stage-tab-btn.active {
+  background: linear-gradient(180deg, #8c1f19 0%, #5a110c 100%);
+  color: #fff;
+  border-color: #f6c876;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.stages-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  padding-bottom: 10px;
+}
+
+.stage-card {
+  background: #fbf6ec;
+  border: 1.5px solid #a68453;
+  border-radius: 4px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.15s;
+  position: relative;
+}
+
+.stage-card:hover {
+  border-color: #d4a359;
+  box-shadow: 0 4px 14px rgba(212,163,89,0.25);
+  transform: translateY(-2px);
+}
+
+.stage-card.is-school-target {
+  border: 2px solid #a62820;
+  background: #fffdf7;
+  box-shadow: 0 0 12px rgba(166,40,32,0.3);
+}
+
+.stage-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stage-card-title {
+  font-family: var(--font-simplified-cn);
+  font-size: 17px;
+  font-weight: 900;
+  color: #1e1713;
+}
+
+.stage-badge {
+  font-size: 14.5px;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-family: var(--font-child-cn);
+}
+
+.stage-badge.passed {
+  background: #059669;
+  color: #fff;
+}
+
+.stage-badge.current {
+  background: #dc2626;
+  color: #fff;
+}
+
+.stage-badge.locked {
+  background: #786455;
+  color: #fce8bd;
+}
+
+.stage-words-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.stage-word-tag {
+  background: #ede3d1;
+  border: 1.5px solid #c4af92;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 16px;
+  font-family: var(--font-child-en);
+  font-weight: 700;
+  color: #2b1f17;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stage-word-tag:hover {
+  background: #f6ecd9;
+  border-color: #8c672b;
+}
+
+.stage-action-btn {
+  margin-top: auto;
+  width: 100%;
+  font-family: var(--font-child-cn);
+  font-size: 16px;
+  font-weight: 800;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+/* ==========================================================================
+   言灵演武 · 麦克风跟读发音评测 (Speech Evaluation Modal)
+   ========================================================================== */
+.speech-eval-card {
+  background: #fbf6ec;
+  border: 2px solid #8c672b;
+  border-radius: 4px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.speech-word-display {
+  font-family: var(--font-en);
+  font-size: 40px;
+  font-weight: 900;
+  color: #8c1f19;
+  letter-spacing: 1px;
+}
+
+.speech-phonics-hint {
+  font-size: 18px;
+  color: #5c432d;
+  font-family: var(--font-simplified-cn);
+  background: #ede3d1;
+  padding: 4px 16px;
+  border-radius: 4px;
+  border: 1px dashed #a68453;
+}
+
+.speech-meaning-text {
+  font-size: 17px;
+  color: #3b2c20;
+  font-family: var(--font-simplified-cn);
+  font-weight: 700;
+}
+
+.speech-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 12px 0;
+}
+
+.btn-mic-record {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 3px solid #f6c876;
+  background: linear-gradient(180deg, #b82d24 0%, #7a1610 100%);
+  color: #fff;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(184, 45, 36, 0.4);
+  transition: all 0.2s;
+}
+
+.btn-mic-record:hover {
+  transform: scale(1.06);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.6);
+}
+
+.btn-mic-record.listening {
+  animation: pulse-mic 1s infinite alternate;
+  background: linear-gradient(180deg, #dc2626 0%, #ef4444 100%);
+  border-color: #fff;
+}
+
+@keyframes pulse-mic {
+  from { transform: scale(1); box-shadow: 0 0 10px rgba(220, 38, 38, 0.5); }
+  to { transform: scale(1.12); box-shadow: 0 0 25px rgba(220, 38, 38, 0.85); }
+}
+
+.speech-eval-result-box {
+  min-height: 80px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f5edd8;
+  border: 1px solid #d4a359;
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+
+.speech-score-seal {
+  font-family: var(--font-simplified-cn);
+  font-size: 20px;
+  font-weight: 900;
+  color: #8c1f19;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.speech-eval-tip {
+  font-size: 15.5px;
+  color: #4a382b;
+  font-family: var(--font-simplified-cn);
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   四大自驱支柱专属样式 (Estate, Theater, Scrolls, Clues)
+   ========================================================================== */
+
+.theater-opt-btn {
+  transition: all 0.2s ease;
+}
+.theater-opt-btn:hover {
+  border-color: #0284c7 !important;
+  background: #f0f9ff !important;
+  transform: translateX(4px);
+}
+
+.estate-furn-row {
+  transition: all 0.2s ease;
+}
+.estate-furn-row:hover {
+  border-color: #93c5fd !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
+}
+
+.estate-slot-card {
+  transition: all 0.2s ease;
+}
+.estate-slot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.estate-container::-webkit-scrollbar,
+.lexicon-scrolls-wrap::-webkit-scrollbar {
+  width: 6px;
+}
+.estate-container::-webkit-scrollbar-thumb,
+.lexicon-scrolls-wrap::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+
+

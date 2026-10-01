@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>太阁英语大冒险 · 2D卡通动作探索 RPG</title>
+
+  <!-- iPad / iOS 全屏沉浸式体验 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="太阁英语">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- 儿童自然拼读与圆润无障碍字体 (Fredoka & Quicksand) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- 样式表 -->
+  <link rel="stylesheet" href="css/style.css?v=29">
+  <link rel="stylesheet" href="css/modal.css?v=29">
+</head>
+<body>
+  <!-- 游戏主视口：HTML5 Canvas 60FPS 大世界 (已由晴和漫游绘卷替代，保留底层兼容) -->
+  <div id="game-viewport" class="hidden">
+    <canvas id="game-canvas"></canvas>
+    
+    <!-- 环境调查与解谜交互悬浮提示 (方向2) -->
+    <div id="interact-bubble" class="interact-bubble hidden" onclick="window.gameEngine.triggerNearbyInteraction()">
+      <span class="interact-bubble-key">E</span>
+      <span class="interact-bubble-icon" id="interact-bubble-icon">🔍</span>
+      <span class="interact-bubble-text" id="interact-bubble-text">调查古碑</span>
+    </div>
+
+    <!-- 和风大名主政仪表盘 (HUD) -->
+    <header class="game-hud">
+      <div class="hud-left">
+        <div class="hud-rank" title="大名品阶官位">🔰 <span id="hud-rank-text">足轻组头</span></div>
+        <div class="hud-hearts" id="hud-hearts">
+          <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+          <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+          <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+        </div>
+      </div>
+
+      <div class="hud-center" id="hud-target-info">
+        <span>🎮 用键盘 <strong>WASD</strong> 跑动探索城堡与庭院</span>
+      </div>
+
+      <div class="hud-right">
+        <button class="btn btn-secondary btn-sm" id="btn-hud-estate" onclick="window.ui.openEstateModal()" style="font-weight:700;">🏡 宅邸</button>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-clues" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-lexicon" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-theater" onclick="window.ui.openTheaterModal()" style="font-weight:700;">🎭 剧场</button>
+        <div class="hud-gold" title="军资金 · 战国金小判"><img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯"> <span id="hud-gold-text">100 贯</span></div>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-home" onclick="window.ui.showHomeScreen()">🏠 返回大本营</button>
+      </div>
+    </header>
+
+    <!-- 开场地牢阵地横幅与本关攻克目标词汇 -->
+    <div id="stage-intro-banner" class="hidden"></div>
+
+    <!-- 局内战国助学法宝道具栏 (供随时使用助学道具与战宠互动) -->
+    <div class="item-dock" id="item-dock">
+      <button class="dock-item-btn" id="btn-item-riceball" title="听音饭团：慢速拆解发音并回血" onclick="window.gameEngine.useQuickItem('item-riceball')">
+        <span class="dock-item-icon"><img src="assets/ui/item_riceball.png" class="dock-item-img" alt="饭团"></span>
+        <span class="dock-item-name">听音饭团</span>
+        <span class="dock-item-badge" id="badge-item-riceball">3</span>
+      </button>
+      <button class="dock-item-btn" id="btn-item-scroll" title="洞察卷轴：点拨发音心法并高亮字母" onclick="window.gameEngine.useQuickItem('item-scroll')">
+        <span class="dock-item-icon"><img src="assets/ui/item_scroll.png" class="dock-item-img" alt="卷轴"></span>
+        <span class="dock-item-name">洞察卷轴</span>
+        <span class="dock-item-badge" id="badge-item-scroll">2</span>
+      </button>
+      <button class="dock-item-btn" id="btn-item-bomb" title="音节破雷：直接轰碎首个音节护盾" onclick="window.gameEngine.useQuickItem('item-bomb')">
+        <span class="dock-item-icon"><img src="assets/ui/item_bomb.png" class="dock-item-img" alt="破雷"></span>
+        <span class="dock-item-name">音节破雷</span>
+        <span class="dock-item-badge" id="badge-item-bomb">1</span>
+      </button>
+      <button class="dock-item-btn" id="btn-nobunaga-mission" title="信长密牒：天下布武密旨与南蛮探案手账" onclick="window.ui.openNobunagaMissionModal()" style="border-color:#e11d48;">
+        <span class="dock-item-icon">📜</span>
+        <span class="dock-item-name">信长密牒</span>
+        <span class="dock-item-badge" style="background:#e11d48;" id="badge-mission-alert">密</span>
+      </button>
+    </div>
+
+    <!-- 触控备用十字按键 (供 iPad 触屏操作) -->
+    <div class="touch-dpad" id="touch-dpad">
+      <button class="dpad-btn dpad-up" data-dir="w">▲</button>
+      <div class="dpad-mid-row">
+        <button class="dpad-btn dpad-left" data-dir="a">◀</button>
+        <div class="dpad-center-core">🕹️</div>
+        <button class="dpad-btn dpad-right" data-dir="d">▶</button>
+      </div>
+      <button class="dpad-btn dpad-down" data-dir="s">▼</button>
+    </div>
+
+    <!-- 拼词触控候选字母键盘 (供 iPad 点击拼写) -->
+    <div class="encounter-keyboard hidden" id="encounter-keyboard"></div>
+  </div>
+
+  <!-- 晴和盛景漫游大绘卷：吉卜力全景画卷探索视口 (彻底替代旧版打怪走格页面) -->
+  <div id="scene-scenic-world" class="scene-scenic-world hidden">
+    <!-- 飘落落樱花瓣容器 -->
+    <div class="scenic-petals-container" id="scenic-petals-container"></div>
+
+    <!-- 和风漫游主政仪表盘 (HUD) -->
+    <header class="scenic-hud">
+      <div class="scenic-hud-left">
+        <div class="scenic-hud-rank" title="大名品阶官位">🔰 <span id="scenic-hud-rank">足轻组头</span></div>
+        <div class="scenic-hud-stage-title" id="scenic-hud-stage-title">第 1 关 · Unit 1: 结识新朋友</div>
+      </div>
+
+      <div class="scenic-hud-center">
+        <div class="scenic-hud-quest-tracker">
+          <button class="scenic-quest-pill" id="scenic-quest-stele" onclick="window.scenicWorld.interact('stele')">
+            ⛩️ 古碑拓片 <span class="pill-dot">○ 待访</span>
+          </button>
+          <button class="scenic-quest-pill" id="scenic-quest-nanban" onclick="window.scenicWorld.interact('nanban')">
+            ⛵ 南蛮贸易 <span class="pill-dot">○ 待访</span>
+          </button>
+          <button class="scenic-quest-pill" id="scenic-quest-chest" onclick="window.scenicWorld.interact('chest')">
+            🎁 草甸宝箱 <span class="pill-dot">○ 待访</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="scenic-hud-right">
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.openEstateModal()" style="font-weight:700;">🏡 宅邸</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.openTheaterModal()" style="font-weight:700;">🎭 剧场</button>
+        <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()" style="font-weight:700;" title="生成今日亲子立志勋绩卡">📜 勋绩</button>
+        <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.triggerEyeRestForTesting()" style="font-weight:700;" title="信长护眼御令(模拟触发)">🍵 护眼</button>
+        <div class="scenic-hud-gold" title="军资金 · 战国金小判">
+          <img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯">
+          <span id="scenic-hud-gold">100 贯</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.showHomeScreen()">🏠 返回大本营</button>
+      </div>
+    </header>
+
+    <!-- 全景画卷舞台：吉卜力画卷与全交互地标卡片 -->
+    <div class="scenic-stage-canvas">
+      <img src="assets/environment/scenic_adventure_bg.jpg" class="scenic-bg-img" alt="清洲立志晴和漫游绘卷">
+
+      <!-- 1. 清洲天守 · 织田信长 (山巅城堡) -->
+      <div class="scenic-landmark-node node-nobunaga" onclick="window.scenicWorld.interact('nobunaga')" title="清洲天守">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">🏯</div>
+          <div class="poi-text-box">
+            <span class="poi-title">清洲天守</span>
+          </div>
+          <span class="poi-status-tag tag-special" id="poi-badge-nobunaga">📜 领主密令</span>
+        </div>
+      </div>
+
+      <!-- 2. 西洋商馆 · 南蛮黑船 (右上海湾) -->
+      <div class="scenic-landmark-node node-nanban" onclick="window.scenicWorld.interact('nanban')" title="界港南蛮船">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">⛵</div>
+          <div class="poi-text-box">
+            <span class="poi-title">界港南蛮船</span>
+          </div>
+          <span class="poi-status-tag tag-pending" id="poi-badge-nanban">⛵ 舶来奇珍</span>
+        </div>
+      </div>
+
+      <!-- 3. 鸟居神碑 · 古代言灵 (中左侧樱花与鸟居) -->
+      <div class="scenic-landmark-node node-stele" onclick="window.scenicWorld.interact('stele')" title="鸟居古神碑">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">⛩️</div>
+          <div class="poi-text-box">
+            <span class="poi-title">鸟居古神碑</span>
+          </div>
+          <span class="poi-status-tag tag-pending" id="poi-badge-stele">🔍 言灵拓片</span>
+        </div>
+      </div>
+
+      <!-- 4. 藤吉郎小宅邸 (中左侧茶亭雅居) -->
+      <div class="scenic-landmark-node node-estate" onclick="window.scenicWorld.interact('estate')" title="藤吉郎宅邸">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">🏡</div>
+          <div class="poi-text-box">
+            <span class="poi-title">藤吉郎宅邸</span>
+          </div>
+          <span class="poi-status-tag tag-solved" id="poi-badge-estate">🏡 雅居 1 件</span>
+        </div>
+      </div>
+
+      <!-- 5. 草甸秘宝箱 (左下雏菊草甸) -->
+      <div class="scenic-landmark-node node-chest" onclick="window.scenicWorld.interact('chest')" title="草甸藏金箱">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">🎁</div>
+          <div class="poi-text-box">
+            <span class="poi-title">草甸藏金箱</span>
+          </div>
+          <span class="poi-status-tag tag-pending" id="poi-badge-chest">🗝️ 听音解密</span>
+        </div>
+      </div>
+
+      <!-- 6. 萌狸「信乐」 (右侧木桥河畔) -->
+      <div class="scenic-landmark-node node-spirit" onclick="window.scenicWorld.interact('spirit')" title="萌狸信乐">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">🍃</div>
+          <div class="poi-text-box">
+            <span class="poi-title">萌狸「信乐」</span>
+          </div>
+          <span class="poi-status-tag tag-pending" id="poi-badge-spirit">🐾 树洞灵兽</span>
+        </div>
+      </div>
+
+      <!-- 7. 羊皮纸藏宝图 (右下青石路与石灯笼) -->
+      <div class="scenic-landmark-node node-treasure" onclick="window.scenicWorld.interact('clues')" title="寻宝线索囊">
+        <div class="landmark-pulse-ring"></div>
+        <div class="landmark-pin-card">
+          <div class="poi-icon-box">🗺️</div>
+          <div class="poi-text-box">
+            <span class="poi-title">寻宝线索囊</span>
+          </div>
+          <span class="poi-status-tag tag-pending" id="poi-badge-treasure">🗺️ 羊皮纸卷</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部漫游指引与胜利封赏横幅 -->
+    <div class="scenic-footer-prompt" id="scenic-footer-prompt">
+      <span class="prompt-icon">🌸</span>
+      <span class="prompt-text"><strong>听音寻宝</strong>：点一点画面中的名胜建筑、宝箱或小狸猫，开启生词大冒险！</span>
+    </div>
+  </div>
+
+  <!-- 宏观大世界：日本列岛行军大地图 (Big World) -->
+  <div id="scene-overworld" class="scene-overworld hidden">
+    <header class="overworld-hud">
+      <div class="ow-hud-left">
+        <span class="ow-badge"><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"> 战国日本列岛行军大地图</span>
+        <span class="ow-rank" id="ow-rank-text">足轻组头</span>
+      </div>
+      <div class="ow-hud-right">
+        <span class="ow-gold"><img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯"> <strong id="ow-gold-text">100</strong> 贯</span>
+        <button class="btn btn-primary btn-sm" onclick="window.taikouTown.enterTown('kiyosu')">🏯 进清洲城</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.showHomeScreen()">🏠 返回大本营</button>
+      </div>
+    </header>
+
+    <div class="overworld-canvas-wrap">
+      <canvas id="overworld-canvas"></canvas>
+    </div>
+
+    <div id="overworld-prompt" class="overworld-prompt">
+      <span>🗺️ 在日本大地图漫游，用 <strong>WASD</strong> 或 <strong>点击城市</strong> 奔袭行军</span>
+    </div>
+  </div>
+
+  <!-- 微观小世界：城下町大街与特定场所建筑 (Small World) -->
+  <div id="scene-town" class="scene-town hidden">
+    <header class="town-hud">
+      <div class="town-hud-left">
+        <span class="town-badge" id="town-title-text">尾张 · 清洲城下町</span>
+        <span class="town-rank" id="town-rank-text">足轻组头</span>
+        <span class="town-hearts" id="town-hearts-text">
+          <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+          <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+          <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+        </span>
+      </div>
+      <div class="town-hud-right">
+        <span class="town-gold"><img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯"> <strong id="town-gold-text">100</strong> 贯</span>
+        <button class="btn btn-primary btn-sm" onclick="window.overworld.show()">🗺️ 出城·大地图</button>
+        <button class="btn btn-danger btn-sm" onclick="window.taikouTown.marchToDungeon()">⚔️ 出征战役</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.showHomeScreen()">🏠 返回大本营</button>
+      </div>
+    </header>
+
+    <div class="town-stage-wrap">
+      <!-- 城下町各建筑地标 -->
+      <div class="town-building-node b-keep" onclick="window.taikouTown.interactWithBuilding('keep')">
+        <img src="assets/town/building_keep.png" class="b-icon-img" alt="清洲天守阁">
+        <div class="b-label">清洲天守阁</div>
+      </div>
+
+      <div class="town-building-node b-tea" onclick="window.taikouTown.interactWithBuilding('tea')">
+        <img src="assets/town/building_tea.png" class="b-icon-img" alt="宗休茶室">
+        <div class="b-label">宗休茶室</div>
+      </div>
+
+      <div class="town-building-node b-med" onclick="window.taikouTown.interactWithBuilding('med')">
+        <img src="assets/town/building_med.png" class="b-icon-img" alt="南蛮药庐">
+        <div class="b-label">南蛮药庐</div>
+      </div>
+
+      <div class="town-building-node b-residence" onclick="window.taikouTown.interactWithBuilding('residence')">
+        <img src="assets/town/building_residence.png" class="b-icon-img" alt="武家大宅">
+        <div class="b-label">武家大宅</div>
+      </div>
+
+      <div class="town-building-node b-dojo" onclick="window.taikouTown.interactWithBuilding('dojo')">
+        <img src="assets/town/building_dojo.png" class="b-icon-img" alt="演武道场">
+        <div class="b-label">演武道场</div>
+      </div>
+
+      <div class="town-building-node b-shop" onclick="window.taikouTown.interactWithBuilding('shop')">
+        <img src="assets/town/building_shop.png" class="b-icon-img" alt="界港南蛮商馆">
+        <div class="b-label">界港南蛮商馆</div>
+      </div>
+
+      <div class="town-building-node b-gate" onclick="window.taikouTown.interactWithBuilding('gate')">
+        <img src="assets/town/building_gate.png" class="b-icon-img" alt="出阵大手门">
+        <div class="b-label">出阵大手门</div>
+      </div>
+
+      <!-- 藤吉郎人物精灵 -->
+      <div id="town-hero-figure" class="town-hero-figure">
+        <img src="assets/characters/tokichiro.png" class="town-hero-img" alt="藤吉郎">
+      </div>
+    </div>
+
+    <div id="town-action-prompt" class="town-action-prompt">
+      <span>🏮 漫步清洲城下町，走近建筑即可入内修行互动</span>
+    </div>
+  </div>
+
+  <!-- 游戏前端主页：战国大本营 (Game Home Screen) -->
+  <div id="home-screen" class="home-screen">
+    <!-- 飘落樱花动效容器 -->
+    <div class="sakura-container" id="home-sakura-container"></div>
+
+    <div class="home-content">
+      <!-- 游戏主标题 -->
+      <div class="home-header">
+        <div class="home-badge">🏯 尾张织田家 · 军略大本营</div>
+        <h1 class="home-title">太阁英语立志传 <img src="assets/ui/seal_taikou.png" class="title-seal" alt="印"></h1>
+      </div>
+
+      <!-- 角色军机名牌档案卡 -->
+      <div class="home-hero-card">
+        <div class="home-hero-visual">
+          <div class="home-hero-avatar">
+            <img src="assets/portraits/tokichiro.jpg" alt="木下藤吉郎">
+          </div>
+        </div>
+        <div class="home-hero-details">
+          <div class="home-hero-name-row">
+            <span class="home-hero-name">木下藤吉郎</span>
+            <span class="home-hero-rank" id="home-rank-badge">🔰 足轻组头</span>
+          </div>
+          <div class="home-hero-stats-row">
+            <span class="home-stat-chip"><img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯"> <strong id="home-gold-val">100</strong> 贯</span>
+            <span class="home-stat-chip" id="home-hearts-val">
+              <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+              <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+              <img src="assets/ui/magatama_green.png" class="magatama-bead" alt="命">
+            </span>
+            <span class="home-stat-chip">🕯️ 出勤 <strong id="home-streak-val">1</strong> 天</span>
+          </div>
+          <div class="home-hero-progress-chip" id="home-progress-text">
+            🚩 当前主命：第 1 关 · 【Unit 1: 结识新朋友】
+          </div>
+        </div>
+      </div>
+
+      <!-- 核心行动主按钮 -->
+      <div class="home-actions">
+        <button class="btn-home-start" onclick="window.ui.startAdventure()">
+          <span class="start-icon">🗺️</span>
+          <span class="start-main-text" id="home-start-btn-title">出 发 · 第 1 关</span>
+        </button>
+
+        <!-- 次级功能卡片网格 (战国雕花木牌札) -->
+        <div class="home-nav-grid" id="home-nav-grid">
+          <button class="home-nav-btn" id="btn-nav-estate" data-feature="estate" onclick="window.ui.handleNavFeatureClick('estate', () => window.ui.openEstateModal())">
+            <span class="home-nav-icon">🏡</span>
+            <span class="home-nav-label">藤吉郎宅邸</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-clues" data-feature="clues" onclick="window.ui.handleNavFeatureClick('clues', () => window.ui.openTreasureClueModal())">
+            <span class="home-nav-icon">🗺️</span>
+            <span class="home-nav-label">寻宝线索囊</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-theater" data-feature="theater" onclick="window.ui.handleNavFeatureClick('theater', () => window.ui.openTheaterModal())">
+            <span class="home-nav-icon">🎭</span>
+            <span class="home-nav-label">信长智将剧场</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-lexicon" data-feature="lexicon" onclick="window.ui.handleNavFeatureClick('lexicon', () => window.ui.openLexiconModal())">
+            <span class="home-nav-icon">📜</span>
+            <span class="home-nav-label">万国物语绘卷</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-hyojo" data-feature="hyojo" onclick="window.ui.handleNavFeatureClick('hyojo', () => window.questSystem.openHyojoModal())">
+            <span class="home-nav-icon">🏯</span>
+            <span class="home-nav-label">信长大名评定</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-cards" data-feature="cards" onclick="window.ui.handleNavFeatureClick('cards', () => window.cardsManager.openCardsBookModal())">
+            <span class="home-nav-icon">🎴</span>
+            <span class="home-nav-label">太阁卡片绘卷</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-overworld" data-feature="overworld" onclick="window.ui.handleNavFeatureClick('overworld', () => window.overworld.show())">
+            <span class="home-nav-icon">🗺️</span>
+            <span class="home-nav-label">战国日本大世界</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-town" data-feature="town" onclick="window.ui.handleNavFeatureClick('town', () => window.taikouTown.enterTown('kiyosu'))">
+            <span class="home-nav-icon">🏮</span>
+            <span class="home-nav-label">清洲城下町</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-officer" data-feature="officer" onclick="window.ui.handleNavFeatureClick('officer', () => window.officerSystem.openResidenceModal('hidenaga'))">
+            <span class="home-nav-icon">📜</span>
+            <span class="home-nav-label">武家名将宅邸</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-trade" data-feature="trade" onclick="window.ui.handleNavFeatureClick('trade', () => window.nanbanTrade.openTradeModal('kiyosu'))">
+            <span class="home-nav-icon">🚢</span>
+            <span class="home-nav-label">战国特产跑商</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-chapters" data-feature="chapters" onclick="window.ui.handleNavFeatureClick('chapters', () => window.ui.openChaptersModal())">
+            <span class="home-nav-icon">⚔️</span>
+            <span class="home-nav-label">战役关卡选择</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-honor" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()">
+            <span class="home-nav-icon">📜</span>
+            <span class="home-nav-label">立志勋绩卡</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-rest" onclick="if(window.honorScroll) window.honorScroll.triggerEyeRestForTesting()">
+            <span class="home-nav-icon">🍵</span>
+            <span class="home-nav-label">信长护眼令</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-parent" data-feature="parent" onclick="window.ui.openParentProgressModal()">
+            <span class="parent-badge-pill">👨‍👩‍👧 家长</span>
+            <span class="home-nav-icon">📌</span>
+            <span class="home-nav-label">学校教学对齐</span>
+          </button>
+          <button class="home-nav-btn" id="btn-nav-speech" data-feature="speech" onclick="window.ui.handleNavFeatureClick('speech', () => window.ui.openSpeechEvalModal())">
+            <span class="home-nav-icon">🎙️</span>
+            <span class="home-nav-label">言灵发音演武</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 1：家长专属教学进度对齐滑块与单元直达卡 -->
+  <div class="modal-overlay hidden" id="modal-parent-progress">
+    <div class="modal-container" style="max-width: 660px;">
+      <div class="modal-header">
+        <h3>📌 家长专属 · 学校教学进度对齐</h3>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="progress-adjust-box">
+          <div style="font-size: 14px; color: var(--text-sub); line-height: 1.5;">
+            学校老师教到了哪个单元？点击下方单元卡或拖动滑块，一键将孩子的冒险新词对齐到学校进度：
+          </div>
+
+          <!-- 4大单元一键直达卡 -->
+          <div class="unit-quick-grid" id="unit-quick-cards">
+            <button class="unit-quick-btn active" data-start="0">
+              <span class="unit-q-tag">Unit 1</span>
+              <span class="unit-q-name">结识新朋友</span>
+              <span class="unit-q-range">第 1~52 词</span>
+            </button>
+            <button class="unit-quick-btn" data-start="52">
+              <span class="unit-q-tag">Unit 2</span>
+              <span class="unit-q-name">游戏与数字</span>
+              <span class="unit-q-range">第 53~100 词</span>
+            </button>
+            <button class="unit-quick-btn" data-start="100">
+              <span class="unit-q-tag">Unit 3</span>
+              <span class="unit-q-name">色彩与书包</span>
+              <span class="unit-q-range">第 101~143 词</span>
+            </button>
+            <button class="unit-quick-btn" data-start="143">
+              <span class="unit-q-tag">Unit 4</span>
+              <span class="unit-q-name">家庭与职业</span>
+              <span class="unit-q-range">第 144~178 词</span>
+            </button>
+          </div>
+
+          <!-- 滑块与微调控制 -->
+          <div class="slider-container">
+            <div class="stepper-row">
+              <button class="btn btn-sm btn-secondary" id="btn-step-prev-10">⏮ -10词</button>
+              <button class="btn btn-sm btn-secondary" id="btn-step-prev-1">◀ -1词</button>
+              <input type="range" class="progress-slider" id="slider-progress" min="0" max="177" value="0">
+              <button class="btn btn-sm btn-secondary" id="btn-step-next-1">+1词 ▶</button>
+              <button class="btn btn-sm btn-secondary" id="btn-step-next-10">+10词 ⏭</button>
+            </div>
+
+            <!-- 当前选中单词实时卡片 -->
+            <div class="slider-preview">
+              <div class="slider-count-tag" id="slider-count-info">第 1 词 / 全书共 178 词</div>
+              <div class="slider-word-text" id="slider-word-info">【Unit 1: 结识新朋友】: meet (遇见) 🤝</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="btn-save-progress" style="width:100%; padding:14px; font-size:16px;">💾 确认同步并对齐进度</button>
+
+          <!-- 📖 新增：2024新版教材 178 词生词对照总表 -->
+          <div class="words-table-section" style="margin-top: 20px; border-top: 1px dashed var(--border-gold); padding-top: 16px;">
+            <div class="words-table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <h4 style="margin: 0; font-size: 15px; color: var(--gold-sengoku); font-weight: 800;">📖 课本照片 100% 对齐生词总表 (共 178 词)</h4>
+              <div class="unit-filter-tabs" id="parent-words-unit-tabs" style="display: flex; gap: 6px;">
+                <button class="tab-btn active" data-unit="all">全部 (178)</button>
+                <button class="tab-btn" data-unit="1">Unit 1 (52)</button>
+                <button class="tab-btn" data-unit="2">Unit 2 (48)</button>
+                <button class="tab-btn" data-unit="3">Unit 3 (43)</button>
+                <button class="tab-btn" data-unit="4">Unit 4 (35)</button>
+              </div>
+            </div>
+            <div class="words-list-scrollable" id="parent-words-list-container">
+              <!-- 动态渲染 178 个单词卡片 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 5：战国天下布武 · 60大合战关卡与自由出征总览 -->
+  <div class="modal-overlay hidden" id="modal-chapters">
+    <div class="modal-container modal-stages-container" style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;vertical-align:middle;margin-right:6px;"> 战役合战关卡 · 自由出征与温故</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-chapters').classList.add('hidden')">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1;">
+        <!-- 学校教学对齐当前状态与提示横幅 -->
+        <div class="stage-school-status-banner" id="stage-school-status-banner">
+          <div class="banner-main-line">
+            <span class="banner-tag">🏫 学校教学对齐进度</span>
+            <span id="banner-school-stage-info" style="font-size: 16px; font-weight: 800; color: #8c1f19;">当前正挑战：第 1 关 · 【Unit 1: 结识新朋友】</span>
+          </div>
+          <div class="banner-sub-tip">
+            💡 <strong>机制说明</strong>：下方 1~60 关中，所有已解锁和已通关的关卡均可随时点击<strong>出征温故</strong>，重温战斗斩怪绝<strong>不会倒退</strong>家长设定的学校教学进度！
+          </div>
+        </div>
+
+        <!-- 章节单元筛选 Tabs -->
+        <div class="stage-filter-tabs" id="stage-filter-tabs">
+          <button class="stage-tab-btn active" data-unit="all" onclick="window.ui.filterStages('all')">全天下一览 (1~60关)</button>
+          <button class="stage-tab-btn" data-unit="1" onclick="window.ui.filterStages('1')">第一章: 尾张 (1~18关)</button>
+          <button class="stage-tab-btn" data-unit="2" onclick="window.ui.filterStages('2')">第二章: 美浓 (19~34关)</button>
+          <button class="stage-tab-btn" data-unit="3" onclick="window.ui.filterStages('3')">第三章: 近江 (35~48关)</button>
+          <button class="stage-tab-btn" data-unit="4" onclick="window.ui.filterStages('4')">第四章: 界港 (49~60关)</button>
+        </div>
+
+        <!-- 60大关卡网格容器 -->
+        <div class="stages-grid-container" id="stages-grid-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 6：言灵演武 · 麦克风纯正美音发音评测殿 -->
+  <div class="modal-overlay hidden" id="modal-speech-eval">
+    <div class="modal-container" style="max-width: 560px;">
+      <div class="modal-header">
+        <h3><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;vertical-align:middle;margin-right:6px;"> 言灵演武 · 麦克风发音评测殿</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-speech-eval').classList.add('hidden')">✕</button>
+      </div>
+      <div class="modal-body" id="speech-eval-modal-body" style="padding: 20px 24px; text-align: center;">
+        <!-- 动态注入发音评测内容 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 2：南蛮商馆 & 城下町锻冶屋 -->
+  <div class="modal-overlay hidden" id="modal-shop">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>🏯 界港南蛮商馆 & 城下町锻冶屋</h3>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 15px; color: var(--gold-sengoku); font-weight: 900;">
+          当前所持军资：💰 <span id="shop-gold-display">100 贯</span>
+        </div>
+        <div class="shop-grid" id="shop-items-grid">
+          <!-- 动态生成商品卡片 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 3：评定封赏胜利大捷 -->
+  <div class="modal-overlay hidden" id="modal-victory">
+    <div class="modal-container" style="max-width: 620px;">
+      <button class="modal-close" onclick="window.ui.closeVictoryModal()">×</button>
+      <div class="modal-body">
+        <div class="victory-modal-content" id="victory-content">
+          <!-- 动态生成封赏令 -->
+        </div>
+        <div class="modal-footer-actions" id="victory-footer-actions">
+          <button class="btn btn-primary" id="btn-victory-claim" onclick="window.ui.claimVictoryReward()">
+            🎌 领赏入仕 · 晋升太阁官位
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 4：战国名师传功 · 自然拼读与破招心法卷轴 -->
+  <div class="modal-overlay hidden" id="modal-teaching-scroll">
+    <div class="teaching-scroll-container">
+      <div class="teaching-scroll-header">
+        <div class="scroll-stamp">织田家秘传</div>
+        <h3 id="teach-word-title">📖 破招心法 · 细看拆解</h3>
+      </div>
+      <div class="teaching-scroll-body">
+        <div class="teach-word-badge" id="teach-word-en">MEET</div>
+        <div class="teach-phonics-row" id="teach-phonics-chunks">
+          <!-- 动态注入自然拼读音节卡片 -->
+        </div>
+        <div class="teach-meaning" id="teach-word-cn">🤝 遇见 / 相识</div>
+        <div class="teach-tip-box" id="teach-mnemonic">
+          💡 <strong>拼读点拨：</strong>双写元音字母组合 <strong>ee</strong> 读作长元音 <strong>/i:/</strong>
+        </div>
+        <div class="teach-audio-row">
+          <button class="btn btn-secondary" id="btn-teach-speak" onclick="if(window.gameEngine && window.gameEngine.teachingWord) window.audioEngine.speak(window.gameEngine.teachingWord.en)">
+            🔊 点击仔细听原音跟读
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer-actions">
+        <button class="btn btn-primary" id="btn-start-blind-spell" onclick="window.gameEngine.startBlindRetest()">
+          ⚡ 我记住了，开始盲拼破招！
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 5：演武场秘宝箱 · 听音辨词破锁挑战 -->
+  <div class="modal-overlay hidden" id="modal-chest-listen">
+    <div class="modal-container" style="max-width: 480px;">
+      <button class="modal-close" onclick="window.ui.closeChestListenModal()">×</button>
+      <div class="modal-body">
+        <div class="chest-listen-box">
+          <h3 class="chest-listen-title">📦 黄金秘宝匣 · 听音破锁</h3>
+          <p class="chest-listen-tip">点击铜铃听原音，找出匹配的释义即可解开宝箱！</p>
+          <div class="chest-audio-trigger" id="chest-audio-btn" onclick="window.ui.playChestWordAudio()">
+            🔊
+          </div>
+          <div class="chest-options-grid" id="chest-options-container">
+            <!-- 动态生成 3 个选项卡 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 6：南蛮商馆 · 掌柜辨词砍价对决 -->
+  <div class="modal-overlay hidden" id="modal-bargain">
+    <div class="modal-container" style="max-width: 520px;">
+      <button class="modal-close" onclick="window.ui.closeBargainModal()">×</button>
+      <div class="modal-body" style="padding: 24px 20px;">
+        <div class="bargain-box" id="bargain-box-content">
+          <!-- 动态注入掌柜对话、原价/半价对比、英文题目与选项 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 7：战国城防 · 暗号石锁机关 -->
+  <div class="modal-overlay hidden" id="modal-gate-passphrase">
+    <div class="modal-container" style="max-width: 500px;">
+      <button class="modal-close" onclick="window.ui.closeGateModal()">×</button>
+      <div class="modal-body" style="padding: 24px 20px;">
+        <div class="gate-box" id="gate-box-content">
+          <!-- 动态注入城门暗号题目与选项 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 8：织田信长天下布武密牒 · 南蛮暗号探案手账 (方向4) -->
+  <div class="modal-overlay hidden" id="modal-nobunaga-scroll">
+    <div class="modal-container scroll-container" style="max-width: 600px;">
+      <button class="modal-close" onclick="window.ui.closeNobunagaModal()">×</button>
+      <div class="scroll-content" id="nobunaga-scroll-content">
+        <!-- 动态注入信长朱印密旨与探案任务手账 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 8B：鸟居古神碑 · 言灵暗语拓片破译 (方向2 塞尔达式环境解谜) -->
+  <div class="modal-overlay hidden" id="modal-stele-cipher">
+    <div class="modal-container stele-container">
+      <button class="modal-close" onclick="window.ui.closeSteleModal()">×</button>
+      <div class="stele-content" id="stele-cipher-content">
+        <!-- 动态注入古碑拓片解谜 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 8C：南蛮商馆 · 西洋洋商奇珍洽购谈判 (方向4 南蛮贸易) -->
+  <div class="modal-overlay hidden" id="modal-nanban-trade">
+    <div class="modal-container trade-container">
+      <button class="modal-close" onclick="window.ui.closeNanbanTradeModal()">×</button>
+      <div class="trade-content" id="nanban-trade-content">
+        <!-- 动态注入南蛮商船对话与贸易谈判 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 8D：西洋密宝箱 · 听音辨宝寻宝开箱 -->
+  <div class="modal-overlay hidden" id="modal-treasure-chest">
+    <div class="modal-container chest-container">
+      <button class="modal-close" onclick="window.ui.closeChestModal()">×</button>
+      <div class="chest-content" id="treasure-chest-content">
+        <!-- 动态注入宝箱寻宝挑战 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 8E：森林生灵奇遇 · 萌狸「信乐」对话 -->
+  <div class="modal-overlay hidden" id="modal-friendly-spirit">
+    <div class="modal-container spirit-container">
+      <button class="modal-close" onclick="window.ui.closeSpiritModal()">×</button>
+      <div class="spirit-content" id="friendly-spirit-content">
+        <!-- 动态注入萌狸奇遇 -->
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- 弹窗 9：宗休茶室 · 茶道翻牌消消乐 -->
+  <div class="modal-overlay hidden" id="modal-tea-ceremony">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3>🍵 宗休茶室 · 茶道中英记忆翻牌消消乐</h3>
+        <button class="modal-close" onclick="window.teaMinigame.close()">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="tea-info-bar">
+          <span id="tea-status-msg">🍵 点击翻开茶盏，寻得中英意境相通之一对！</span>
+          <span class="tea-count-badge">已参透: <strong id="tea-pairs-count">0 / 3</strong></span>
+        </div>
+        <div class="tea-board" id="tea-board"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 10：南蛮药庐 · 听音接药草调药 -->
+  <div class="modal-overlay hidden" id="modal-medicine-game">
+    <div class="modal-container" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3>🌿 南蛮药庐 · 听音接药调炼兵粮丸</h3>
+        <button class="modal-close" onclick="window.medicineMinigame.close()">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px; text-align: center;">
+        <div id="med-target-prompt" class="med-prompt-banner">
+          正在调剂灵药...
+        </div>
+        <div id="med-recipe-slots" class="med-recipe-slots"></div>
+        <div class="med-canvas-wrap">
+          <canvas id="medicine-canvas" width="460" height="340"></canvas>
+        </div>
+        <div class="med-touch-hint">
+          <span>💡 左右拖动或用键盘 <strong>A / D / 方向键</strong> 移动药臼接取正确药草！</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 11：清洲天守阁 · 见织田信长 -->
+  <div class="modal-overlay hidden" id="modal-keep-dialog">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3>🏯 清洲天守阁 · 织田信长亲授今日主命</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-keep-dialog').classList.add('hidden')">✕</button>
+      </div>
+      <div class="modal-body" id="keep-dialog-body" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗 12：城下町大手门 · 出城选择 -->
+  <div class="modal-overlay hidden" id="modal-town-gate">
+    <div class="modal-container" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3>🚪 出阵大手门 · 行军通关抉择</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-town-gate').classList.add('hidden')">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 24px 20px; text-align: center;">
+        <p style="font-size:15px;color:var(--text-sub);margin-bottom:20px;">
+          守门足轻躬身行礼：“藤吉郎少侠！您欲前往何方？”
+        </p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="btn btn-primary btn-lg" onclick="window.taikouTown.leaveToOverworld()">
+            🗺️ 出城走向【战国日本大世界】（周游列国）
+          </button>
+          <button class="btn btn-danger btn-lg" onclick="window.taikouTown.marchToDungeon()">
+            ⚔️ 出征前线【战役地牢副本】（斩妖破敌）
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗：大世界神秘藏宝图挖掘与解密 -->
+  <div class="modal-overlay hidden" id="modal-treasure-hunt">
+    <div class="modal-container" style="max-width: 580px;">
+      <button class="modal-close" onclick="window.ui.closeTreasureHuntModal()">✕</button>
+      <div class="modal-body" id="treasure-hunt-content" style="padding: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：羊皮纸藏宝图线索囊 -->
+  <div class="modal-overlay hidden" id="modal-treasure-clues">
+    <div class="modal-container" style="max-width: 540px;">
+      <button class="modal-close" onclick="window.ui.closeTreasureClueModal()">✕</button>
+      <div class="modal-body" id="treasure-clues-content" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：藤吉郎小宅邸 / 一夜城建造装扮 -->
+  <div class="modal-overlay hidden" id="modal-tokichiro-estate">
+    <div class="modal-container" style="max-width: 720px;">
+      <button class="modal-close" onclick="window.ui.closeEstateModal()">✕</button>
+      <div class="modal-body" id="estate-modal-content" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：信长智将主线危机小剧场 -->
+  <div class="modal-overlay hidden" id="modal-taikou-theater">
+    <div class="modal-container" style="max-width: 780px;">
+      <button class="modal-close" onclick="window.ui.closeTheaterModal()">✕</button>
+      <div class="modal-body" id="theater-modal-content" style="padding: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：万国洋物大绘卷 · 词汇图鉴与令旗 -->
+  <div class="modal-overlay hidden" id="modal-lexicon-scrolls">
+    <div class="modal-container" style="max-width: 760px;">
+      <button class="modal-close" onclick="window.ui.closeLexiconModal()">✕</button>
+      <div class="modal-body" id="lexicon-modal-content" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：言灵声波共鸣 · 口语跟读评测 -->
+  <div class="modal-overlay hidden" id="modal-voice-chant">
+    <div class="modal-container" style="max-width: 520px;">
+      <button class="modal-close" onclick="window.ui.closeVoiceChantModal()">✕</button>
+      <div class="modal-body" id="voice-chant-content" style="padding: 20px; text-align: center;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：信长健康护眼御令 -->
+  <div class="modal-overlay hidden" id="modal-nobunaga-rest">
+    <div class="modal-container" style="max-width: 540px;">
+      <div class="modal-body" id="nobunaga-rest-content" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：亲子立志军功勋绩卡 -->
+  <div class="modal-overlay hidden" id="modal-honor-scroll">
+    <div class="modal-container" style="max-width: 480px;">
+      <button class="modal-close" onclick="window.honorScroll.closeCertificateModal()">✕</button>
+      <div class="modal-body" id="honor-scroll-content" style="padding: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 注销旧 Service Worker，杜绝旧缓存 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script>
+
+    <!-- 脚本模块按依赖加载 -->
+  <script src="js/words-data.js?v=26"></script>
+  <script src="js/phonics.js?v=26"></script>
+  <script src="js/progress.js?v=26"></script>
+  <script src="js/speech.js?v=26"></script>
+  <script src="js/skill-cards.js?v=26"></script>
+  <script src="js/quest-system.js?v=26"></script>
+  <script src="js/officer-system.js?v=26"></script>
+  <script src="js/nanban-trade.js?v=26"></script>
+  <script src="js/minigame-dojo.js?v=26"></script>
+  <script src="js/minigame-temple.js?v=26"></script>
+  <script src="js/hero.js?v=26"></script>
+  <script src="js/game-characters.js?v=26"></script>
+  <script src="js/treasure-hunt.js?v=26"></script>
+  <script src="js/tokichiro-estate.js?v=26"></script>
+  <script src="js/taikou-theater.js?v=26"></script>
+  <script src="js/lexicon-scrolls.js?v=26"></script>
+  <script src="js/game-map.js?v=26"></script>
+  <script src="js/minigame-tea.js?v=26"></script>
+  <script src="js/minigame-medicine.js?v=26"></script>
+  <script src="js/taikou-town.js?v=26"></script>
+  <script src="js/overworld.js?v=26"></script>
+  <script src="js/game-engine.js?v=26"></script>
+  <script src="js/scenic-world.js?v=26"></script>
+  <script src="js/honor-scroll.js?v=26"></script>
+  <script src="js/ui.js?v=26"></script>
+  <script src="js/app.js?v=26"></script>
+</body>
+</html>
