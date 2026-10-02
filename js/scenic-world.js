@@ -227,7 +227,7 @@ class ScenicWorld {
         footerPrompt.className = 'scenic-footer-prompt highlight-victory';
         footerPrompt.innerHTML = `
           <span class="prompt-icon">🎊</span>
-          <span class="prompt-text">今日城下巡游三大立志探索全部圆满！请点击上方 <strong>【清洲天守】</strong> 向织田信长公受封升官！</span>
+          <span class="prompt-text">三大探求全部圆满！请轻触 <strong>【清洲天守】</strong> 觐见信长公受封！</span>
           <button class="btn btn-primary btn-sm prompt-btn" onclick="window.ui.claimExplorationPromotion()">🏯 觐见受封</button>
         `;
       } else {
@@ -235,7 +235,7 @@ class ScenicWorld {
         footerPrompt.className = 'scenic-footer-prompt';
         footerPrompt.innerHTML = `
           <span class="prompt-icon">🌸</span>
-          <span class="prompt-text"><strong>清洲晴和漫游</strong>：轻触画面中的任意地标名胜（鸟居、商馆、草甸、小居、狸猫）即可开启纯享听音探求 [ ${solvedCount} / 3 完成 ]</span>
+          <span class="prompt-text"><strong>晴和漫游</strong>：轻触地标开启听音探秘 [ ${solvedCount} / 3 完成 ]</span>
         `;
       }
     }

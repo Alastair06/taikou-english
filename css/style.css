@@ -470,7 +470,7 @@ body, html {
 }
 
 /* 针对 iPad / 大屏触控：按键全面加宽加大，大字高清晰度 */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (min-height: 550px) {
   .touch-dpad {
     transform: scale(1.15);
     transform-origin: bottom left;
@@ -2099,7 +2099,7 @@ body, html {
 }
 
 /* 针对 iPad 宽屏大绘卷自适应 */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (min-height: 550px) {
   .home-content {
     max-width: 980px;
     padding: 26px 34px;
@@ -2219,29 +2219,31 @@ body, html {
     font-size: 19px;
   }
   .home-nav-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
   }
   .home-nav-btn {
-    min-height: 72px;
-    padding: 6px 4px;
-    border-radius: 12px;
+    min-height: 56px;
+    padding: 5px 3px;
+    border-radius: 10px;
+    gap: 3px;
   }
   .home-nav-icon {
-    font-size: 24px;
+    font-size: 20px;
   }
   .home-nav-label {
-    font-size: 13px;
+    font-size: 11.5px;
+    white-space: nowrap;
   }
   .home-nav-btn.is-locked {
-    padding: 6px 4px;
+    padding: 5px 3px;
   }
   .seal-talisman {
-    margin-top: 2px;
-    padding: 1px 6px;
+    margin-top: 1px;
+    padding: 1px 4px;
   }
   .seal-text {
-    font-size: 11px;
+    font-size: 9.5px;
   }
 }
 
@@ -4710,7 +4712,7 @@ body, html {
 }
 
 /* 针对 iPad / 大屏平板专属自适应 */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (min-height: 550px) {
   .poi-title {
     font-size: 18px;
     font-weight: 900;
@@ -5795,5 +5797,309 @@ body, html {
 @media (orientation: landscape) {
   .orientation-toast {
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   移动端与手机横屏终极自适应排版引擎 (Mobile & Landscape Master Suite)
+   确保在任何手机（横屏或竖屏）下，字号与卡片均严整收纳，杜绝“字充满屏幕”
+   ========================================================================== */
+
+/* 1. 移动端全设备通用轻量化 (宽 <= 767px 或 高 <= 520px) */
+@media (max-width: 767px), (max-height: 520px) {
+  /* 漫游名胜图钉轻量化：去除占地方的副状态条，换用精致胶囊 */
+  .landmark-pin-card {
+    padding: 3px 8px !important;
+    gap: 5px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1.5px solid rgba(253, 230, 138, 0.95) !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16) !important;
+    min-width: 0 !important;
+  }
+  .poi-icon-box {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 13.5px !important;
+    border-radius: 50% !important;
+  }
+  .poi-title {
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.2px !important;
+  }
+  /* 手机端隐藏冗长副状态文字标签，保留画面通透 */
+  .poi-status-tag {
+    display: none !important;
+  }
+  /* 底部漫游指引横幅：轻量悬浮胶囊，严禁遮挡半屏 */
+  .scenic-footer-prompt {
+    bottom: max(6px, env(safe-area-inset-bottom, 6px)) !important;
+    padding: 4px 14px !important;
+    border-radius: 999px !important;
+    width: auto !important;
+    max-width: min(540px, calc(100% - 24px)) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12) !important;
+    border: 1.5px solid #fed7aa !important;
+    gap: 8px !important;
+  }
+  .scenic-footer-prompt .prompt-icon {
+    font-size: 16px !important;
+  }
+  .scenic-footer-prompt .prompt-text {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .scenic-footer-prompt .prompt-btn {
+    padding: 3px 10px !important;
+    font-size: 11.5px !important;
+    border-radius: 999px !important;
+  }
+}
+
+/* 2. 手机超薄横屏专属排版 (高度 <= 520px，如 iPhone/安卓横屏握持) */
+@media (max-height: 520px), (orientation: landscape) and (max-height: 550px) {
+  /* 漫游横屏顶部 HUD 极致紧凑 */
+  .scenic-hud {
+    height: 38px !important;
+    padding: max(4px, env(safe-area-inset-top, 4px)) max(12px, env(safe-area-inset-right, 12px)) 4px max(12px, env(safe-area-inset-left, 12px)) !important;
+  }
+  .scenic-hud-rank {
+    font-size: 11.5px !important;
+    padding: 2px 8px !important;
+  }
+  .scenic-hud-gold {
+    font-size: 11.5px !important;
+    padding: 2px 8px !important;
+  }
+  .scenic-hud-right .btn {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* 横屏下微调名胜坐标，消除一切重叠遮挡，大视野留白 */
+  .node-nobunaga { left: 45% !important; top: 22% !important; }
+  .node-nanban   { left: 82% !important; top: 32% !important; }
+  .node-stele    { left: 14% !important; top: 48% !important; }
+  .node-estate   { left: 36% !important; top: 62% !important; }
+  .node-spirit   { left: 60% !important; top: 62% !important; }
+  .node-chest    { left: 15% !important; top: 76% !important; }
+  .node-treasure { left: 82% !important; top: 76% !important; }
+
+  /* 战国大本营主页：超薄横屏左右双列自适应，整屏尽览无需滚动 */
+  .home-screen {
+    padding: max(4px, env(safe-area-inset-top, 4px)) max(14px, env(safe-area-inset-right, 14px)) max(4px, env(safe-area-inset-bottom, 4px)) max(14px, env(safe-area-inset-left, 14px)) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .home-content {
+    max-width: 860px !important;
+    width: 100% !important;
+    padding: 8px 12px !important;
+    border-radius: 16px !important;
+    max-height: 96dvh !important;
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: 240px 1fr !important;
+    grid-template-rows: auto 1fr !important;
+    column-gap: 12px !important;
+    row-gap: 6px !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+  }
+  .home-header {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 0 !important;
+    gap: 6px !important;
+  }
+  .home-badge {
+    font-size: 10.5px !important;
+    padding: 2px 6px !important;
+    margin-bottom: 0 !important;
+  }
+  .home-title {
+    font-size: 14.5px !important;
+    gap: 4px !important;
+    margin: 0 !important;
+  }
+  .home-title .title-seal {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  .home-hero-card {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    padding: 8px 10px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    gap: 5px !important;
+  }
+  .home-hero-visual {
+    display: flex !important;
+  }
+  .home-hero-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 10px !important;
+  }
+  .home-hero-details {
+    gap: 3px !important;
+    width: 100% !important;
+  }
+  .home-hero-name-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  .home-hero-name {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+  }
+  .home-hero-rank {
+    font-size: 10px !important;
+    padding: 1px 6px !important;
+    border-radius: 999px !important;
+  }
+  .home-hero-stats-row {
+    display: flex !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    margin-top: 2px !important;
+  }
+  .home-stat-chip {
+    font-size: 10px !important;
+    padding: 1px 5px !important;
+  }
+  .home-hero-progress-chip {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .home-actions {
+    grid-column: 2 !important;
+    grid-row: 1 / span 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    justify-content: flex-start !important;
+    height: 100% !important;
+  }
+  .btn-home-start {
+    padding: 7px 12px !important;
+    border-radius: 10px !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  .start-icon {
+    font-size: 16px !important;
+  }
+  .start-main-text {
+    font-size: 14.5px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .home-nav-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 5px !important;
+    overflow-y: auto !important;
+    max-height: 230px !important;
+  }
+  .home-nav-btn {
+    min-height: 42px !important;
+    padding: 3px 3px !important;
+    border-radius: 8px !important;
+    gap: 2px !important;
+  }
+  .home-nav-icon {
+    font-size: 16px !important;
+  }
+  .home-nav-label {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+  .seal-talisman {
+    margin-top: 1px !important;
+    padding: 1px 3px !important;
+  }
+  .seal-text {
+    font-size: 8.5px !important;
+  }
+
+  /* 智将剧场横屏排版精简收纳 */
+  .theater-subtitle {
+    display: none !important;
+  }
+  .theater-stage-header {
+    margin-bottom: 4px !important;
+    padding-bottom: 4px !important;
+  }
+  .theater-speaker-layout {
+    margin-bottom: 4px !important;
+    gap: 8px !important;
+  }
+  .theater-speaker-badge {
+    min-width: 64px !important;
+  }
+  .theater-speaker-img {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
+  }
+  .theater-speaker-name {
+    font-size: 11.5px !important;
+  }
+  .theater-speech-bubble {
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+  }
+  .theater-speech-text {
+    font-size: 12.5px !important;
+    line-height: 1.4 !important;
+  }
+  .theater-quiz-card {
+    padding: 6px 10px !important;
+    margin-top: 4px !important;
+    border-radius: 10px !important;
+  }
+  .theater-quiz-prompt {
+    font-size: 11.5px !important;
+    margin-bottom: 4px !important;
+  }
+  .theater-opts-list {
+    gap: 4px !important;
+  }
+  .theater-opt-btn {
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+  .theater-opt-word {
+    font-size: 11.5px !important;
+  }
+  .theater-quiz-footer {
+    margin-top: 4px !important;
+    font-size: 11px !important;
   }
 }

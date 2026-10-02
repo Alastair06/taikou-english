@@ -3028,7 +3028,7 @@ class UIManager {
           </button>
         </div>
 
-        <div style="font-size:12px; color:#64748b; margin-bottom:12px; line-height:1.4;">
+        <div class="theater-subtitle" style="font-size:12px; color:#64748b; margin-bottom:8px; line-height:1.4;">
           ${story.subtitle}
         </div>
 
