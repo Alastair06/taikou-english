@@ -2218,117 +2218,185 @@ body, html {
   }
 }
 
-/* 针对 iPhone / 手机端竖屏自适应 */
-@media (max-width: 650px) {
+/* 针对 iPhone / 手机端竖屏自适应 (整屏一页尽览，严格零滚动零下拉) */
+@media (max-width: 650px) and (orientation: portrait) {
   .home-screen {
-    padding: max(8px, env(safe-area-inset-top, 8px)) 10px max(8px, env(safe-area-inset-bottom, 8px)) 10px;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: max(4px, env(safe-area-inset-top, 4px)) 8px max(4px, env(safe-area-inset-bottom, 4px)) 8px !important;
+    box-sizing: border-box !important;
   }
   .home-content {
-    padding: 14px 12px;
-    max-height: 96dvh;
-    gap: 10px;
-    border-radius: 20px;
+    height: calc(100dvh - max(8px, env(safe-area-inset-top, 4px) + env(safe-area-inset-bottom, 4px))) !important;
+    max-height: calc(100dvh - max(8px, env(safe-area-inset-top, 4px) + env(safe-area-inset-bottom, 4px))) !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    padding: 6px 10px !important;
+    gap: 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    border-radius: 18px !important;
+  }
+  .home-header {
+    gap: 2px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  .home-badge {
+    font-size: 10px !important;
+    padding: 2px 10px !important;
+    margin: 0 !important;
   }
   .home-title {
-    font-size: 24px;
-    gap: 6px;
+    font-size: 18px !important;
+    gap: 6px !important;
+    margin: 0 !important;
+  }
+  .home-title .title-seal {
+    width: 18px !important;
+    height: 18px !important;
   }
   .home-hero-card {
-    padding: 10px 12px;
-    gap: 10px;
-    align-items: center;
-    border-radius: 16px;
+    padding: 6px 10px !important;
+    gap: 8px !important;
+    align-items: center !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
   }
   .home-hero-avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    flex-shrink: 0;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
   }
   .home-hero-info {
-    flex: 1;
-    min-width: 0;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
   .home-hero-name-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 6px;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 4px !important;
   }
   .home-hero-name {
-    font-size: 16.5px;
-    font-weight: 900;
-    white-space: nowrap;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
   }
   .home-hero-rank {
-    font-size: 11.5px;
-    padding: 2px 8px;
-    white-space: nowrap;
-    border-radius: 999px;
+    font-size: 9.5px !important;
+    padding: 1px 6px !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
   }
   .home-hero-stats-row {
-    gap: 6px;
-    margin-top: 4px;
-    flex-wrap: wrap;
+    gap: 4px !important;
+    margin-top: 1px !important;
+    flex-wrap: wrap !important;
   }
   .home-stat-chip {
-    font-size: 11px;
-    padding: 2px 7px;
+    font-size: 9.5px !important;
+    padding: 1px 6px !important;
   }
   .home-hero-progress-chip {
-    font-size: 11.5px;
-    padding: 4px 8px;
-    margin-top: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 9.5px !important;
+    padding: 2px 6px !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .home-actions {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    justify-content: flex-start !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
   }
   .btn-home-start {
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: 6px 12px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+    height: 40px !important;
+    flex-shrink: 0 !important;
+  }
+  .start-icon {
+    font-size: 18px !important;
   }
   .start-main-text {
-    font-size: 19px;
+    font-size: 15px !important;
+  }
+  .start-sub-text {
+    font-size: 10px !important;
   }
   .home-nav-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    flex: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: repeat(5, 1fr) !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    max-height: none !important;
+    min-height: 0 !important;
   }
   .home-nav-btn {
-    min-height: 56px;
-    padding: 5px 3px;
-    border-radius: 10px;
-    gap: 3px;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 2px 2px !important;
+    border-radius: 8px !important;
+    gap: 1px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
   }
   .home-nav-icon {
-    font-size: 20px;
+    font-size: 18px !important;
+    line-height: 1 !important;
   }
   .home-nav-label {
-    font-size: 11.5px;
-    white-space: nowrap;
+    font-size: 10.5px !important;
+    white-space: nowrap !important;
+    line-height: 1.1 !important;
   }
   .home-nav-btn.is-locked {
-    padding: 5px 3px;
+    padding: 2px 2px !important;
   }
   .seal-talisman {
-    margin-top: 1px;
-    padding: 1px 4px;
+    margin-top: 1px !important;
+    padding: 1px 3px !important;
+    line-height: 1 !important;
   }
   .seal-text {
-    font-size: 9.5px;
+    font-size: 8.5px !important;
   }
   .home-mission-card {
-    display: none;
+    display: none !important;
   }
   .parent-badge-pill {
-    position: absolute;
-    top: 3px;
-    right: 4px;
-    font-size: 9px;
-    padding: 1px 4px;
-    border-radius: 4px;
-    line-height: 1.1;
-    z-index: 2;
+    position: absolute !important;
+    top: 2px !important;
+    right: 3px !important;
+    font-size: 8px !important;
+    padding: 0px 3px !important;
+    border-radius: 3px !important;
+    line-height: 1.1 !important;
+    z-index: 2 !important;
   }
 }
 

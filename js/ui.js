@@ -2629,15 +2629,26 @@ class UIManager {
   // 支柱二：藤吉郎小宅邸 / 一夜城建造装扮系统 (Estate UI)
   // =========================================================================
 
-  openEstateModal() {
+  openEstateModal(tab = null, category = null, page = null) {
     const modal = document.getElementById('modal-tokichiro-estate');
     const content = document.getElementById('estate-modal-content');
     if (!modal || !content) return;
 
-    const estate = window.estateSystem ? window.estateSystem.getEstateInfo() : { name: '清洲松林草庵', icon: '🛖' };
+    if (tab) this._estateTab = tab;
+    if (!this._estateTab) this._estateTab = 'view';
+    if (category) {
+      this._estateCategory = category;
+      this._estatePage = 1;
+    }
+    if (!this._estateCategory) this._estateCategory = 'all';
+    if (page !== null && page !== undefined) this._estatePage = page;
+    if (!this._estatePage || this._estatePage < 1) this._estatePage = 1;
+
+    const estate = window.estateSystem ? window.estateSystem.getEstateInfo() : { name: '清洲松林草庵', icon: '🛖', desc: '尾张清洲织田家奉公初期朴素长屋' };
     const catalog = window.estateSystem ? window.estateSystem.catalog : [];
     const placed = window.estateSystem ? window.estateSystem.state.placedSlots : {};
     const heroGold = window.heroManager ? window.heroManager.hero.gold : 0;
+    const unlockedCount = catalog.filter(f => window.estateSystem?.isUnlocked(f.id)).length;
 
     // 房间插槽配置
     const slots = [
@@ -2698,28 +2709,31 @@ class UIManager {
     const slotsHtml = slots.map(slot => {
       const item = placed[slot.id] ? catalog.find(f => f.id === placed[slot.id]) : null;
       return `
-        <div class="estate-slot-card" style="background:#f8fafc; border:2px dashed ${item ? '#10b981' : '#cbd5e1'}; border-radius:14px; padding:10px; text-align:center; min-width:90px; flex:1;">
-          <div style="font-size:11px; color:#64748b; font-weight:700;">${slot.name}</div>
-          <div style="font-size:26px; margin:6px 0;">${item ? item.emoji : slot.icon}</div>
-          <div style="font-size:12px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            ${item ? item.name : '（空位）'}
+        <div class="estate-slot-card" style="border: 1.5px dashed ${item ? '#10b981' : '#cbd5e1'};">
+          <div class="estate-slot-title">${slot.name}</div>
+          <div class="estate-slot-emoji">${item ? item.emoji : slot.icon}</div>
+          <div class="estate-slot-name">${item ? item.name : '（空位）'}</div>
+          <div class="estate-slot-sub">
+            ${item ? `
+              <span style="color:#0284c7; cursor:pointer;" onclick="if(window.audioEngine) window.audioEngine.speak('${item.en}')">🔊 [${item.en}]</span>
+              <button style="border:none; background:#fee2e2; color:#ef4444; border-radius:3px; padding:1px 4px; cursor:pointer; font-size:9px;" onclick="window.ui.removeEstateItem('${slot.id}')">收起</button>
+            ` : `
+              <span style="color:#94a3b8;">待布置</span>
+            `}
           </div>
-          ${item ? `
-            <div style="font-size:10px; color:#0284c7; cursor:pointer;" onclick="if(window.audioEngine) window.audioEngine.speak('${item.en}')">
-              🔊 [ ${item.en} ]
-            </div>
-            <button style="margin-top:4px; font-size:10px; border:none; background:#fee2e2; color:#ef4444; border-radius:4px; padding:2px 6px; cursor:pointer;" onclick="window.ui.removeEstateItem('${slot.id}')">
-              收起
-            </button>
-          ` : `
-            <div style="font-size:10px; color:#94a3b8;">待布置</div>
-          `}
         </div>
       `;
     }).join('');
 
-    // 家具图鉴与购置列表
-    const catalogHtml = catalog.map(item => {
+    // 过滤与分页家具工坊数据 (横屏单页2件/竖屏单页4件，彻底杜绝下拉滚动翻页)
+    const isLandscape = window.innerHeight < 550 && window.innerWidth > window.innerHeight;
+    const pageSize = isLandscape ? 2 : 4;
+    const filteredCatalog = catalog.filter(f => this._estateCategory === 'all' || f.slotType === this._estateCategory);
+    const totalPages = Math.max(1, Math.ceil(filteredCatalog.length / pageSize));
+    if (this._estatePage > totalPages) this._estatePage = totalPages;
+    const pageItems = filteredCatalog.slice((this._estatePage - 1) * pageSize, this._estatePage * pageSize);
+
+    const catalogHtml = pageItems.map(item => {
       const isUnlocked = window.estateSystem ? window.estateSystem.isUnlocked(item.id) : false;
       return `
         <div class="estate-furn-row">
@@ -2755,36 +2769,77 @@ class UIManager {
 
     content.innerHTML = `
       <div class="estate-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg,#0284c7,#0369a1); color:#fff; border-radius:16px; padding:16px 20px; margin-bottom:16px;">
+        <!-- 顶部信息栏 -->
+        <div class="estate-header-banner">
           <div>
-            <div style="font-size:18px; font-weight:900;">${estate.icon} ${estate.name}</div>
-            <div style="font-size:12px; opacity:0.9; margin-top:2px;">${estate.desc}</div>
+            <span style="font-size:15px; font-weight:900;">${estate.icon} ${estate.name}</span>
+            <span style="font-size:11px; opacity:0.85; margin-left:6px;">${estate.desc}</span>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:12px; opacity:0.8;">持有资金</div>
-            <div style="font-size:18px; font-weight:900;">🪙 ${heroGold} 贯</div>
+          <div style="font-size:14px; font-weight:900;">🪙 ${heroGold} 贯</div>
+        </div>
+
+        <!-- 标签页导航 (一键切卡，免滚动) -->
+        <div class="estate-nav-tabs">
+          <button class="estate-tab-btn ${this._estateTab === 'view' ? 'active' : ''}" onclick="window.ui.openEstateModal('view')">
+            🏡 居所陈设总览
+          </button>
+          <button class="estate-tab-btn ${this._estateTab === 'shop' ? 'active' : ''}" onclick="window.ui.openEstateModal('shop')">
+            🪑 南蛮洋物工坊 (${unlockedCount}/${catalog.length})
+          </button>
+        </div>
+
+        ${this._estateTab === 'view' ? `
+          <!-- 视图 1：居所实景与插槽一览 (整屏零滚动) -->
+          <div class="estate-view-container">
+            <div class="estate-view-split">
+              <div class="estate-view-split-left">
+                ${tatamiRoomHtml}
+              </div>
+              <div class="estate-view-split-right">
+                <div class="estate-slots-grid">
+                  ${slotsHtml}
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="window.ui.openEstateModal('shop')" style="width:100%; font-size:11.5px; font-weight:800; padding:6px 12px; margin-top:4px;">
+                  🛒 前往南蛮工坊购置家具 (${unlockedCount}/${catalog.length}) ➡️
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        ` : `
+          <!-- 视图 2：洋物工坊分类与分页订购 (单页4件，整屏零滚动) -->
+          <div class="estate-shop-container">
+            <div class="estate-filter-bar">
+              <button class="estate-filter-pill ${this._estateCategory === 'all' ? 'active' : ''}" onclick="window.ui.openEstateModal('shop', 'all', 1)">
+                全部 (10)
+              </button>
+              <button class="estate-filter-pill ${this._estateCategory === 'room' ? 'active' : ''}" onclick="window.ui.openEstateModal('shop', 'room', 1)">
+                🪑 室内雅居 (7)
+              </button>
+              <button class="estate-filter-pill ${this._estateCategory === 'garden' ? 'active' : ''}" onclick="window.ui.openEstateModal('shop', 'garden', 1)">
+                🌸 庭院别院 (3)
+              </button>
+            </div>
 
-        <!-- 和风实景房间透视图 -->
-        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:8px;">
-          🏡 居所实景透视图（点击房间内的家具听音互动）：
-        </div>
-        ${tatamiRoomHtml}
+            <div class="estate-shop-grid">
+              ${catalogHtml}
+            </div>
 
-        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:8px;">
-          🗄️ 居所空间与陈设插槽：
-        </div>
-        <div style="display:flex; gap:8px; overflow-x:auto; margin-bottom:20px;">
-          ${slotsHtml}
-        </div>
-
-        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:8px;">
-          🪑 西洋南蛮洋物家具订购工坊（点击 🔊 听音，赚取金判购置心仪家具）：
-        </div>
-        <div class="estate-catalog-list">
-          ${catalogHtml}
-        </div>
+            <div class="estate-pagination-bar">
+              <button class="btn btn-sm btn-secondary" ${this._estatePage <= 1 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="window.ui.openEstateModal('shop', null, ${this._estatePage - 1})">
+                ◀ 上一页
+              </button>
+              <span style="font-size:11.5px; font-weight:800; color:#475569;">
+                第 ${this._estatePage} / ${totalPages} 页 (共 ${filteredCatalog.length} 件)
+              </span>
+              <button class="btn btn-sm btn-secondary" ${this._estatePage >= totalPages ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} onclick="window.ui.openEstateModal('shop', null, ${this._estatePage + 1})">
+                下一页 ▶
+              </button>
+              <button class="btn btn-sm btn-primary" onclick="window.ui.openEstateModal('view')" style="margin-left:auto; font-size:11.5px;">
+                🏡 返回居所查看
+              </button>
+            </div>
+          </div>
+        `}
       </div>
     `;
 
@@ -2825,7 +2880,7 @@ class UIManager {
     if (res.success) {
       if (window.audioEngine) window.audioEngine.playKobanCollect();
       if (window.gameEngine) window.gameEngine.updateHUDStats();
-      this.openEstateModal();
+      this.openEstateModal(this._estateTab, this._estateCategory, this._estatePage);
     }
   }
 
@@ -2833,13 +2888,13 @@ class UIManager {
     if (!slotId || !furnId || !window.estateSystem) return;
     window.estateSystem.placeFurniture(slotId, furnId);
     this.showToast('✨ 家具布置妥当，房间焕然一新！', 2000);
-    this.openEstateModal();
+    this.openEstateModal(this._estateTab, this._estateCategory, this._estatePage);
   }
 
   removeEstateItem(slotId) {
     if (!window.estateSystem) return;
     window.estateSystem.removeFurniture(slotId);
-    this.openEstateModal();
+    this.openEstateModal(this._estateTab, this._estateCategory, this._estatePage);
   }
 
   closeEstateModal() {
