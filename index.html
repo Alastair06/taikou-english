@@ -366,6 +366,31 @@
         </div>
       </div>
 
+      <!-- 每日立志军令与学识勋绩看板 (充实左侧空间，展示战国主命目标与积累) -->
+      <div class="home-mission-card" id="home-mission-card">
+        <div class="mission-card-title">
+          <span>📜 今日军略主命</span>
+          <span class="mission-tag">进军中</span>
+        </div>
+        <div class="mission-desc" id="home-mission-desc">
+          踏破清洲城下町名胜，探寻言灵秘宝，向织田信长公受封升官！
+        </div>
+        <div class="mission-stat-grid">
+          <div class="mission-stat-cell">
+            <span class="stat-lbl">战国武勋</span>
+            <span class="stat-val" style="color:#b91c1c;" id="home-sub-merit">⭐ 45 点</span>
+          </div>
+          <div class="mission-stat-cell">
+            <span class="stat-lbl">掌握言灵</span>
+            <span class="stat-val" style="color:#0284c7;" id="home-sub-vocab">📖 12 词</span>
+          </div>
+          <div class="mission-stat-cell">
+            <span class="stat-lbl">下一官阶</span>
+            <span class="stat-val" style="color:#15803d;" id="home-sub-rank">🔰 足轻组头</span>
+          </div>
+        </div>
+      </div>
+
       <!-- 核心行动主按钮 -->
       <div class="home-actions">
         <button class="btn-home-start" onclick="window.ui.startAdventure()">
@@ -428,7 +453,7 @@
             <span class="home-nav-label">信长护眼令</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-parent" data-feature="parent" onclick="window.ui.openParentProgressModal()">
-            <span class="parent-badge-pill">👨‍👩‍👧 家长</span>
+            <span class="parent-badge-pill">家长</span>
             <span class="home-nav-icon">📌</span>
             <span class="home-nav-label">学校教学对齐</span>
           </button>

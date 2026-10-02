@@ -1815,6 +1815,78 @@ body, html {
   line-height: 1.45;
 }
 
+/* 军略立志主命与学识勋绩看板 (充实左侧与主页空间) */
+.home-mission-card {
+  background: linear-gradient(145deg, #fefce8 0%, #fffbeb 60%, #fef3c7 100%);
+  border: 1.5px solid #fde047;
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(202, 138, 4, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mission-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 800;
+  color: #854d0e;
+}
+
+.mission-tag {
+  background: #ca8a04;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+.mission-desc {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #713f12;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(253, 224, 71, 0.5);
+}
+
+.mission-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mission-stat-cell {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(254, 240, 138, 0.8);
+  border-radius: 6px;
+  padding: 5px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.mission-stat-cell .stat-lbl {
+  font-size: 9.5px;
+  color: #a16207;
+  font-weight: 600;
+}
+
+.mission-stat-cell .stat-val {
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 /* 核心主行动按键 - 活力朱雀红金光大按键 */
 .home-actions {
   display: flex;
@@ -2244,6 +2316,19 @@ body, html {
   }
   .seal-text {
     font-size: 9.5px;
+  }
+  .home-mission-card {
+    display: none;
+  }
+  .parent-badge-pill {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 4px;
+    line-height: 1.1;
+    z-index: 2;
   }
 }
 
@@ -5896,25 +5981,30 @@ body, html {
   .node-chest    { left: 15% !important; top: 76% !important; }
   .node-treasure { left: 82% !important; top: 76% !important; }
 
-  /* 战国大本营主页：超薄横屏左右双列自适应，整屏尽览无需滚动 */
+  /* 战国大本营主页：超薄横屏左右双列自适应，整屏尽览无需滚动，空间充分利用 */
+  /* 战国大本营主页：超薄横屏左右双列自适应，整屏尽览无需滚动，空间充分利用 */
   .home-screen {
-    padding: max(4px, env(safe-area-inset-top, 4px)) max(14px, env(safe-area-inset-right, 14px)) max(4px, env(safe-area-inset-bottom, 4px)) max(14px, env(safe-area-inset-left, 14px)) !important;
+    padding: max(4px, env(safe-area-inset-top, 4px)) max(12px, env(safe-area-inset-right, 12px)) max(4px, env(safe-area-inset-bottom, 4px)) max(12px, env(safe-area-inset-left, 12px)) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    min-height: 100dvh !important;
+    height: 100dvh !important;
+    box-sizing: border-box !important;
   }
   .home-content {
-    max-width: 860px !important;
+    max-width: 900px !important;
     width: 100% !important;
-    padding: 8px 12px !important;
+    height: calc(100dvh - max(8px, env(safe-area-inset-top, 4px) + env(safe-area-inset-bottom, 4px))) !important;
+    max-height: 98dvh !important;
+    padding: 6px 10px !important;
     border-radius: 16px !important;
-    max-height: 96dvh !important;
     box-sizing: border-box !important;
     display: grid !important;
-    grid-template-columns: 240px 1fr !important;
-    grid-template-rows: auto 1fr !important;
-    column-gap: 12px !important;
-    row-gap: 6px !important;
+    grid-template-columns: 250px 1fr !important;
+    grid-template-rows: 24px auto 1fr !important;
+    column-gap: 10px !important;
+    row-gap: 4px !important;
     gap: 0 !important;
     overflow: hidden !important;
   }
@@ -5922,48 +6012,57 @@ body, html {
     grid-column: 1 !important;
     grid-row: 1 !important;
     display: flex !important;
+    flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
     margin-bottom: 0 !important;
-    gap: 6px !important;
+    gap: 4px !important;
+    height: 24px !important;
   }
   .home-badge {
-    font-size: 10.5px !important;
-    padding: 2px 6px !important;
+    font-size: 9px !important;
+    padding: 2px 5px !important;
     margin-bottom: 0 !important;
+    white-space: nowrap !important;
   }
   .home-title {
-    font-size: 14.5px !important;
-    gap: 4px !important;
+    font-size: 12px !important;
+    gap: 3px !important;
     margin: 0 !important;
+    white-space: nowrap !important;
   }
   .home-title .title-seal {
-    width: 15px !important;
-    height: 15px !important;
+    width: 13px !important;
+    height: 13px !important;
   }
   .home-hero-card {
     grid-column: 1 !important;
     grid-row: 2 !important;
-    padding: 8px 10px !important;
-    border-radius: 14px !important;
+    padding: 5px 8px !important;
+    border-radius: 12px !important;
     display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
+    flex-direction: row !important;
+    align-items: center !important;
     box-sizing: border-box !important;
     margin: 0 !important;
-    gap: 5px !important;
+    gap: 8px !important;
   }
   .home-hero-visual {
     display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
   }
   .home-hero-avatar {
-    width: 44px !important;
-    height: 44px !important;
+    width: 42px !important;
+    height: 42px !important;
     border-radius: 10px !important;
   }
   .home-hero-details {
-    gap: 3px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
     width: 100% !important;
+    min-width: 0 !important;
   }
   .home-hero-name-row {
     display: flex !important;
@@ -5971,80 +6070,157 @@ body, html {
     align-items: center !important;
   }
   .home-hero-name {
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 900 !important;
     white-space: nowrap !important;
   }
   .home-hero-rank {
-    font-size: 10px !important;
-    padding: 1px 6px !important;
+    font-size: 9px !important;
+    padding: 1px 5px !important;
     border-radius: 999px !important;
   }
   .home-hero-stats-row {
     display: flex !important;
-    gap: 4px !important;
+    gap: 3px !important;
     flex-wrap: wrap !important;
-    margin-top: 2px !important;
+    margin-top: 1px !important;
   }
   .home-stat-chip {
-    font-size: 10px !important;
-    padding: 1px 5px !important;
+    font-size: 8.5px !important;
+    padding: 1px 4px !important;
   }
   .home-hero-progress-chip {
-    font-size: 10px !important;
-    padding: 2px 5px !important;
-    margin-top: 2px !important;
+    font-size: 8.5px !important;
+    padding: 2px 4px !important;
+    margin-top: 1px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
-  .home-actions {
-    grid-column: 2 !important;
-    grid-row: 1 / span 2 !important;
+  .home-mission-card {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 6px !important;
+    justify-content: space-between !important;
+    padding: 5px 8px !important;
+    margin: 0 !important;
+    gap: 3px !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    flex: 1 !important;
+  }
+  .mission-card-title {
+    font-size: 10.5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  .mission-tag {
+    font-size: 8px !important;
+    padding: 1px 5px !important;
+  }
+  .mission-desc {
+    font-size: 9px !important;
+    line-height: 1.25 !important;
+    padding: 3px 5px !important;
+  }
+  .mission-stat-grid {
+    gap: 3px !important;
+  }
+  .mission-stat-cell {
+    padding: 2px 2px !important;
+    gap: 1px !important;
+  }
+  .mission-stat-cell .stat-lbl {
+    font-size: 7.5px !important;
+  }
+  .mission-stat-cell .stat-val {
+    font-size: 9px !important;
+  }
+  .home-actions {
+    grid-column: 2 !important;
+    grid-row: 1 / span 3 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
     justify-content: flex-start !important;
     height: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
   .btn-home-start {
-    padding: 7px 12px !important;
+    padding: 5px 12px !important;
     border-radius: 10px !important;
     gap: 6px !important;
     flex-shrink: 0 !important;
+    height: 38px !important;
+    box-sizing: border-box !important;
   }
   .start-icon {
     font-size: 16px !important;
   }
   .start-main-text {
-    font-size: 14.5px !important;
+    font-size: 13.5px !important;
     letter-spacing: 0.5px !important;
   }
+  .start-sub-text {
+    font-size: 10px !important;
+  }
   .home-nav-grid {
+    flex: 1 !important;
+    display: grid !important;
     grid-template-columns: repeat(5, 1fr) !important;
-    gap: 5px !important;
-    overflow-y: auto !important;
-    max-height: 230px !important;
+    grid-template-rows: repeat(3, 1fr) !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+    max-height: none !important;
+    margin-bottom: 0 !important;
   }
   .home-nav-btn {
-    min-height: 42px !important;
-    padding: 3px 3px !important;
+    position: relative !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 2px 2px !important;
     border-radius: 8px !important;
-    gap: 2px !important;
+    gap: 1px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
   }
   .home-nav-icon {
     font-size: 16px !important;
+    line-height: 1 !important;
   }
   .home-nav-label {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
     white-space: nowrap !important;
+    line-height: 1.1 !important;
   }
   .seal-talisman {
     margin-top: 1px !important;
     padding: 1px 3px !important;
+    line-height: 1 !important;
   }
   .seal-text {
-    font-size: 8.5px !important;
+    font-size: 8px !important;
+  }
+  .parent-badge-pill {
+    position: absolute !important;
+    top: 2px !important;
+    right: 2px !important;
+    background: #dbeafe !important;
+    border: 1px solid #93c5fd !important;
+    color: #1d4ed8 !important;
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    padding: 0px 3px !important;
+    border-radius: 3px !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0 !important;
+    z-index: 3 !important;
   }
 
   /* 智将剧场横屏排版精简收纳 */

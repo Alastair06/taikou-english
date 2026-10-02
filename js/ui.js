@@ -211,6 +211,23 @@ class UIManager {
       stageSub.remove();
     }
 
+    // 动态刷新每日立志军令主命看板
+    const subMerit = document.getElementById('home-sub-merit');
+    if (subMerit) {
+      const merit = window.rankManager ? (window.rankManager.state?.merit || 0) : 0;
+      subMerit.textContent = `⭐ ${merit} 点`;
+    }
+    const subVocab = document.getElementById('home-sub-vocab');
+    if (subVocab) {
+      const learned = window.learnedWords ? (window.learnedWords.size || 0) : curIdx;
+      subVocab.textContent = `📖 ${learned} 词`;
+    }
+    const subRank = document.getElementById('home-sub-rank');
+    if (subRank) {
+      const nextRank = window.rankManager ? window.rankManager.getNextRank() : null;
+      subRank.textContent = nextRank ? `🔰 ${nextRank.title}` : '👑 天下人';
+    }
+
     // 动态刷新九大次级功能牌札的渐进式封印/解禁状态
     this.updateHomeNavLocks();
   }
@@ -2705,29 +2722,29 @@ class UIManager {
     const catalogHtml = catalog.map(item => {
       const isUnlocked = window.estateSystem ? window.estateSystem.isUnlocked(item.id) : false;
       return `
-        <div class="estate-furn-row" style="display:flex; align-items:center; justify-content:space-between; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 12px; margin-bottom:8px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:24px;">${item.emoji}</span>
-            <div>
-              <div style="font-weight:800; font-size:14px; color:#0f172a;">
-                ${item.name}
-                <span style="color:#0284c7; font-size:12px; margin-left:4px;">[ ${item.en} ]</span>
-                <span style="font-size:11px; color:#64748b;">${item.phonetic}</span>
+        <div class="estate-furn-row">
+          <div class="estate-furn-info">
+            <span class="estate-furn-emoji">${item.emoji}</span>
+            <div class="estate-furn-texts">
+              <div class="estate-furn-name-row">
+                <span class="estate-furn-name">${item.name}</span>
+                <span class="estate-furn-en">[ ${item.en} ]</span>
+                <span class="estate-furn-phonetic">${item.phonetic}</span>
               </div>
-              <div style="font-size:11px; color:#64748b;">${item.desc}</div>
+              <div class="estate-furn-desc">${item.desc}</div>
             </div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div class="estate-furn-actions">
             <button class="btn btn-sm btn-secondary" onclick="if(window.audioEngine) window.audioEngine.speak('${item.en}')" title="听读英文发音">
               🔊
             </button>
             ${isUnlocked ? `
-              <select onchange="window.ui.placeEstateItem(this.value, '${item.id}')" style="font-size:11px; padding:4px 8px; border-radius:8px; border:1px solid #cbd5e1;">
+              <select class="estate-furn-select" onchange="window.ui.placeEstateItem(this.value, '${item.id}')">
                 <option value="">布置到...</option>
                 ${slots.filter(s => s.type === item.slotType).map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
               </select>
             ` : `
-              <button class="btn btn-sm btn-primary" onclick="window.ui.buyEstateFurniture('${item.id}')" style="background:#ca8a04;">
+              <button class="btn btn-sm btn-primary estate-buy-btn" onclick="window.ui.buyEstateFurniture('${item.id}')">
                 🪙 ${item.cost} 贯购置
               </button>
             `}
@@ -2737,7 +2754,7 @@ class UIManager {
     }).join('');
 
     content.innerHTML = `
-      <div class="estate-container" style="max-height:75vh; overflow-y:auto;">
+      <div class="estate-container">
         <div style="display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg,#0284c7,#0369a1); color:#fff; border-radius:16px; padding:16px 20px; margin-bottom:16px;">
           <div>
             <div style="font-size:18px; font-weight:900;">${estate.icon} ${estate.name}</div>
@@ -2772,6 +2789,7 @@ class UIManager {
     `;
 
     modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
   }
 
   interactRoomFurn(furnId, slotName) {
@@ -2827,6 +2845,7 @@ class UIManager {
   closeEstateModal() {
     const modal = document.getElementById('modal-tokichiro-estate');
     if (modal) modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
   }
 
   // =========================================================================
