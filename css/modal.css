@@ -86,6 +86,31 @@
     max-height: calc(96vh - 52px);
     overflow-y: auto;
   }
+/* 针对手机窄屏（竖屏）自适应 */
+@media (max-width: 650px) {
+  .modal-overlay {
+    padding: 8px !important;
+  }
+  .modal-container {
+    max-height: 94dvh !important;
+    border-radius: 18px !important;
+  }
+  .modal-header {
+    padding: 12px 16px;
+  }
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    top: 8px;
+    right: 8px;
+  }
+  .modal-body {
+    padding: 10px 12px;
+  }
 }
 
 @keyframes modal-pop {

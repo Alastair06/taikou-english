@@ -23,6 +23,7 @@ class UIManager {
       };
     });
     this.initSakuraEffect();
+    this.initOrientationHint();
   }
 
   /**
@@ -43,6 +44,37 @@ class UIManager {
       petal.style.opacity = `${Math.random() * 0.5 + 0.4}`;
       container.appendChild(petal);
     }
+  }
+
+  /**
+   * 移动端旋转横屏轻柔引导提示
+   */
+  initOrientationHint() {
+    const isMobile = window.innerWidth <= 650 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile) return;
+
+    const checkAndShow = () => {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      const existing = document.getElementById('mobile-orientation-hint');
+      if (isPortrait && !existing && !sessionStorage.getItem('dismiss_orientation_hint')) {
+        const hint = document.createElement('div');
+        hint.id = 'mobile-orientation-hint';
+        hint.className = 'orientation-toast';
+        hint.innerHTML = `
+          <span>📱 建议旋转横屏体验，视野更开阔震撼！</span>
+          <span class="tip-close" onclick="sessionStorage.setItem('dismiss_orientation_hint', '1'); this.parentElement.remove();">✕</span>
+        `;
+        document.body.appendChild(hint);
+        setTimeout(() => {
+          if (hint && hint.parentElement) hint.remove();
+        }, 5000);
+      } else if (!isPortrait && existing) {
+        existing.remove();
+      }
+    };
+
+    setTimeout(checkAndShow, 1200);
+    window.addEventListener('resize', checkAndShow);
   }
 
   /**
@@ -2866,11 +2898,10 @@ class UIManager {
     content.innerHTML = `
       <div class="theater-catalog-wrap">
         <div class="theater-chapter-header">
-          <div>
+          <div class="theater-chapter-info">
             <div class="theater-chapter-title">
-              <span>🎭</span>
-              <span>${chapter.title}</span>
-              <span style="font-size:13px; font-weight:700; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:6px;">${chapter.timeSpan}</span>
+              <span>🎭 ${chapter.title}</span>
+              <span class="theater-chapter-timespan">${chapter.timeSpan}</span>
             </div>
             <div class="theater-chapter-sub">${chapter.subtitle}</div>
           </div>
@@ -2909,35 +2940,35 @@ class UIManager {
       const nextStory = nextStoryId ? window.theaterSystem.getStoryById(nextStoryId) : null;
 
       content.innerHTML = `
-        <div class="theater-card" style="text-align:center; padding:24px 20px;">
-          <div style="font-size:42px; margin-bottom:8px;">🏆</div>
-          <div style="font-size:12px; font-weight:800; color:#b45309; margin-bottom:4px;">${story.bannerIcon || '📜'} 第 ${story.episodeNum || 1} 回目大功成</div>
-          <h3 style="font-size:22px; color:#b91c1c; font-weight:900; margin-bottom:12px;">${story.title} · 圆满大捷！</h3>
+        <div class="theater-card" style="text-align:center; padding:18px 12px;">
+          <div style="font-size:38px; margin-bottom:6px;">🏆</div>
+          <div style="font-size:11.5px; font-weight:800; color:#b45309; margin-bottom:4px;">${story.bannerIcon || '📜'} 第 ${story.episodeNum || 1} 回目大功成</div>
+          <h3 style="font-size:20px; color:#b91c1c; font-weight:900; margin-bottom:10px;">${story.title} · 圆满大捷！</h3>
           
-          <div style="display:flex; gap:16px; align-items:center; background:#fffbeb; border:1px solid #fef3c7; border-radius:14px; padding:14px; margin-bottom:16px; text-align:left;">
-            <img src="${step.portrait || 'assets/portraits/tokichiro.jpg'}" style="width:64px; height:64px; border-radius:12px; border:2px solid #b45309; object-fit:cover; flex-shrink:0;">
-            <div>
-              <div style="font-size:13px; font-weight:800; color:#0f172a;">${step.speaker} · <span style="color:#64748b; font-weight:600;">${step.role}</span></div>
-              <div style="font-size:14px; color:#334155; line-height:1.5; margin-top:4px;">${step.text}</div>
+          <div style="display:flex; gap:12px; align-items:center; background:#fffbeb; border:1px solid #fef3c7; border-radius:14px; padding:12px; margin-bottom:14px; text-align:left;">
+            <img src="${step.portrait || 'assets/portraits/tokichiro.jpg'}" style="width:52px; height:52px; border-radius:12px; border:2px solid #b45309; object-fit:cover; flex-shrink:0;">
+            <div style="min-width:0;">
+              <div style="font-size:13px; font-weight:800; color:#0f172a;">${step.speaker} · <span style="color:#64748b; font-weight:600; font-size:11.5px;">${step.role}</span></div>
+              <div style="font-size:13.5px; color:#334155; line-height:1.45; margin-top:4px;">${step.text}</div>
             </div>
           </div>
 
-          <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:12px 20px; margin-bottom:20px;">
-            <div style="font-weight:800; color:#b91c1c;">⭐ +${story.rewardMerit} 武勋</div>
-            <div style="font-weight:800; color:#b45309;">🪙 +${story.rewardGold} 贯</div>
-            <div style="font-weight:800; color:#15803d;">🎖️ 获称号【${story.rewardTitle}】</div>
+          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:10px 14px; margin-bottom:16px;">
+            <div style="font-weight:800; color:#b91c1c; font-size:13px;">⭐ +${story.rewardMerit} 武勋</div>
+            <div style="font-weight:800; color:#b45309; font-size:13px;">🪙 +${story.rewardGold} 贯</div>
+            <div style="font-weight:800; color:#15803d; font-size:13px;">🎖️ 【${story.rewardTitle}】</div>
           </div>
 
-          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
             ${nextStory ? `
-              <button class="btn btn-primary" onclick="window.ui.openTheaterModal('${nextStory.id}')" style="padding:10px 24px; font-weight:900;">
+              <button class="btn btn-primary" onclick="window.ui.openTheaterModal('${nextStory.id}')" style="padding:9px 18px; font-weight:900; font-size:13.5px;">
                 ⚔️ 进军第 ${nextStory.episodeNum} 回：${nextStory.title.split('·')[1] || nextStory.title} ➡️
               </button>
             ` : ''}
-            <button class="btn btn-secondary" onclick="window.ui.renderTheaterCatalog('${story.chapterId || 'ch1'}')" style="padding:10px 20px; font-weight:800;">
+            <button class="btn btn-secondary" onclick="window.ui.renderTheaterCatalog('${story.chapterId || 'ch1'}')" style="padding:9px 16px; font-weight:800; font-size:13px;">
               📜 返回剧目总目
             </button>
-            <button class="btn btn-secondary" onclick="window.ui.closeTheaterModal()" style="padding:10px 20px; font-weight:800;">
+            <button class="btn btn-secondary" onclick="window.ui.closeTheaterModal()" style="padding:9px 16px; font-weight:800; font-size:13px;">
               领旨谢恩 · 返回大地图
             </button>
           </div>
@@ -2949,23 +2980,23 @@ class UIManager {
     let interactiveHtml = '';
     if (step.action === 'quiz') {
       const optsHtml = step.options.map(opt => `
-        <button class="theater-opt-btn" onclick="window.ui.verifyTheaterChoice(${opt.correct}, '${opt.en.replace(/'/g, "\\'")}')" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; cursor:pointer; font-size:14px; font-weight:700; transition:all 0.2s ease;">
+        <button class="theater-opt-btn" onclick="window.ui.verifyTheaterChoice(${opt.correct}, '${opt.en.replace(/'/g, "\\'")}')">
           <span style="font-size:18px;">${opt.emoji}</span>
           <span style="color:#0f172a;">${opt.cn}</span>
-          <span style="color:#0284c7; font-family:monospace; margin-left:auto; background:#f0f9ff; padding:2px 8px; border-radius:6px; font-size:13px;">[ ${opt.en} ]</span>
+          <span class="theater-opt-word">[ ${opt.en} ]</span>
         </button>
       `).join('');
 
       interactiveHtml = `
-        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:14px; padding:14px; margin-top:14px;">
-          <div style="font-weight:800; color:#0369a1; font-size:14px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+        <div class="theater-quiz-card">
+          <div class="theater-quiz-prompt">
             <span>🎯</span>
             <span>${step.prompt}</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="theater-opts-list">
             ${optsHtml}
           </div>
-          <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div class="theater-quiz-footer">
             <div style="font-size:12px; color:#64748b;">
               💡 纯正发音指引，轻触选项直接破局
             </div>
@@ -2977,7 +3008,7 @@ class UIManager {
       `;
     } else {
       interactiveHtml = `
-        <div style="margin-top:16px; text-align:right;">
+        <div style="margin-top:14px; text-align:right;">
           <button class="btn btn-primary" onclick="window.ui.advanceTheaterStep()" style="padding:10px 28px; font-weight:800;">
             继续对话 ➡️
           </button>
@@ -2986,33 +3017,31 @@ class UIManager {
     }
 
     content.innerHTML = `
-      <div class="theater-stage" style="padding:8px 4px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
-          <div>
-            <span style="font-size:11px; font-weight:800; color:#b45309; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:2px 8px; margin-right:6px;">
-              第 ${story.episodeNum || 1} 回目
-            </span>
-            <span style="font-size:14px; font-weight:900; color:#0f172a;">
-              ${story.bannerIcon || '📜'} ${story.title}
-            </span>
+      <div class="theater-stage">
+        <div class="theater-stage-header">
+          <div class="theater-stage-titles">
+            <span class="theater-ep-pill">第 ${story.episodeNum || 1} 回目</span>
+            <span class="theater-title-text">${story.bannerIcon || '📜'} ${story.title}</span>
           </div>
-          <button class="btn btn-xs btn-secondary" onclick="window.ui.renderTheaterCatalog('${story.chapterId || 'ch1'}')" style="font-weight:700;">
+          <button class="theater-btn-catalog btn btn-xs btn-secondary" onclick="window.ui.renderTheaterCatalog('${story.chapterId || 'ch1'}')">
             📜 剧目表
           </button>
         </div>
 
-        <div style="font-size:12px; color:#64748b; margin-bottom:14px; line-height:1.4;">
+        <div style="font-size:12px; color:#64748b; margin-bottom:12px; line-height:1.4;">
           ${story.subtitle}
         </div>
 
-        <div style="display:flex; gap:16px; align-items:flex-start; margin-bottom:12px;">
-          <div style="text-align:center; min-width:80px; flex-shrink:0;">
-            <img src="${step.portrait || 'assets/portraits/tokichiro.jpg'}" style="width:72px; height:72px; border-radius:16px; border:2px solid #0f172a; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-            <div style="font-size:12px; font-weight:800; color:#0f172a; margin-top:6px;">${step.speaker}</div>
-            <div style="font-size:10px; color:#64748b; font-weight:600;">${step.role}</div>
+        <div class="theater-speaker-layout">
+          <div class="theater-speaker-badge">
+            <img src="${step.portrait || 'assets/portraits/tokichiro.jpg'}" class="theater-speaker-img">
+            <div class="theater-speaker-meta">
+              <span class="theater-speaker-name">${step.speaker}</span>
+              <span class="theater-speaker-role">${step.role}</span>
+            </div>
           </div>
-          <div style="flex:1; background:#ffffff; border:1.5px solid #e2e8f0; border-radius:16px; padding:14px 16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); position:relative;">
-            <div style="font-size:15px; color:#1e293b; line-height:1.65; font-weight:500;">
+          <div class="theater-speech-bubble">
+            <div class="theater-speech-text">
               ${step.text}
             </div>
           </div>
