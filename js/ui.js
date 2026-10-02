@@ -1576,9 +1576,9 @@ class UIManager {
       <div class="bargain-merchant-row">
         <div class="merchant-avatar">👳‍♂️</div>
         <div class="merchant-dialog-wrap">
-          <div class="merchant-dialog-title">南蛮商馆掌柜 · 今井宗久</div>
+          <div class="merchant-dialog-title">掌柜 · 今井宗久</div>
           <div class="merchant-dialog-text">
-            “少侠好眼光！此物乃西番名匠所铸。若你能听老夫念出这句西番暗号，并选出对应词义，老夫便折价五成（立省 <strong>${savedGold}</strong> 贯）半价让与你！”
+            “少侠好眼光！若能听辨这句西番暗号，老夫便折价五成（立省 <strong>${savedGold}</strong> 贯）让与你！”
           </div>
         </div>
       </div>
@@ -1588,19 +1588,15 @@ class UIManager {
         <div class="deal-price-compare">
           <span>原价:</span>
           <span class="deal-price-original">🪙 ${item.cost} 贯</span>
-          <span>砍价五折:</span>
+          <span>五折:</span>
           <span class="deal-price-discount">⚡ 🪙 ${discountedPrice} 贯</span>
         </div>
       </div>
 
       <div class="bargain-question-card">
-        <div style="font-size:13px;color:#64748b;font-weight:700;">🎧 点击铜铃收听番邦密令发音：</div>
         <button class="bargain-audio-btn" onclick="window.ui.playBargainAudio()">
-          <span>🔊 听掌柜发音 (${targetWord.en.length} 字母)</span>
+          <span>🔊 听掌柜发音 [ ${targetWord.en} ]</span>
         </button>
-        <div style="font-size:14px;color:#334155;font-weight:800;margin-top:4px;">
-          请选出与掌柜发音相符的中文词义：
-        </div>
         <div class="bargain-options-grid">
           ${choicesHtml}
         </div>
@@ -1608,7 +1604,7 @@ class UIManager {
 
       <div class="bargain-footer-actions">
         <button class="btn btn-sm btn-secondary" onclick="window.ui.buyBargainItemOriginalPrice('${item.id}')">
-          🪙 不砍了，以原价 ${item.cost} 贯直接买
+          🪙 原价 ${item.cost} 贯买下
         </button>
         <button class="btn btn-sm btn-secondary" onclick="window.ui.closeBargainModal()">
           再想想
@@ -1747,30 +1743,17 @@ class UIManager {
     content.innerHTML = `
       <div class="gate-icon">🏯</div>
       <div class="gate-title">${gate.name} · 石锁机关</div>
-      <div class="gate-desc">
-        城防石锁紧闭去路！石壁上刻着一道神秘的中文谜面。<br>
-        选出匹配的英文单词暗号即可开启重门，并犒赏 <strong>+20 贯</strong>！
-      </div>
 
       <div class="bargain-question-card">
-        <div style="font-size:17px;color:#78350f;font-weight:900;">
+        <div style="font-size:17px;color:#78350f;font-weight:900;margin-bottom:6px;">
           机关谜面：【${targetWord.cn}】 ${targetWord.emoji || ''}
         </div>
-        <button class="bargain-audio-btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="window.ui.playGateAudio()">
-          <span>🔊 聆听机关法音提示</span>
+        <button class="bargain-audio-btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);margin-bottom:8px;" onclick="window.ui.playGateAudio()">
+          <span>🔊 聆听法音 [ ${targetWord.en} ]</span>
         </button>
-        <div style="font-size:13px;color:#64748b;font-weight:700;margin-top:4px;">
-          请选出对应的英文暗号：
-        </div>
         <div class="bargain-options-grid">
           ${choicesHtml}
         </div>
-      </div>
-
-      <div class="bargain-footer-actions">
-        <button class="btn btn-sm btn-secondary" onclick="window.ui.closeGateModal()">
-          稍后再破
-        </button>
       </div>
     `;
 
@@ -1849,17 +1832,17 @@ class UIManager {
     const allDone = steleSolved && nanbanSolved && chestSolved;
 
     // 动态生成信长当下的主命密旨
-    let mainOrderTitle = '【清洲破译密令 · 探查鸟居古碑】';
-    let mainOrderDesc = '主公织田信长密令：那古野与清洲古道旁伫立着散发幽光的西洋鸟居古碑，满朝文武无人识得上面的西方符文，唯有藤吉郎你通晓南蛮言灵！速速前往调查破译，取得古神庇佑与真言秘宝！';
+    let mainOrderTitle = '【探查鸟居古碑】';
+    let mainOrderDesc = '前往鸟居古道调查西洋古碑，破译古神真言秘宝！';
     if (steleSolved && !nanbanSolved) {
-      mainOrderTitle = '【南蛮通商密令 · 洽商西洋洋货】';
-      mainOrderDesc = '主公织田信长密令：葡萄牙使节与船长抵达东林商馆，运来了大批西洋奇珍！速去商馆用南蛮语言与商队谈判采购，壮大织田家领内物产！';
+      mainOrderTitle = '【洽商西洋洋货】';
+      mainOrderDesc = '前往东林商馆与葡萄牙商队谈判采购西洋奇珍！';
     } else if (steleSolved && nanbanSolved && !chestSolved) {
-      mainOrderTitle = '【草甸寻宝密令 · 探寻密宝与生灵】';
-      mainOrderDesc = '主公织田信长密令：听闻城下樱花神木与草甸掩映处留有西洋密宝箱，林中还有通灵小萌狸。速速前去探查开启，收齐今日三件主命！';
+      mainOrderTitle = '【探寻密宝萌狸】';
+      mainOrderDesc = '前往草甸神木探查西洋宝箱，寻访通灵小萌狸！';
     } else if (allDone) {
-      mainOrderTitle = '【全境立志大捷 · 升官封赏御旨】';
-      mainOrderDesc = '信长抚掌大赞：“藤吉郎真乃吾之福将！言灵古碑已破，南蛮商契已订，秘宝神物尽收！全军上下无不钦佩，速速回营领受官爵封赏！”';
+      mainOrderTitle = '【全境主命达成】';
+      mainOrderDesc = '主命尽数达成，速速领受官爵封赏！';
     }
 
     content.innerHTML = `
@@ -1869,85 +1852,90 @@ class UIManager {
       </div>
 
       <div class="scroll-title-wrap">
-        <h2 class="scroll-title">📜 织田信长天下密牒 · 外交官南蛮手账</h2>
-        <div class="scroll-subtitle">—— 唯有通晓万国真言之智将，方能助主公一统乱世！ ——</div>
+        <h2 class="scroll-title">📜 织田信长天下密牒</h2>
       </div>
 
-      <!-- 信长主命密旨卡片 -->
-      <div class="nobunaga-order-box">
-        <div class="nobunaga-avatar-row">
-          <div class="nobunaga-avatar-thumb">
-            <img src="assets/portraits/nobunaga.jpg" alt="织田信长" onerror="this.outerHTML='<span style=\\'font-size:32px;\\'>⚔️</span>'">
-          </div>
-          <div>
-            <div class="nobunaga-speech-name">尾张大名 · 织田信长亲笔御押：</div>
-            <div class="nobunaga-speech-quote">“藤吉郎！全军唯你独具慧眼能破南蛮洋文。办妥此事，官职俸禄重重有赏！”</div>
-          </div>
-        </div>
+      <div class="nobunaga-scroll-body-grid">
+        <div class="nobunaga-left-col">
+          <!-- 信长主命密旨卡片 -->
+          <div class="nobunaga-order-box">
+            <div class="nobunaga-avatar-row">
+              <div class="nobunaga-avatar-thumb">
+                <img src="assets/portraits/nobunaga.jpg" alt="织田信长" onerror="this.outerHTML='<span style=\\'font-size:28px;\\'>⚔️</span>'">
+              </div>
+              <div>
+                <div class="nobunaga-speech-name">织田信长：</div>
+                <div class="nobunaga-speech-quote">“藤吉郎！速去办妥今日主命，重重有赏！”</div>
+              </div>
+            </div>
 
-        <div class="nobunaga-mission-detail">
-          <div class="mission-tag-row">
-            <span class="mission-main-tag">${mainOrderTitle}</span>
-            <span class="mission-status-pill ${allDone ? 'status-done' : 'status-active'}">
-              ${allDone ? '已全数达成 🎉' : '执行中 ⚡'}
-            </span>
+            <div class="nobunaga-mission-detail">
+              <div class="mission-tag-row">
+                <span class="mission-main-tag">${mainOrderTitle}</span>
+                <span class="mission-status-pill ${allDone ? 'status-done' : 'status-active'}">
+                  ${allDone ? '已达成 🎉' : '执行中 ⚡'}
+                </span>
+              </div>
+              <div class="mission-desc-text">${mainOrderDesc}</div>
+            </div>
           </div>
-          <div class="mission-desc-text">${mainOrderDesc}</div>
-        </div>
-      </div>
 
-      <!-- 密牒调查进度三步走 -->
-      <div class="mission-steps-grid">
-        <div class="mission-step-card ${steleSolved ? 'step-completed' : ''}">
-          <div class="step-icon">${steleSolved ? '✅' : '⛩️'}</div>
-          <div class="step-info">
-            <div class="step-title">调查鸟居古碑</div>
-            <div class="step-status">${steleSolved ? '已破译古神真言 (+25贯)' : '西侧鸟居未调查'}</div>
-          </div>
-        </div>
-
-        <div class="mission-step-card ${nanbanSolved ? 'step-completed' : ''}">
-          <div class="step-icon">${nanbanSolved ? '✅' : '⛵'}</div>
-          <div class="step-info">
-            <div class="step-title">南蛮商贸洽谈</div>
-            <div class="step-status">${nanbanSolved ? '已订立商贸洋契 (+30贯)' : '东林商会未造访'}</div>
+          <!-- 藤吉郎功勋官职晋升条 -->
+          <div class="rank-promotion-bar">
+            <div class="rank-promo-header">
+              <span>官职：<strong>${curRank.title || curRank.name}</strong> (${hero.merit} 功勋)</span>
+              <span>${nextRank ? `离【${nextRank.title || nextRank.name}】还差 ${Math.max(0, nextRank.reqMerit - hero.merit)} 功勋` : '大名位阶'}</span>
+            </div>
+            <div class="promo-progress-track">
+              <div class="promo-progress-fill" style="width: ${nextRank ? Math.min(100, Math.round((hero.merit / nextRank.reqMerit) * 100)) : 100}%;"></div>
+            </div>
           </div>
         </div>
 
-        <div class="mission-step-card ${chestSolved ? 'step-completed' : ''}">
-          <div class="step-icon">${chestSolved ? '✅' : '🎁'}</div>
-          <div class="step-info">
-            <div class="step-title">开启草甸秘宝</div>
-            <div class="step-status">${chestSolved ? '已探得西洋宝藏 (+30贯)' : '草甸樱花树下未探索'}</div>
+        <div class="nobunaga-right-col">
+          <!-- 密牒调查进度三步走 -->
+          <div class="mission-steps-grid">
+            <div class="mission-step-card ${steleSolved ? 'step-completed' : ''}">
+              <div class="step-icon">${steleSolved ? '✅' : '⛩️'}</div>
+              <div class="step-info">
+                <div class="step-title">鸟居古碑</div>
+                <div class="step-status">${steleSolved ? '已破译 (+25贯)' : '未调查'}</div>
+              </div>
+            </div>
+
+            <div class="mission-step-card ${nanbanSolved ? 'step-completed' : ''}">
+              <div class="step-icon">${nanbanSolved ? '✅' : '⛵'}</div>
+              <div class="step-info">
+                <div class="step-title">南蛮商贸</div>
+                <div class="step-status">${nanbanSolved ? '已订立 (+30贯)' : '未造访'}</div>
+              </div>
+            </div>
+
+            <div class="mission-step-card ${chestSolved ? 'step-completed' : ''}">
+              <div class="step-icon">${chestSolved ? '✅' : '🎁'}</div>
+              <div class="step-info">
+                <div class="step-title">草甸秘宝</div>
+                <div class="step-status">${chestSolved ? '已探得 (+30贯)' : '未探索'}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部快捷动作 -->
+          <div class="scroll-actions-row">
+            ${allDone ? `
+              <button class="btn btn-primary" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 14px rgba(16,185,129,0.35);" onclick="window.ui.closeNobunagaModal(); window.ui.claimExplorationPromotion();">
+                🏆 举行升官大典！
+              </button>
+            ` : `
+              <button class="btn btn-primary" onclick="window.ui.openChaptersModal(); window.ui.closeNobunagaModal();">
+                📖 查阅南蛮词汇
+              </button>
+            `}
+            <button class="btn btn-secondary" onclick="window.ui.closeNobunagaModal()">
+              遵命领旨！
+            </button>
           </div>
         </div>
-      </div>
-
-      <!-- 藤吉郎功勋官职晋升条 -->
-      <div class="rank-promotion-bar">
-        <div class="rank-promo-header">
-          <span>当前官职：<strong>${curRank.title || curRank.name}</strong> (${hero.merit} 功勋)</span>
-          <span>${nextRank ? `晋升【${nextRank.title || nextRank.name}】还需 ${Math.max(0, nextRank.reqMerit - hero.merit)} 功勋` : '已达最高大名位阶！'}</span>
-        </div>
-        <div class="promo-progress-track">
-          <div class="promo-progress-fill" style="width: ${nextRank ? Math.min(100, Math.round((hero.merit / nextRank.reqMerit) * 100)) : 100}%;"></div>
-        </div>
-      </div>
-
-      <!-- 底部快捷动作 -->
-      <div class="scroll-actions-row">
-        ${allDone ? `
-          <button class="btn btn-primary" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 14px rgba(16,185,129,0.35);" onclick="window.ui.closeNobunagaModal(); window.ui.claimExplorationPromotion();">
-            🏆 呈递密牒 · 举行升官大典！
-          </button>
-        ` : `
-          <button class="btn btn-primary" onclick="window.ui.openChaptersModal(); window.ui.closeNobunagaModal();">
-            📖 查阅 178 词南蛮字汇密卷
-          </button>
-        `}
-        <button class="btn btn-secondary" onclick="window.ui.closeNobunagaModal()">
-          遵命领旨！
-        </button>
       </div>
     `;
 
@@ -2008,14 +1996,9 @@ class UIManager {
           <span class="stele-status-badge">${node.isSolved ? '已破译 ✨' : '探索中 🔍'}</span>
         </div>
 
-        <div class="stele-lore">
-          仔细倾听神碑读出的英语单词，选择正确的词语，就能解开宝藏秘密！
-        </div>
-
         <!-- 古碑拓片符文中央区 -->
         <div class="stele-rune-tablet">
           <div class="stele-cipher-word">${maskedWord.toUpperCase()}</div>
-          <div class="stele-cipher-hint">（这个单词一共有 ${cleanWord.length} 个字母）</div>
         </div>
 
         <!-- 听音读音与言灵麦克风跟读按钮 -->
@@ -2024,22 +2007,12 @@ class UIManager {
             <span>🔊 倾听标准发音</span>
           </button>
           <button class="stele-chant-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706); border-color:#f59e0b; box-shadow:0 4px 14px rgba(245,158,11,0.35);" onclick="window.ui.openVoiceChantModal(window.ui.activeSteleChallenge ? window.ui.activeSteleChallenge.wordObj : null)">
-            <span>🎙️ 言灵麦克风跟读</span>
+            <span>🎙️ 言灵跟读</span>
           </button>
-        </div>
-
-        <div class="stele-instruction">
-          👉 听一听，选择正确的单词：
         </div>
 
         <div class="stele-choices-grid">
           ${choicesHtml}
-        </div>
-
-        <div class="stele-footer">
-          <button class="btn btn-secondary" style="font-family:var(--font-child-cn); font-size:16px; font-weight:800; padding:8px 20px; border-radius:12px;" onclick="window.ui.closeSteleModal()">
-            返回探索 ➔
-          </button>
         </div>
       </div>
     `;
@@ -2130,36 +2103,31 @@ class UIManager {
     content.innerHTML = `
       <div class="nanban-treaty-card">
         <div class="treaty-header">
-          <span class="treaty-crest">⛵ 西洋葡萄牙商船队 · 奇珍采买会谈</span>
-          <span class="treaty-badge">${node.isSolved ? '贸易协定已订立 🤝' : '谈判进行中 📜'}</span>
+          <span class="treaty-crest">⛵ 西洋葡萄牙商船队 · 奇珍采买</span>
+          <span class="treaty-badge">${node.isSolved ? '贸易已订立 🤝' : '谈判进行中 📜'}</span>
         </div>
 
-        <div class="nanban-dialogue-wrap">
-          <div class="nanban-captain-avatar">🧔🏼‍♂️</div>
-          <div class="nanban-speech-bubble">
-            “Olá! 亲爱的藤吉郎阁下！我是里斯本来的本托船长。我们运来了火绳铁炮、望远镜与天鹅绒，但我们的货运密契上指明需要调配一样物资，您能听懂是何物吗？”
+        <div class="nanban-body-grid">
+          <div class="nanban-left-col">
+            <div class="nanban-dialogue-wrap">
+              <div class="nanban-captain-avatar">🧔🏼‍♂️</div>
+              <div class="nanban-speech-bubble">
+                “Olá！货单密契指明需调配一样物资，您能听懂是何物吗？”
+              </div>
+            </div>
+
+            <div class="treaty-request-card">
+              <button class="treaty-listen-btn" onclick="window.ui.playNanbanAudio()">
+                <span>🔊 倾听物资名 [ ${targetWord.en} ]</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- 听取洋商货契发音 -->
-        <div class="treaty-request-card">
-          <div class="treaty-sub-title">🎧 点击听取本托船长的西洋求购物资发音：</div>
-          <button class="treaty-listen-btn" onclick="window.ui.playNanbanAudio()">
-            <span>🔊 倾听西洋物资名 [ ${targetWord.en} ]</span>
-          </button>
-          <div class="treaty-instruction">
-            请从南蛮商队货箱中选出对应的物资交割：
+          <div class="nanban-right-col">
+            <div class="treaty-cargo-grid">
+              ${choicesHtml}
+            </div>
           </div>
-        </div>
-
-        <div class="treaty-cargo-grid">
-          ${choicesHtml}
-        </div>
-
-        <div class="treaty-footer">
-          <button class="btn btn-sm btn-secondary" onclick="window.ui.closeNanbanTradeModal()">
-            容后再谈
-          </button>
         </div>
       </div>
     `;
@@ -2252,29 +2220,23 @@ class UIManager {
           <span class="chest-status-badge">${node.isSolved ? '已开启 ✨' : '待破译 🗝️'}</span>
         </div>
 
-        <div class="chest-lore">
-          落樱草甸微光闪烁，静静安置着一只铸铁包金的西洋旅行密箱。<br>
-          箱盖铭文依稀回荡着神秘的口令密语，听清读音，选出对应的真言即可开箱获宝！
-        </div>
+        <div class="chest-body-grid">
+          <div class="chest-left-col">
+            <div class="chest-lore">
+              🗝️ 倾听箱锁真言读音，破译密码即可开启宝箱！
+            </div>
+            <div class="chest-audio-wrap">
+              <button class="chest-listen-btn" onclick="if(window.audioEngine) window.audioEngine.speak('${targetWord.en.replace(/'/g, "\\'")}')">
+                <span>🔊 倾听宝箱秘钥 [ ${targetWord.en} ]</span>
+              </button>
+            </div>
+          </div>
 
-        <div class="chest-audio-wrap">
-          <button class="chest-listen-btn" onclick="if(window.audioEngine) window.audioEngine.speak('${targetWord.en.replace(/'/g, "\\'")}')">
-            <span>🔊 倾听宝箱秘钥密语 [ ${targetWord.en} ]</span>
-          </button>
-        </div>
-
-        <div class="chest-instruction">
-          🗝️ 选出与密语相符的宝物真言：
-        </div>
-
-        <div class="chest-choices-grid">
-          ${choicesHtml}
-        </div>
-
-        <div class="chest-footer">
-          <button class="btn btn-sm btn-secondary" onclick="window.ui.closeChestModal()">
-            暂且退下
-          </button>
+          <div class="chest-right-col">
+            <div class="chest-choices-grid">
+              ${choicesHtml}
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -2357,37 +2319,33 @@ class UIManager {
       <div class="spirit-card">
         <div class="spirit-header-row">
           <span class="spirit-tag">🍃 森林生灵奇遇 · 萌狸「信乐」</span>
-          <span class="spirit-status-badge">${node.isSolved ? '已成莫逆之交 💖' : '开心问候中 🐾'}</span>
+          <span class="spirit-status-badge">${node.isSolved ? '莫逆之交 💖' : '问候中 🐾'}</span>
         </div>
 
-        <div class="spirit-dialogue-wrap">
-          <div class="spirit-avatar">🦝</div>
-          <div class="spirit-speech-bubble">
-            “哇！是藤吉郎哥哥！我今天在神木树洞里捡到了一张发光的西方小卡片，可是我不认得上面的英文字母，你能教教我这是什么意思吗？”
+        <div class="spirit-body-grid">
+          <div class="spirit-left-col">
+            <div class="spirit-dialogue-wrap">
+              <div class="spirit-avatar">🦝</div>
+              <div class="spirit-speech-bubble">
+                “哇！藤吉郎哥哥，树洞里捡到了一张发光小卡片，这是什么意思呀？”
+              </div>
+            </div>
+
+            <div class="spirit-audio-wrap" style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+              <button class="spirit-listen-btn" onclick="if(window.audioEngine) window.audioEngine.speak('${targetWord.en.replace(/'/g, "\\'")}')">
+                <span>🔊 倾听读音 [ ${targetWord.en} ]</span>
+              </button>
+              <button class="spirit-listen-btn" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;" onclick="window.ui.openVoiceChantModal(window.ui.activeSpiritChallenge ? window.ui.activeSpiritChallenge.wordObj : null)">
+                <span>🎙️ 念给信乐听</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="spirit-audio-wrap" style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-          <button class="spirit-listen-btn" onclick="if(window.audioEngine) window.audioEngine.speak('${targetWord.en.replace(/'/g, "\\'")}')">
-            <span>🔊 倾听小狸猫读音 [ ${targetWord.en} ]</span>
-          </button>
-          <button class="spirit-listen-btn" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;" onclick="window.ui.openVoiceChantModal(window.ui.activeSpiritChallenge ? window.ui.activeSpiritChallenge.wordObj : null)">
-            <span>🎙️ 念给小狸猫听</span>
-          </button>
-        </div>
-
-        <div class="spirit-instruction">
-          🐾 帮小狸猫找出正确的词义：
-        </div>
-
-        <div class="spirit-choices-grid">
-          ${choicesHtml}
-        </div>
-
-        <div class="spirit-footer">
-          <button class="btn btn-sm btn-secondary" onclick="window.ui.closeSpiritModal()">
-            下次再聊
-          </button>
+          <div class="spirit-right-col">
+            <div class="spirit-choices-grid">
+              ${choicesHtml}
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -2509,34 +2467,29 @@ class UIManager {
     content.innerHTML = `
       <div class="chest-card" style="border: 2px solid #eab308; background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);">
         <div class="chest-header-row">
-          <span class="chest-tag" style="background:#fef08a; color:#854d0e;">✨ 大世界神秘藏宝点 · ${spot.name}</span>
+          <span class="chest-tag" style="background:#fef08a; color:#854d0e;">✨ 藏宝点 · ${spot.name}</span>
           <span class="chest-status-badge" style="background:#e0f2fe; color:#0369a1;">💎 探寻秘宝</span>
         </div>
 
-        <div class="chest-lore" style="color:#78350f; font-size:14px; margin: 12px 0;">
-          📜 羊皮纸线索：<strong>“${spot.clueEn}”</strong><br>
-          <span style="color:#92400e; font-size:13px;">（${spot.clueCn}）</span><br>
-          在此处地面泛起金光，埋藏着一枚古代航海秘箱！倾听箱锁声纹，找出正确的真言密语！
-        </div>
+        <div class="chest-body-grid">
+          <div class="chest-left-col">
+            <div class="chest-lore" style="color:#78350f; font-size:14px; margin: 4px 0 8px 0;">
+              📜 航海线索：<strong>“${spot.clueEn}”</strong><br>
+              <span style="color:#92400e; font-size:13px;">（${spot.clueCn}）</span>
+            </div>
 
-        <div class="chest-audio-wrap" style="text-align:center; margin:14px 0;">
-          <button class="chest-listen-btn" style="background:linear-gradient(135deg,#eab308,#ca8a04); border-radius:999px; padding:10px 24px; color:#fff; font-weight:700; border:none; cursor:pointer;" onclick="if(window.audioEngine) window.audioEngine.speak('${target.en.replace(/'/g, "\\'")}')">
-            <span>🔊 倾听秘箱声纹真言 [ ${target.en} ]</span>
-          </button>
-        </div>
+            <div class="chest-audio-wrap" style="text-align:center; margin:8px 0;">
+              <button class="chest-listen-btn" style="background:linear-gradient(135deg,#eab308,#ca8a04); border-radius:999px; padding:8px 20px; color:#fff; font-weight:700; border:none; cursor:pointer;" onclick="if(window.audioEngine) window.audioEngine.speak('${target.en.replace(/'/g, "\\'")}')">
+                <span>🔊 倾听秘箱真言 [ ${target.en} ]</span>
+              </button>
+            </div>
+          </div>
 
-        <div class="chest-instruction" style="font-weight:700; color:#0f172a; margin-bottom:8px;">
-          🗝️ 选出契合的真言密语解锁宝箱：
-        </div>
-
-        <div class="chest-choices-grid" style="display:flex; flex-direction:column; gap:8px;">
-          ${choicesHtml}
-        </div>
-
-        <div class="chest-footer" style="margin-top:14px; text-align:right;">
-          <button class="btn btn-sm btn-secondary" onclick="window.ui.closeTreasureHuntModal()">
-            稍后再探
-          </button>
+          <div class="chest-right-col">
+            <div class="chest-choices-grid">
+              ${choicesHtml}
+            </div>
+          </div>
         </div>
       </div>
     `;
