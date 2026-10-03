@@ -3,7 +3,24 @@
  * - 纯正美音真人离线朗读（支持 iPad 离线自带 Samantha 语音库）
  * - Web Audio API 纯代码即时合成：战国太鼓、名刀出鞘、铁炮轰鸣、法螺贝号角
  * - 零外部音频文件加载，100% 离线，毫秒级响应
- */
+// 移动端轻量触感反馈系统 (Tactile Haptics)
+window.haptics = {
+  tap() {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate(12); } catch (e) {}
+    }
+  },
+  success() {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate([25, 40, 35]); } catch (e) {}
+    }
+  },
+  defeat() {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate([60, 50, 80]); } catch (e) {}
+    }
+  }
+};
 
 class AudioEngine {
   constructor() {
@@ -239,6 +256,7 @@ class AudioEngine {
 
   // 2. 名刀出鞘拔刀斩 (Katana Slash)
   playKatanaSlash() {
+    if (window.haptics) window.haptics.success();
     if (!this.audioCtx) return;
     try {
       const now = this.audioCtx.currentTime;
@@ -262,6 +280,7 @@ class AudioEngine {
 
   // 3. 西洋铁炮轰鸣 (Matchlock Musket Fire)
   playMusketBlast() {
+    if (window.haptics) window.haptics.success();
     if (!this.audioCtx) return;
     try {
       const now = this.audioCtx.currentTime;
@@ -285,17 +304,20 @@ class AudioEngine {
 
   // 4. 键盘按键音 (Key tap)
   playKeyRune() {
+    if (window.haptics) window.haptics.tap();
     this.playTone(659.25, 'triangle', 0.06, 0.1); // E5
   }
 
   // 5. 小判金币掉落 (Gold coin)
   playCoin() {
+    if (window.haptics) window.haptics.tap();
     this.playTone(987.77, 'sine', 0.08, 0.15);
     setTimeout(() => this.playTone(1318.51, 'sine', 0.12, 0.18), 70);
   }
 
   // 6. 晋升封赏法螺贝号角 (Sengoku Fanfare)
   playPromotionFanfare() {
+    if (window.haptics) window.haptics.success();
     this.playTaikoDrum();
     setTimeout(() => {
       [440, 554, 659, 880].forEach((f, idx) => {
@@ -306,6 +328,7 @@ class AudioEngine {
 
   // 7. 拼错温和提示音 (Gentle notice)
   playMistake() {
+    if (window.haptics) window.haptics.defeat();
     this.playTone(196, 'sine', 0.12, 0.08);
   }
 

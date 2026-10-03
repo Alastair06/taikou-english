@@ -52,6 +52,7 @@
         <button class="btn btn-secondary btn-sm" id="btn-hud-clues" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-lexicon" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-theater" onclick="window.ui.openTheaterModal()" style="font-weight:700;">🎭 剧场</button>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-fullscreen" onclick="window.ui.toggleFullscreen()" style="font-weight:700;" title="切换全屏沉浸">⛶ 全屏</button>
         <div class="hud-gold" title="军资金 · 战国金小判"><img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯"> <span id="hud-gold-text">100 贯</span></div>
         <button class="btn btn-secondary btn-sm" id="btn-hud-home" onclick="window.ui.showHomeScreen()">🏠 返回大本营</button>
       </div>
@@ -130,6 +131,7 @@
         <button class="btn btn-secondary btn-sm" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
         <button class="btn btn-secondary btn-sm" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
         <button class="btn btn-secondary btn-sm" onclick="window.ui.openTheaterModal()" style="font-weight:700;">🎭 剧场</button>
+        <button class="btn btn-secondary btn-sm" id="btn-scenic-fullscreen" onclick="window.ui.toggleFullscreen()" style="font-weight:700;" title="切换全屏沉浸">⛶ 全屏</button>
         <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()" style="font-weight:700;" title="生成今日亲子立志勋绩卡">📜 勋绩</button>
         <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.triggerEyeRestForTesting()" style="font-weight:700;" title="信长护眼御令(模拟触发)">🍵 护眼</button>
         <div class="scenic-hud-gold" title="军资金 · 战国金小判">
@@ -337,6 +339,7 @@
       <div class="home-header">
         <div class="home-badge">🏯 尾张织田家 · 军略大本营</div>
         <h1 class="home-title">太阁英语立志传 <img src="assets/ui/seal_taikou.png" class="title-seal" alt="印"></h1>
+        <button class="btn-home-fullscreen" onclick="window.ui.toggleFullscreen()" title="切换全屏沉浸">⛶ 全屏</button>
       </div>
 
       <!-- 角色军机名牌档案卡 -->
@@ -610,7 +613,7 @@
 
   <!-- 弹窗 3：评定封赏胜利大捷 -->
   <div class="modal-overlay hidden" id="modal-victory">
-    <div class="modal-container" style="max-width: 620px;">
+    <div class="modal-container">
       <button class="modal-close" onclick="window.ui.closeVictoryModal()">×</button>
       <div class="modal-body">
         <div class="victory-modal-content" id="victory-content">

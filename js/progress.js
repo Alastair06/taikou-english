@@ -21,7 +21,7 @@ class ProgressManager {
       officer:  { minStage: 7, title: '武家名将宅邸', hint: '第 7 关揭封', icon: '📜' },
       hyojo:    { minStage: 8, title: '信长大名评定', hint: '第 8 关揭封', icon: '🏯' },
       trade:    { minStage: 9, title: '战国特产跑商', hint: '第 9 关揭封', icon: '🚢' },
-      theater:  { minStage: 10, title: '信长智将剧场', hint: '第 10 关揭封', icon: '🎭' },
+      theater:  { minStage: 1, title: '战国物语剧场', hint: '即刻启幕', icon: '📜' },
       overworld:{ minStage: 10, title: '战国日本大世界', hint: '第 10 关揭封', icon: '🗺️' }
     };
     this.state = this.loadState();

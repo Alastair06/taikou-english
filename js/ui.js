@@ -857,7 +857,7 @@ class UIManager {
   /**
    * 打开南蛮商馆
    */
-  openShopModal() {
+  openShopModal(page = 0) {
     const modal = document.getElementById('modal-shop');
     if (!modal) return;
 
@@ -868,8 +868,13 @@ class UIManager {
     const container = document.getElementById('shop-items-grid');
     const items = typeof SENGOKU_SHOP_ITEMS !== 'undefined' ? SENGOKU_SHOP_ITEMS.filter(i => i.cost > 0) : [];
 
-    if (container && items.length > 0) {
-      container.innerHTML = items.map(item => {
+    const pageSize = 3;
+    const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+    const curPage = Math.max(0, Math.min(page, totalPages - 1));
+    const pagedItems = items.slice(curPage * pageSize, (curPage + 1) * pageSize);
+
+    if (container && pagedItems.length > 0) {
+      const cardsHtml = pagedItems.map(item => {
         const isConsumable = (item.type === 'consumable');
         const count = isConsumable ? (window.heroManager ? window.heroManager.getItemCount(item.id) : 0) : 0;
         const isOwned = isConsumable ? false : (hero.ownedItemIds ? hero.ownedItemIds.includes(item.id) : false);
@@ -897,12 +902,12 @@ class UIManager {
         const halfCost = Math.max(1, Math.round(item.cost * 0.5));
         const canAffordHalf = hero.gold >= halfCost;
 
-        let btnText = `🪙 ${item.cost} 贯 购入 (砍价享5折⚡)`;
+        let btnText = `🪙 ${item.cost} 贯 购入`;
         let btnDisabled = !canAffordHalf;
         let btnAction = `window.ui.buyShopItem('${item.id}')`;
 
         if (isConsumable) {
-          btnText = `🪙 ${item.cost} 贯 补充 (砍价享5折⚡)`;
+          btnText = `🪙 ${item.cost} 贯 补充`;
           btnDisabled = !canAffordHalf;
           btnAction = `window.ui.buyShopItem('${item.id}')`;
         } else if (isOwned) {
@@ -918,9 +923,9 @@ class UIManager {
 
         let perkHtml = '';
         if (item.phonicsPerk) {
-          perkHtml = `<div style="font-size:11px;color:#0284c7;background:#e0f2fe;padding:3px 6px;border-radius:6px;margin:6px 0;font-weight:700;">⚡ 自然拼读加成: ${item.phonicsPerk}</div>`;
+          perkHtml = `<div class="shop-perk" style="font-size:11px;color:#0284c7;background:#e0f2fe;padding:2px 6px;border-radius:6px;margin:3px 0;font-weight:700;">⚡ 拼读: ${item.phonicsPerk}</div>`;
         } else if (item.hearts) {
-          perkHtml = `<div style="font-size:11px;color:#dc2626;background:#fee2e2;padding:3px 6px;border-radius:6px;margin:6px 0;font-weight:700;">❤️ 心心生命上限: 扩展至 ${item.hearts} 颗心</div>`;
+          perkHtml = `<div class="shop-perk" style="font-size:11px;color:#dc2626;background:#fee2e2;padding:2px 6px;border-radius:6px;margin:3px 0;font-weight:700;">❤️ 生命: +${item.hearts}心</div>`;
         }
 
         return `
@@ -929,9 +934,11 @@ class UIManager {
             <div class="shop-item-icon-wrap">
               <div class="shop-item-icon">${item.icon}</div>
             </div>
-            <div class="shop-item-name">${item.name}</div>
-            <div class="shop-item-desc">${item.desc}</div>
-            ${perkHtml}
+            <div class="shop-card-main-col">
+              <div class="shop-item-name">${item.name}</div>
+              <div class="shop-item-desc">${item.desc}</div>
+              ${perkHtml}
+            </div>
             <div class="shop-item-footer">
               <button class="btn btn-sm ${isEquipped ? 'btn-secondary' : 'btn-primary'}" 
                       ${btnDisabled ? 'disabled' : ''} 
@@ -942,6 +949,22 @@ class UIManager {
           </div>
         `;
       }).join('');
+
+      container.innerHTML = cardsHtml;
+
+      // 渲染单屏分页导航条
+      let pageBar = document.getElementById('shop-pagination-bar');
+      if (!pageBar) {
+        pageBar = document.createElement('div');
+        pageBar.id = 'shop-pagination-bar';
+        pageBar.className = 'shop-pagination-bar';
+        container.parentNode.appendChild(pageBar);
+      }
+      pageBar.innerHTML = `
+        <button class="btn btn-secondary btn-sm" ${curPage === 0 ? 'disabled' : ''} onclick="window.ui.openShopModal(${curPage - 1})">◀ 上一页</button>
+        <span class="shop-page-indicator">第 ${curPage + 1} / ${totalPages} 卷</span>
+        <button class="btn btn-secondary btn-sm" ${curPage >= totalPages - 1 ? 'disabled' : ''} onclick="window.ui.openShopModal(${curPage + 1})">下一页 ▶</button>
+      `;
     }
 
     modal.classList.remove('hidden');
@@ -984,7 +1007,7 @@ class UIManager {
   }
 
   /**
-   * 今日主命通关结算弹窗 · 织田信长天守阁军功感状
+   * 今日主命通关结算弹窗 · 织田信长天守阁军功感状 (超紧凑双栏无滚动画卷)
    */
   showVictoryModal(data) {
     this.lastVictoryData = data;
@@ -1001,67 +1024,86 @@ class UIManager {
     const totalStages = Math.ceil((allWords.length || 178) / 3);
     const curWord = (data && data.words && data.words[0]) || allWords[curIdx] || { unit: 'Unit 1: 结识新朋友' };
 
+    // 匹配战国物语第一回至第六回历史剧场 (1554–1560)
+    const storyMap = [
+      { id: 'story-ch1-one-coin', title: '第一回 · 怀揣一文闯天下 (1554)' },
+      { id: 'story-ch1-warm-sandals', title: '第二回 · 雪中怀暖草鞋志 (1555)' },
+      { id: 'story-ch1-repair-wall', title: '第三回 · 巧策三日补城垣 (1556)' },
+      { id: 'story-ch1-granary-count', title: '第四回 · 粮仓明断杜蠹虫 (1557)' },
+      { id: 'story-ch1-okehazama-spy', title: '第五回 · 桶狭间前夜探风云 (1559)' },
+      { id: 'story-ch1-okehazama-battle', title: '第六回 · 骤雨雷霆斩敌酋 (1560)' }
+    ];
+    const currentStory = storyMap[(stageNum - 1) % storyMap.length];
+
     const content = document.getElementById('victory-content');
     if (content) {
-      const wordsHtml = (data.words && data.words.length > 0) ? `
-        <div class="v-word-box">
-          <div class="v-word-title">📖 本关已攻克并参透的秘传词汇（点击听音跟读）：</div>
-          <div class="v-words-grid">
-            ${data.words.map(w => `
-              <div class="v-word-card" onclick="if(window.audioEngine) window.audioEngine.speak('${w.en}')">
-                <span class="v-emoji">${w.emoji || '📖'}</span>
-                <div style="flex:1; text-align:left;">
-                  <span class="v-en">${w.en}</span>
-                  <div class="v-cn">${w.cn}</div>
-                </div>
-                <span class="v-voice">🔊</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : '';
+      const wordsList = (data.words && data.words.length > 0) ? data.words : [
+        { en: 'meet', cn: '相见 / 结识', emoji: '🤝' },
+        { en: 'friend', cn: '朋友 / 知己', emoji: '🧑‍🤝‍🧑' },
+        { en: 'nice', cn: '极好的 / 惬意', emoji: '😊' }
+      ];
 
       content.innerHTML = `
-        <div class="nobunaga-crest">${isReplay ? '⚡ 天下布武 · 织田信长温故感状 ⚡' : '⚡ 天下布武 · 织田信长军功感状 ⚡'}</div>
-        <h2 class="victory-title">${isReplay ? '合战演武 · 温故大捷！' : '今日主命 · 大捷告成！'}</h2>
-        <div class="victory-stage-tag">🚩 第 ${stageNum} 关 ${isReplay ? '温故演武大捷 · 保留学校教学主线进度' : `/ 共 ${totalStages} 关 · 【${curWord.unit || 'Unit 1'}】`}</div>
-        <p class="victory-sub">
-          ${isReplay 
-            ? '尾张守织田信长赞道：<strong>“温故而知新，可以为师矣！重温旧阵，剑招更精，赏格分毫不差！”</strong>'
-            : '尾张守织田信长大喜：<strong>“真乃不世之奇才！今日之词尽皆参透，封赏必重！”</strong>'}
-        </p>
-        <div class="victory-rewards-box" id="victory-rewards-box">
-          <div class="v-reward-col">
-            <div class="v-val">⭐ +${data.totalMerit || 120}</div>
-            <div class="v-lbl">受封武勋</div>
+        <div class="victory-body-grid">
+          <!-- 左侧：信长军功与封赏 -->
+          <div class="victory-col-info">
+            <div class="nobunaga-crest">${isReplay ? '⚡ 织田信长温故感状 ⚡' : '⚡ 织田信长军功感状 ⚡'}</div>
+            <h2 class="victory-title">${isReplay ? '合战演武 · 温故大捷！' : '今日主命 · 大捷告成！'}</h2>
+            <div class="victory-stage-tag">🚩 第 ${stageNum} 关 ${isReplay ? '· 温故演武' : `/ 共 ${totalStages} 关 · 【${curWord.unit || 'Unit 1'}】`}</div>
+            <p class="victory-sub">
+              ${isReplay 
+                ? '信长公赞道：<strong>“温故而知新，赏格分毫不差！”</strong>'
+                : '信长公大喜：<strong>“真乃奇才！今日之词尽皆参透，封赏必重！”</strong>'}
+            </p>
+            <div class="victory-rewards-box" id="victory-rewards-box">
+              <div class="v-reward-col">
+                <div class="v-val">⭐ +${data.totalMerit || 120}</div>
+                <div class="v-lbl">受封武勋</div>
+              </div>
+              <div class="v-reward-col">
+                <div class="v-val">🪙 +${data.totalGold || 100} 贯</div>
+                <div class="v-lbl">赐封金判</div>
+              </div>
+              <div class="v-reward-col">
+                <div class="v-val">🔥 ${data.streakDays || 1} 天</div>
+                <div class="v-lbl">连胜</div>
+              </div>
+            </div>
+            <div class="victory-actions-grid">
+              <button class="btn btn-primary btn-claim-main" id="btn-victory-claim" onclick="window.ui.claimVictoryReward()">
+                🎌 领赏入仕 · 晋升官位
+              </button>
+              <button class="btn btn-secondary btn-theater-link" onclick="window.ui.openTheaterModal('${currentStory.id}')" title="进入织田信长主线历史物语">
+                📜 战国物语：${currentStory.title.split(' · ')[1] || '微末立志'}
+              </button>
+            </div>
           </div>
-          <div class="v-reward-col">
-            <div class="v-val">🪙 +${data.totalGold || 100} 贯</div>
-            <div class="v-lbl">赐封金判</div>
-          </div>
-          <div class="v-reward-col">
-            <div class="v-val">🔥 ${data.streakDays || 1} 天</div>
-            <div class="v-lbl">演武连胜</div>
+
+          <!-- 右侧：本关攻克掌握的秘传词汇 -->
+          <div class="victory-col-words">
+            <div class="v-word-box-header">📖 本关攻克言灵（点击发音跟读）</div>
+            <div class="v-words-stack">
+              ${wordsList.map(w => `
+                <div class="v-compact-card" onclick="if(window.audioEngine) window.audioEngine.speak('${w.en}')">
+                  <span class="v-emoji">${w.emoji || '📖'}</span>
+                  <div class="v-word-text">
+                    <span class="v-en">${w.en}</span>
+                    <span class="v-cn">${w.cn}</span>
+                  </div>
+                  <span class="v-voice">🔊</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
-        ${data.evaluation ? `<div class="victory-eval-badge">🏅 评定军功：${data.evaluation}</div>` : ''}
-        ${wordsHtml}
       `;
     }
 
-    // 重置底部按钮为初始领赏状态
+    // 底部按钮整合至网格内，隐藏外层容器保证零滚动
     const footer = document.getElementById('victory-footer-actions');
     if (footer) {
-      footer.innerHTML = `
-        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; width:100%;">
-          <button class="btn btn-primary" id="btn-victory-claim" onclick="window.ui.claimVictoryReward()" style="font-size:16px; font-weight:900; padding:12px 32px; box-shadow:0 4px 14px rgba(220,38,38,0.4);">
-            🎌 领赏入仕 · 晋升太阁官位
-          </button>
-          <button class="btn btn-secondary" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal(window.ui.lastVictoryData)" style="font-size:15px; font-weight:800; background:#fef3c7; color:#92400e; border:1.5px solid #f59e0b; padding:12px 20px; box-shadow:0 4px 12px rgba(245,158,11,0.25);">
-            📜 亲子立志勋绩卡
-          </button>
-        </div>
-      `;
+      footer.innerHTML = '';
+      footer.style.display = 'none';
     }
 
     if (window.audioEngine) window.audioEngine.playPromotionFanfare();
@@ -1069,7 +1111,7 @@ class UIManager {
   }
 
   /**
-   * 领赏入仕：将金币与武勋真正入账，触发可能的大名晋升仪式，并呈现进军下一关通道！
+   * 领赏入仕：将金币与武勋入账，触发可能的大名晋升仪式，并呈现进军下一关通道与战国物语！
    */
   claimVictoryReward() {
     this.hasClaimedCurrentVictory = true;
@@ -1091,7 +1133,7 @@ class UIManager {
       meritRes = window.heroManager.addMerit(merit);
     }
 
-    // 每日打卡推进（如果为温故模式，绝不推进或回退学校教学主线进度）
+    // 每日打卡推进
     if (window.progressManager) {
       window.progressManager.finishTodayQuest({ isReplay: isReplay, stageNum: curStageNum });
     }
@@ -1122,94 +1164,89 @@ class UIManager {
     const curSchoolStage = Math.floor(curIdx / 3) + 1;
     const allWords = window.wordManager ? window.wordManager.getAllTextbookWordsFlat() : [];
     const totalStages = Math.ceil((allWords.length || 178) / 3);
+    const nextStageNum = Math.min(totalStages, curSchoolStage + 1);
 
-    // 敕封感状：将界面升华为气势恢宏且紧凑的封赏大典
+    const storyMap = [
+      { id: 'story-ch1-one-coin', num: 1, title: '怀揣一文闯天下', desc: '清洲城下南蛮货摊算账，赚取第一桶金', time: '1554年' },
+      { id: 'story-ch1-warm-sandals', num: 2, title: '雪中怀暖草鞋志', desc: '怀中捂暖草鞋侍主，深自信长主公赞赏', time: '1555年' },
+      { id: 'story-ch1-repair-wall', num: 3, title: '巧策三日补城垣', desc: '分工竞进智修清洲城垣，名震织田家臣', time: '1556年' },
+      { id: 'story-ch1-granary-count', num: 4, title: '粮仓明断杜蠹虫', desc: '严查军粮仓禀贪墨，节余百石名扬尾张', time: '1557年' },
+      { id: 'story-ch1-okehazama-spy', num: 5, title: '桶狭间前夜探风云', desc: '深入今川前线斥候密探，探明敌军主营', time: '1559年' },
+      { id: 'story-ch1-okehazama-battle', num: 6, title: '骤雨雷霆斩敌酋', desc: '暴风骤雨雷霆奇袭，信长一战名震天下', time: '1560年' }
+    ];
+    const storyIdx = (curStageNum - 1) % storyMap.length;
+    const currentStory = storyMap[storyIdx];
+
     const content = document.getElementById('victory-content');
     if (content) {
       content.innerHTML = `
-        <div class="nobunaga-crest">⚡ 天下布武 · 织田信长官位晋封状 ⚡</div>
-        <h2 class="victory-title" style="margin-bottom: 2px;">封赏大典 · 敕命晋阶！</h2>
-        <div class="victory-stage-tag">🚩 第 ${curStageNum} 关 大捷达成 ${isReplay ? '· 温故战役功赏全数入账' : `· 准备进军第 ${curSchoolStage + 1} 关`}</div>
-        ${(meritRes.promoted && meritRes.newRank) ? `
-          <div class="victory-promo-box">
-            <div class="promo-badge">🎉 织田信长御命亲授 · 官位晋升 🎉</div>
-            <div class="promo-title">${meritRes.newRank.icon} 晋升为【${meritRes.newRank.title}】！</div>
-            <div class="promo-house">🏠 赐封居所：${meritRes.newRank.house}</div>
-            <div class="promo-desc">“${meritRes.newRank.desc}”</div>
-            <div class="promo-bonus">🪙 赐封金判 +${goldEarned} 贯 · ⭐ 受封功勋 +${meritRes.earned}</div>
-          </div>
-        ` : `
-          <div class="victory-claimed-box">
-            <div class="claimed-badge">✅ 功赏全数入账！</div>
-            <div class="claimed-info">🪙 赐封金判 +${goldEarned} 贯已入宝库 · ⭐ 受封功勋 +${meritRes.earned}</div>
-            <div class="claimed-rank">当前太阁品阶：<strong>${meritRes.newRank ? meritRes.newRank.title : '足轻'}</strong> · 军威日盛！</div>
-          </div>
-        `}
-        ${newlyUnlocked.length > 0 ? `
-          <div class="victory-unlock-alert-box" style="margin-top: 10px; background: linear-gradient(135deg, rgba(234,179,8,0.25) 0%, rgba(180,83,9,0.2) 100%); border: 1.5px solid #facc15; border-radius: 6px; padding: 10px 14px; text-align: center;">
-            <div style="font-size: 15px; font-weight: 900; color: #fef08a; font-family: var(--font-simplified-cn);">
-              🔓 织田信长御意破印 · 新殿堂解禁！
+        <div class="victory-body-grid">
+          <!-- 左侧：敕命封赏与主行动 -->
+          <div class="victory-col-info">
+            <div class="nobunaga-crest">⚡ 织田信长敕命晋阶状 · 第 ${curStageNum} 关平定 ⚡</div>
+            
+            ${(meritRes.promoted && meritRes.newRank) ? `
+              <div class="victory-promo-box">
+                <div class="promo-title">${meritRes.newRank.icon} 晋升为【${meritRes.newRank.title}】！</div>
+                <div class="promo-bonus">🪙 赐金 +${goldEarned} 贯 · ⭐ 武勋 +${meritRes.earned}</div>
+                <div class="promo-desc" style="margin-top:2px;">🏠 赐居：${meritRes.newRank.house} ${newlyUnlocked.length > 0 ? `· 🔓 解封【${newlyUnlocked.map(u => u.title).join('、')}】` : ''}</div>
+              </div>
+            ` : `
+              <div class="victory-claimed-box">
+                <div class="claimed-badge">✅ 功赏全数入账！</div>
+                <div class="claimed-info">🪙 赐金 +${goldEarned} 贯 · ⭐ 武勋 +${meritRes.earned}</div>
+                <div class="claimed-rank">威名日盛！${newlyUnlocked.length > 0 ? `🔓 解封【${newlyUnlocked.map(u => u.title).join('、')}】` : ''}</div>
+              </div>
+            `}
+
+            <div class="victory-actions-grid">
+              ${isReplay ? `
+                <button class="btn btn-primary btn-claim-main" onclick="window.ui.openChaptersFromVictory()">
+                  🗺️ 关卡全景
+                </button>
+                <button class="btn btn-secondary" onclick="window.ui.proceedToSchoolTarget()">
+                  🏫 回主线
+                </button>
+              ` : `
+                <button class="btn btn-primary btn-claim-main btn-next-stage" onclick="window.ui.proceedToNextStage()">
+                  ⚔️ 进军第 ${nextStageNum} 关
+                </button>
+                <button class="btn btn-secondary" onclick="window.ui.returnHomeFromVictory()">
+                  🏠 大本营
+                </button>
+              `}
+              <button class="btn btn-secondary" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal(window.ui.lastVictoryData)">
+                📜 勋绩
+              </button>
+              <button class="btn btn-secondary" onclick="window.ui.replayCurrentStage()">
+                🔄 再战
+              </button>
             </div>
-            <div style="font-size: 13.5px; color: #fff; margin-top: 4px; font-family: var(--font-simplified-cn);">
-              恭喜主公！已平定第 ${curStageNum} 关，【${newlyUnlocked.map(u => u.title).join('、')}】封印解除，现已向你敞开！
+          </div>
+
+          <!-- 右侧：尾张战国物语剧场剧情联动 -->
+          <div class="victory-col-words">
+            <div class="v-story-teaser-card">
+              <div class="v-teaser-tag">📜 战国物语剧场 · 第 ${currentStory.num} 回目 (${currentStory.time})</div>
+              <div class="v-teaser-title">${currentStory.title}</div>
+              <div class="v-teaser-desc">${currentStory.desc}</div>
+              <button class="btn btn-primary btn-teaser-btn" onclick="window.ui.openTheaterModal('${currentStory.id}')">
+                🎭 亲历这段战国历史
+              </button>
+            </div>
+            <div class="v-stage-stats-mini">
+              <span>📚 本关积累：3个新单词</span>
+              <span>⭐ 武勋总计：${(window.heroManager && window.heroManager.hero) ? window.heroManager.hero.merit : 0} 点</span>
             </div>
           </div>
-        ` : ''}
+        </div>
       `;
     }
 
-    // 底部切换为清晰的行动面板（区分温故出征与学校主线）
     const footer = document.getElementById('victory-footer-actions');
     if (footer) {
-      if (isReplay) {
-        footer.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center;">
-            <button class="btn btn-primary" onclick="window.ui.openChaptersFromVictory()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); font-size: 16px; font-weight: 900; padding: 13px 32px; box-shadow: 0 4px 16px rgba(37,99,235,0.4); width: 88%;">
-              🗺️ 返回战役关卡全景（温故其它关卡）
-            </button>
-            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%;">
-              <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal(window.ui.lastVictoryData)" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; font-weight:800;">
-                📜 亲子立志勋绩卡
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.replayCurrentStage()">
-                🔄 再战第 ${curStageNum} 关
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.proceedToSchoolTarget()">
-                🏫 回到学校主线关卡（第 ${curSchoolStage} 关）
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.returnHomeFromVictory()">
-                🏠 返回大本营主页
-              </button>
-            </div>
-          </div>
-        `;
-      } else {
-        const nextStageNum = Math.min(totalStages, curSchoolStage + 1);
-        footer.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center;">
-            <button class="btn btn-primary btn-next-stage" onclick="window.ui.proceedToNextStage()" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); font-size: 16px; font-weight: 900; padding: 13px 32px; box-shadow: 0 4px 16px rgba(16,185,129,0.4); width: 88%;">
-              ⚔️ 进军下一关（第 ${nextStageNum} 关 / 共 ${totalStages} 关）· 迎战新单词！
-            </button>
-            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%;">
-              <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal(window.ui.lastVictoryData)" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; font-weight:800;">
-                📜 亲子立志勋绩卡
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.replayCurrentStage()">
-                🔄 再练一次本关（巩固冲三星）
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.openShopFromVictory()">
-                🏯 南蛮商馆选购装备
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.returnHomeFromVictory()">
-                🏠 返回大本营主页
-              </button>
-              <button class="btn btn-secondary btn-sm" onclick="window.ui.openChaptersFromVictory()">
-                🗺️ 战役关卡全景地图
-              </button>
-            </div>
-          </div>
-        `;
-      }
+      footer.innerHTML = '';
+      footer.style.display = 'none';
     }
   }
 
@@ -1217,6 +1254,28 @@ class UIManager {
     const modal = document.getElementById('modal-victory');
     if (modal) modal.classList.add('hidden');
     this.showHomeScreen();
+  }
+
+  /**
+   * 切换全屏沉浸式体验 (支持 iPad/手机浏览器与 Webkit API)
+   */
+  toggleFullscreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) {
+        docEl.requestFullscreen().catch(() => {});
+      } else if (docEl.webkitRequestFullscreen) {
+        docEl.webkitRequestFullscreen();
+      }
+      this.showToast('⛶ 已开启全屏沉浸演武', '🌸');
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+      this.showToast('⛶ 已退出全屏', '🏮');
+    }
   }
 
   /**
