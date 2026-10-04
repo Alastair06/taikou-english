@@ -29,16 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('UI/World init error:', err);
   }
 
-  // 3. 全局点击/触摸解锁音频
+  // 3. 全局点击/触摸解锁音频与前后台切换自动唤醒
   const unlockAudio = () => {
     if (window.audioEngine) {
       window.audioEngine.unlockAudio();
     }
-    document.removeEventListener('touchstart', unlockAudio);
-    document.removeEventListener('click', unlockAudio);
   };
-  document.addEventListener('touchstart', unlockAudio, { passive: true });
-  document.addEventListener('click', unlockAudio, { passive: true });
+  ['pointerdown', 'touchstart', 'touchend', 'click'].forEach(evt => {
+    window.addEventListener(evt, unlockAudio, { passive: true });
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && window.audioEngine) {
+      window.audioEngine.ensureAudioContext();
+    }
+  });
 
   // 4. 绑定 iPad 触控虚拟方向键 (D-Pad，多场景自适应路由)
   const dpadBtns = document.querySelectorAll('.dpad-btn');

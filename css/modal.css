@@ -2104,7 +2104,13 @@ body:has(.modal-overlay:not(.hidden)) .tokichiro-sit-sprite {
   text-align: center;
 }
 
-/* 主页全屏快捷入口 */
+/* 主页工具栏与全屏/试音入口 */
+.home-header-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .btn-home-fullscreen {
   display: inline-flex;
   align-items: center;
@@ -2130,8 +2136,57 @@ body:has(.modal-overlay:not(.hidden)) .tokichiro-sit-sprite {
   transform: translateY(-1px);
 }
 
+@media (max-height: 520px), (max-width: 600px) {
+  .home-header-tools {
+    gap: 4px;
+  }
+  .btn-home-fullscreen {
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+}
+
 /* 针对手机横屏视口 (高度 <= 520px) 极致紧凑无滚动 */
 @media (max-height: 520px) {
+  .tribute-modal-card {
+    padding: 8px 16px !important;
+    border-radius: 14px !important;
+    max-height: 96vh !important;
+  }
+  .tribute-modal-card > div:first-child {
+    font-size: 26px !important;
+    margin-bottom: 2px !important;
+  }
+  .tribute-modal-card h3 {
+    font-size: 16px !important;
+    margin: 2px 0 4px !important;
+  }
+  .tribute-modal-card p {
+    font-size: 12.5px !important;
+    margin-bottom: 8px !important;
+    line-height: 1.3 !important;
+  }
+  .tribute-modal-card > div:nth-of-type(2) {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+  .tribute-modal-card > div:nth-of-type(2) > div {
+    padding: 4px 12px !important;
+    border-radius: 10px !important;
+    min-width: 90px !important;
+  }
+  .tribute-modal-card > div:nth-of-type(2) > div > div:first-child {
+    font-size: 12px !important;
+  }
+  .tribute-modal-card > div:nth-of-type(2) > div > div:last-child {
+    font-size: 16px !important;
+  }
+  .tribute-modal-card button.btn {
+    font-size: 14px !important;
+    padding: 5px 22px !important;
+    border-radius: 10px !important;
+  }
+
   #modal-victory .modal-container {
     max-height: 98vh !important;
     border-radius: 14px !important;

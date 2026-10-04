@@ -6153,7 +6153,7 @@ body, html {
 /* 浮动横屏建议提示气泡 (在竖屏小屏下显示，横屏自动隐藏) */
 .orientation-toast {
   position: fixed;
-  top: max(8px, env(safe-area-inset-top, 8px));
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
   left: 50%;
   transform: translateX(-50%);
   background: rgba(15, 23, 42, 0.9);
@@ -6320,18 +6320,17 @@ body, html {
     align-items: center !important;
     justify-content: space-between !important;
     margin-bottom: 0 !important;
-    gap: 4px !important;
+    gap: 6px !important;
     height: 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .home-badge {
-    font-size: 9px !important;
-    padding: 2px 5px !important;
-    margin-bottom: 0 !important;
-    white-space: nowrap !important;
+    display: none !important;
   }
   .home-title {
-    font-size: 12px !important;
-    gap: 3px !important;
+    font-size: 13px !important;
+    gap: 4px !important;
     margin: 0 !important;
     white-space: nowrap !important;
   }
