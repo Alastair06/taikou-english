@@ -558,7 +558,7 @@ class JapanOverworldManager {
 
   triggerCheckpoint(cpId) {
     const cp = this.checkpoints.find(c => c.id === cpId);
-    if (!cp) return;
+    if (!cp || cp.isSolved) return;
 
     window.audioEngine.speak(cp.word);
     cp.isSolved = true;

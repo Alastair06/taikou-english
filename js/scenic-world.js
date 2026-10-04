@@ -146,6 +146,7 @@ class ScenicWorld {
     this.updateHUD();
     this.updateLandmarks();
     this.initAmbientEggs();
+    this.resetAmbientEggs();
     this.startPetals();
 
     // 播放和风开场音效
@@ -398,13 +399,35 @@ class ScenicWorld {
   }
 
   /**
-   * 触发动森式环境微交互
+   * 重置所有环境微交互彩蛋状态（重新进入绘卷大地图时恢复显示）
+   */
+  resetAmbientEggs() {
+    const stage = this.container ? this.container.querySelector('.scenic-stage-canvas') : null;
+    if (!stage) return;
+    stage.querySelectorAll('.scenic-ambient-node').forEach(node => {
+      node.classList.remove('egg-collected', 'anim-disappearing', 'anim-fly-away', 'anim-dive-away', 'anim-leap-away', 'anim-gather-away', 'anim-chime-away', 'anim-bouncing');
+    });
+  }
+
+  /**
+   * 触发动森式环境微交互彩蛋
+   * - 惊起飞走/潜水/跳跃/采撷等生动离场动效，随后在画面中消失，不可重复点击
+   * - 每日首次探索奖励 5 贯，彻底杜绝无限制点击刷钱
+   * - 停留静赏片刻（35秒）或重新进入地图后轻柔归来栖息，随时可跟读自然发音
    */
   triggerAmbient(eggId) {
     const egg = this.ambientEggs.find(e => e.id === eggId);
     if (!egg) return;
 
-    // 1. 播放音效与真人美音
+    const nodeEl = this.container ? this.container.querySelector(`.ambient-${egg.id}`) : null;
+    if (!nodeEl || nodeEl.classList.contains('egg-collected') || nodeEl.classList.contains('anim-disappearing')) {
+      return;
+    }
+
+    // 立即标记为正在离场，防止短时间内重复连击
+    nodeEl.classList.add('anim-disappearing');
+
+    // 1. 播放自然和风音效与纯正真人美音
     if (window.audioEngine) {
       if (egg.sound === 'splash') window.audioEngine.playWaterSplash();
       else if (egg.sound === 'chime') window.audioEngine.playWindChime();
@@ -417,20 +440,35 @@ class ScenicWorld {
       }, 150);
     }
 
-    // 2. 好奇心金币奖励
-    if (window.heroManager) {
-      window.heroManager.addGold(5);
+    // 2. 每日首次探索奖励（严谨防刷：每天每只彩蛋仅首次奖励 5 贯）
+    const today = new Date().toISOString().slice(0, 10);
+    const claimKey = `scenic_egg_claimed_${today}_${egg.id}`;
+    let isFirstToday = false;
+    try {
+      if (typeof localStorage !== 'undefined' && !localStorage.getItem(claimKey)) {
+        localStorage.setItem(claimKey, '1');
+        isFirstToday = true;
+      }
+    } catch (e) {
+      isFirstToday = false;
     }
-    this.updateHUD();
 
-    // 3. 气泡与轻快动效弹出
+    if (isFirstToday) {
+      if (window.heroManager) {
+        window.heroManager.addGold(5);
+      }
+      this.updateHUD();
+      if (window.ui && window.ui.showToast) {
+        window.ui.showToast(`✨ 好奇发现！【${egg.name}】跃然画中，参透词汇【${egg.en} · ${egg.cn}】，获赠 5 贯！`, egg.emoji);
+      }
+    } else {
+      if (window.ui && window.ui.showToast) {
+        window.ui.showToast(`🎵 再次探寻【${egg.name} · ${egg.en}】纯正发音！（今日 5 贯发现奖励已领取）`, egg.emoji);
+      }
+    }
+
+    // 3. 词汇拼读气泡生动展现
     const bubble = document.getElementById(`bubble-ambient-${egg.id}`);
-    const nodeEl = this.container ? this.container.querySelector(`.ambient-${egg.id}`) : null;
-    if (nodeEl) {
-      nodeEl.classList.add('anim-bouncing');
-      setTimeout(() => nodeEl.classList.remove('anim-bouncing'), 600);
-    }
-
     if (bubble) {
       bubble.classList.remove('hidden');
       bubble.classList.add('bubble-show');
@@ -444,10 +482,33 @@ class ScenicWorld {
       }, 2600);
     }
 
-    // 4. 底部轻柔提示
-    if (window.ui && window.ui.showToast) {
-      window.ui.showToast(`✨ 好奇发现！【${egg.name}】跃然画中，参透洋文【${egg.en} · ${egg.cn}】，获赠 5 贯！`, egg.emoji);
+    // 4. 生动的离场/潜水/飞走消失动效
+    if (egg.id === 'bird') {
+      nodeEl.classList.add('anim-fly-away');
+    } else if (egg.id === 'koi') {
+      nodeEl.classList.add('anim-dive-away');
+    } else if (egg.id === 'frog') {
+      nodeEl.classList.add('anim-leap-away');
+    } else if (egg.id === 'flower') {
+      nodeEl.classList.add('anim-gather-away');
+    } else {
+      nodeEl.classList.add('anim-chime-away');
     }
+
+    // 动效结束后进入隐藏收集状态（从画卷中消失，不可重复点击）
+    setTimeout(() => {
+      nodeEl.classList.add('egg-collected');
+      nodeEl.classList.remove('anim-disappearing', 'anim-fly-away', 'anim-dive-away', 'anim-leap-away', 'anim-gather-away', 'anim-chime-away');
+    }, 850);
+
+    // 动森式栖息再现：在绘卷驻足欣赏 35 秒后，小动物悄悄回巢，可再次复习发音
+    setTimeout(() => {
+      if (nodeEl && nodeEl.classList.contains('egg-collected')) {
+        nodeEl.classList.remove('egg-collected');
+        nodeEl.classList.add('anim-reappear');
+        setTimeout(() => nodeEl.classList.remove('anim-reappear'), 600);
+      }
+    }, 35000);
   }
 
   /**
