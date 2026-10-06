@@ -130,6 +130,11 @@ class UIManager {
    * 一键从大本营出发进入晴和盛景漫游绘卷大世界 (彻底替代旧版简陋打怪走格页面)
    */
   startAdventure() {
+    if (window.progressManager && window.progressManager.isDailyStageLimitReached()) {
+      this.openTodayFinishedModal();
+      return;
+    }
+
     this.hideHomeScreen();
     if (window.overworld) window.overworld.hide();
     if (window.taikouTown) {
@@ -171,7 +176,7 @@ class UIManager {
     const curStage = Math.floor(curIdx / 3) + 1;
     const allWords = window.wordManager ? window.wordManager.getAllTextbookWordsFlat() : [];
     const totalStages = Math.ceil((allWords.length || 178) / 3);
-    const curWord = allWords[curIdx] || { unit: 'Unit 1: 结识新朋友' };
+    const curWord = allWords[curIdx] || { unit: 'Unit 1: 结识新朋' };
 
     const rankBadge = document.getElementById('home-rank-badge');
     if (rankBadge) rankBadge.textContent = `${rank ? rank.title : '足轻组头'}`;
@@ -193,19 +198,33 @@ class UIManager {
       heartsVal.innerHTML = heartsStr;
     }
 
+    const isLimitReached = window.progressManager ? window.progressManager.isDailyStageLimitReached() : false;
+    const isTodayDone = window.progressManager ? window.progressManager.isTodayFinished() : false;
+
     const progressText = document.getElementById('home-progress-text');
     if (progressText) {
       if (window.questSystem && window.questSystem.state.activeQuest) {
         const q = window.questSystem.state.activeQuest;
         progressText.innerHTML = `📜 信长主命：<strong>${q.title}</strong> [${q.currentCount}/${q.targetCount}]`;
+      } else if (isLimitReached) {
+        progressText.innerHTML = `🏯 今日主命：<strong>今日大捷已落城！</strong>（已掌握 3 词 · 建议入营休整）`;
       } else {
         progressText.innerHTML = `🚩 当前主命：<strong>第 ${curStage} 关 / 共 ${totalStages} 关</strong> · 【${curWord.unit || 'Unit 1'}】`;
       }
     }
 
+    const startBtn = document.querySelector('.btn-home-start');
     const startBtnTitle = document.getElementById('home-start-btn-title') || document.querySelector('.start-main-text');
     if (startBtnTitle) {
-      startBtnTitle.textContent = `⚔️ 攻城出征 · 第 ${curStage} 关`;
+      if (isLimitReached) {
+        startBtnTitle.textContent = `🏯 今日大捷 · 休整练兵`;
+        if (startBtn) startBtn.classList.add('finished');
+      } else {
+        startBtnTitle.textContent = (isTodayDone && window.progressManager && window.progressManager.state.dailyLimitUnlocked)
+          ? `⚔️ 进军第 ${curStage} 关 (家长特许)`
+          : `⚔️ 攻城出征 · 第 ${curStage} 关`;
+        if (startBtn) startBtn.classList.remove('finished');
+      }
     }
     const stageSub = document.getElementById('home-start-stage-sub');
     if (stageSub) {
@@ -441,6 +460,25 @@ class UIManager {
 
       updatePreview(currentIdx);
       this.renderParentWordsList('all', currentIdx);
+
+      // 更新每日限额与特许状态
+      const quotaStatus = document.getElementById('parent-quota-status');
+      const quotaBtn = document.getElementById('btn-toggle-daily-limit');
+      if (quotaStatus && quotaBtn && window.progressManager) {
+        const isDone = window.progressManager.isTodayFinished();
+        const isOverride = window.progressManager.state.dailyLimitUnlocked;
+        if (isDone) {
+          quotaStatus.innerHTML = isOverride
+            ? '<span style="color:#0284c7;">已特许进军下一关（家长特许生效中）</span>'
+            : '<span style="color:#15803d;">已平定今日名城（3 词全掌握 · 限额保护中）</span>';
+          quotaBtn.textContent = isOverride ? '🔒 恢复每日 1 关严格限额' : '🔓 特许今日进军下一关';
+        } else {
+          quotaStatus.innerHTML = isOverride
+            ? '<span style="color:#0284c7;">家长特许已开启（可自由攻城）</span>'
+            : '<span style="color:#b45309;">今日出征中（每日严格限额 1 关 · 3 词）</span>';
+          quotaBtn.textContent = isOverride ? '🔒 恢复每日 1 关严格限额' : '🔓 特许今日无限制出征';
+        }
+      }
     }
 
     modal.classList.remove('hidden');
@@ -528,6 +566,115 @@ class UIManager {
     }
     const modal = document.getElementById('modal-parent-progress');
     if (modal) modal.classList.add('hidden');
+  }
+
+  /**
+   * 家长专属：一键开关今日限额
+   */
+  toggleParentDailyLimit() {
+    if (!window.progressManager) return;
+    const nowUnlocked = window.progressManager.toggleDailyLimitOverride();
+    this.openParentProgressModal(); // 刷新弹窗状态
+    this.updateHomeProfile();
+    if (nowUnlocked) {
+      this.showToast('🔓 家长已特许今日进军下一关！', '✨');
+    } else {
+      this.showToast('🔒 已恢复每日 1 关严格限额保护！', '🛡️');
+    }
+  }
+
+  /**
+   * 打开今日主命大捷与鸣金休整对话框 (严格保障每日10分钟与3-5词吸收上限)
+   */
+  openTodayFinishedModal() {
+    const modal = document.getElementById('modal-today-finished');
+    if (!modal) return;
+
+    const words = (window.progressManager && typeof window.progressManager.getTodayStageWords === 'function')
+      ? window.progressManager.getTodayStageWords()
+      : [];
+
+    const isTownUnlocked = window.progressManager ? window.progressManager.isFeatureUnlocked('town') : false;
+    const isEstateUnlocked = window.progressManager ? window.progressManager.isFeatureUnlocked('estate') : false;
+
+    const content = document.getElementById('today-finished-content');
+    if (content) {
+      content.innerHTML = `
+        <div class="today-finished-card">
+          <div class="today-finished-crest">🍵 尾张织田家 · 今日主命大捷 🍵</div>
+
+          <div class="today-finished-speech">
+            <div class="today-finished-nobunaga-avatar">🏯</div>
+            <div class="today-finished-bubble-text">
+              “藤吉郎！今日主命合战已大获全胜，<strong>今日 3 词已全数烙入心怀！</strong><br>
+              兵贵神速，更贵持之以恒。今日功业已毕，全军鸣金收兵、休整练兵！”
+            </div>
+          </div>
+
+          <div class="today-finished-words-box">
+            <div class="today-finished-words-header">
+              <span>📖 今日平定掌握之 3 词（点击发音跟读）：</span>
+              <span style="font-size:12px; color:#15803d; font-weight:700;">✅ 已达标</span>
+            </div>
+            <div class="today-finished-words-grid">
+              ${words.map(w => `
+                <div class="today-word-card" onclick="if(window.audioEngine) window.audioEngine.speak('${w.en}')" title="点击听发音">
+                  <span style="font-size:18px;">${w.emoji || '📖'}</span>
+                  <span class="word-en">${w.en}</span>
+                  <span class="word-cn">${w.cn}</span>
+                  <span style="font-size:11px; color:#15803d;">🔊 朗读</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div style="font-size:13.5px; font-weight:800; color:#1e293b; margin-bottom:8px; text-align:left;">
+            🏮 战后闲暇（无学习负担，自由探索）：
+          </div>
+
+          <div class="today-finished-actions-grid">
+            <button class="btn btn-primary" onclick="window.ui.openTownFromVictory()">
+              ${isTownUnlocked ? '🏮 城下町采办' : '📜 词汇图鉴温故'}
+            </button>
+            <button class="btn btn-secondary" onclick="if(window.honorScroll) { window.ui.closeTodayFinishedModal(); window.honorScroll.showCertificateModal(); }">
+              📜 检阅军功状
+            </button>
+            <button class="btn btn-secondary" onclick="${isEstateUnlocked ? 'window.ui.closeTodayFinishedModal(); if(window.tokichiroEstate) window.tokichiroEstate.openModal();' : 'window.ui.closeTodayFinishedModal(); window.ui.openChaptersModal();'}">
+              ${isEstateUnlocked ? '🏡 宅邸巡视' : '🏯 攻城关卡总览'}
+            </button>
+            <button class="btn btn-secondary" onclick="window.ui.closeTodayFinishedModal(); window.ui.replayCurrentStage();">
+              🔄 重温今日合战
+            </button>
+          </div>
+
+          <div class="today-parent-override-box">
+            <div>
+              <div style="font-weight:700; color:#1e293b;">👨‍👩‍👧 家长特许进军</div>
+              <div style="font-size:12px; color:#64748b;">如孩子精力充沛或学校教学需要，家长可特许提前解锁下一关</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="window.ui.unlockDailyLimitFromModal()">
+              🔓 特许进军
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  closeTodayFinishedModal() {
+    const modal = document.getElementById('modal-today-finished');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  unlockDailyLimitFromModal() {
+    if (window.progressManager) {
+      window.progressManager.toggleDailyLimitOverride(true);
+    }
+    this.closeTodayFinishedModal();
+    this.showToast('🔓 家长已特许进军下一关！', '⚔️');
+    this.startAdventure();
   }
 
   /**
@@ -1207,12 +1354,19 @@ class UIManager {
                 <button class="btn btn-secondary" onclick="window.ui.proceedToSchoolTarget()">
                   🏫 回主线
                 </button>
-              ` : `
+              ` : (window.progressManager && window.progressManager.state.dailyLimitUnlocked) ? `
                 <button class="btn btn-primary btn-claim-main btn-next-stage" onclick="window.ui.proceedToNextStage()">
-                  ⚔️ 进军第 ${nextStageNum} 关
+                  ⚔️ 进军第 ${nextStageNum} 关 (家长特许)
                 </button>
                 <button class="btn btn-secondary" onclick="window.ui.returnHomeFromVictory()">
-                  🏠 大本营
+                  🏠 回大营
+                </button>
+              ` : `
+                <button class="btn btn-primary btn-claim-main" onclick="window.ui.returnHomeFromVictory()">
+                  🏯 今日大捷 · 回营休整
+                </button>
+                <button class="btn btn-secondary" onclick="window.ui.openTownFromVictory()">
+                  🏮 城下町
                 </button>
               `}
               <button class="btn btn-secondary" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal(window.ui.lastVictoryData)">
@@ -1234,9 +1388,12 @@ class UIManager {
                 ⚔️ 亲历这场战役
               </button>
             </div>
-            <div class="v-stage-stats-mini">
-              <span>📚 本关积累：3个新单词</span>
+            <div class="v-stage-stats-mini" style="display:flex; flex-direction:column; gap:4px;">
+              <span>📚 本关掌握：3 个新单词</span>
               <span>⭐ 武勋总计：${(window.heroManager && window.heroManager.hero) ? window.heroManager.hero.merit : 0} 点</span>
+              ${(!isReplay && !(window.progressManager && window.progressManager.state.dailyLimitUnlocked)) ? `
+                <span style="color:#15803d; font-weight:700;">🍵 今日主命大捷已达成（10分钟 3 词），建议回营休整！</span>
+              ` : ''}
             </div>
           </div>
         </div>
@@ -1254,6 +1411,24 @@ class UIManager {
     const modal = document.getElementById('modal-victory');
     if (modal) modal.classList.add('hidden');
     this.showHomeScreen();
+  }
+
+  /**
+   * 从胜利大捷弹窗一键前往城下町
+   */
+  openTownFromVictory() {
+    const modal = document.getElementById('modal-victory');
+    if (modal) modal.classList.add('hidden');
+    if (window.progressManager && !window.progressManager.isFeatureUnlocked('town')) {
+      const cfg = window.progressManager.getFeatureUnlockConfig('town');
+      this.showHomeScreen();
+      this.showToast(`🏮 城下町需平定第 ${cfg.minStage} 关后解封，先回营修整！`, '🏯');
+    } else if (window.taikouTown) {
+      this.hideHomeScreen();
+      window.taikouTown.enterTown('kiyosu');
+    } else {
+      this.showHomeScreen();
+    }
   }
 
   /**

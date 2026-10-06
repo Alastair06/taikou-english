@@ -35,7 +35,8 @@ class ProgressManager {
       masteryMap: {},      // 每个单词的掌握度记录 { "meet": { correct: 3, wrong: 0, level: 3 } }
       todayQuestCache: null, // 当天的题目缓存，保证当天刷题一致性
       clearedStages: {},   // 已通关的关卡记录 { 1: true, 2: true, ... }
-      maxStageCleared: 0   // 历史最高通关关卡数
+      maxStageCleared: 0,  // 历史最高通关关卡数
+      dailyLimitUnlocked: false // 家长特许开关（解除今日主命限额）
     };
   }
 
@@ -43,7 +44,12 @@ class ProgressManager {
     try {
       const data = localStorage.getItem(this.storageKey);
       if (data) {
-        return { ...this.getDefaultState(), ...JSON.parse(data) };
+        const loaded = { ...this.getDefaultState(), ...JSON.parse(data) };
+        // 新自然日自动恢复每日限额锁定
+        if (loaded.lastQuestDate !== this.getTodayDateStr()) {
+          loaded.dailyLimitUnlocked = false;
+        }
+        return loaded;
       }
     } catch (e) {
       console.warn('Progress load failed:', e);
@@ -69,6 +75,39 @@ class ProgressManager {
    */
   isTodayFinished() {
     return this.state.lastQuestDate === this.getTodayDateStr();
+  }
+
+  /**
+   * 是否达到每日主命关卡上限（每日严格限额 1 关/3 词，10 分钟预算）
+   */
+  isDailyStageLimitReached() {
+    return this.isTodayFinished() && !this.state.dailyLimitUnlocked;
+  }
+
+  /**
+   * 家长特许：开关今日进军限制
+   */
+  toggleDailyLimitOverride(forceAllow) {
+    if (typeof forceAllow === 'boolean') {
+      this.state.dailyLimitUnlocked = forceAllow;
+    } else {
+      this.state.dailyLimitUnlocked = !this.state.dailyLimitUnlocked;
+    }
+    this.saveState();
+    return this.state.dailyLimitUnlocked;
+  }
+
+  /**
+   * 获取今日关联掌握的 3 个核心词汇
+   */
+  getTodayStageWords() {
+    const allWords = window.wordManager ? window.wordManager.getAllTextbookWordsFlat() : [];
+    if (!allWords || allWords.length === 0) return [];
+    let targetIdx = this.state.currentWordIndex || 0;
+    if (this.isTodayFinished() && targetIdx >= 3) {
+      targetIdx -= 3;
+    }
+    return allWords.slice(targetIdx, targetIdx + 3);
   }
 
   /**
@@ -219,6 +258,7 @@ class ProgressManager {
     // 只有在非历史关卡重温(isReplay)模式下，才自动推进学校教学主命进度！
     if (!options || !options.isReplay) {
       this.state.currentWordIndex += 3;
+      this.state.dailyLimitUnlocked = false;
     }
     this.saveState();
   }

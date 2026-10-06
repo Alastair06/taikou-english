@@ -656,6 +656,19 @@
 
           <button class="btn btn-primary" id="btn-save-progress" style="width:100%; padding:14px; font-size:16px;">💾 确认同步并对齐进度</button>
 
+          <!-- 每日主命限额与护眼防沉迷控制区 -->
+          <div class="parent-quota-box" id="parent-quota-box" style="margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="flex: 1; min-width: 220px;">
+              <div style="font-weight: 800; color: #1e293b; font-size: 14px;">🛡️ 每日主命限额（每天 1 关 · 3 词 · 10 分钟）</div>
+              <div style="font-size: 13px; color: #64748b; margin-top: 2px;" id="parent-quota-desc">
+                严格防止认知过载。今日状态：<span id="parent-quota-status" style="font-weight:700; color:#15803d;">检测中...</span>
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-toggle-daily-limit" onclick="window.ui.toggleParentDailyLimit()">
+              🔓 特许今日进军下一关
+            </button>
+          </div>
+
           <!-- 📖 新增：2024新版教材 178 词生词对照总表 -->
           <div class="words-table-section" style="margin-top: 20px; border-top: 1px dashed var(--border-gold); padding-top: 16px;">
             <div class="words-table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
@@ -1016,6 +1029,14 @@
     <div class="modal-container" style="max-width: 480px;">
       <button class="modal-close" onclick="window.honorScroll.closeCertificateModal()">✕</button>
       <div class="modal-body" id="honor-scroll-content" style="padding: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：今日大捷休整面板 -->
+  <div class="modal-overlay hidden" id="modal-today-finished">
+    <div class="modal-container" style="max-width: 560px;">
+      <button class="modal-close" onclick="window.ui.closeTodayFinishedModal()">✕</button>
+      <div class="modal-body" id="today-finished-content" style="padding: 18px;"></div>
     </div>
   </div>
 

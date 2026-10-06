@@ -9,7 +9,7 @@
 class EyeRestGuard {
   constructor() {
     this.activeSeconds = 0;
-    this.restInterval = 1200; // 20 分钟 (1200秒)
+    this.restInterval = 600; // 10 分钟 (600秒) 严格对齐每日10分钟专注上限
     this.timer = null;
     this.countdownSeconds = 180; // 3 分钟休整
     this.countdownTimer = null;
@@ -42,19 +42,37 @@ class EyeRestGuard {
       window.audioEngine.playFluteFanfare();
     }
 
+    // 动态拉取今日掌握的 3 词
+    let wordsSummaryHtml = '';
+    if (window.progressManager && typeof window.progressManager.getTodayStageWords === 'function') {
+      const words = window.progressManager.getTodayStageWords();
+      if (words && words.length > 0) {
+        wordsSummaryHtml = `
+          <div class="rest-words-summary" style="margin-bottom:12px; background:rgba(255,255,255,0.85); border:1px solid #bbf7d0; border-radius:10px; padding:8px 12px; text-align:left;">
+            <div style="font-size:13px; font-weight:800; color:#15803d; margin-bottom:4px;">📖 今日掌握言灵（3 词全达成）：</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              ${words.map(w => `<span style="display:inline-flex; align-items:center; gap:4px; font-size:13px; background:#ecfdf5; border:1px solid #86efac; border-radius:6px; padding:2px 8px; color:#166534;"><strong>${w.en}</strong> ${w.cn}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+
     const content = document.getElementById('nobunaga-rest-content');
     if (content) {
       content.innerHTML = `
         <div class="nobunaga-rest-card">
-          <div class="rest-crest">🍵 尾张织田家 · 信长主公御意 🍵</div>
+          <div class="rest-crest">🍵 尾张织田家 · 信长主公鸣金收兵御令 🍵</div>
           <div class="rest-avatar-row">
             <div class="rest-nobunaga-avatar">🏯</div>
             <div class="rest-speech-bubble">
-              “藤吉郎！天下布武，非一日之功。<br>
-              汝已专心演武二十刻，<strong>全军暂且收兵歇息，望向窗外远山与绿树！</strong><br>
-              劳逸兼修，方成日后统领尾张之栋梁大器！”
+              “藤吉郎！演武十刻（十分钟）已至，天下布武非一日之功。<br>
+              汝今日攻城斩将，词意已烙入心怀。<strong>全军即刻鸣金收兵，远眺窗外青山绿水！</strong><br>
+              劳逸兼修，保重双目，方成日后统领尾张之栋梁大器！”
             </div>
           </div>
+
+          ${wordsSummaryHtml}
 
           <div class="rest-visual-stage">
             <div class="rest-landscape">
@@ -63,16 +81,21 @@ class EyeRestGuard {
               <span class="rest-trees">🌲 眺望绿野</span>
             </div>
             <div class="rest-timer-display" id="rest-timer-val">03:00</div>
-            <div class="rest-tip-text">闭目养神或极目远眺，让眼睛完全放松~</div>
+            <div class="rest-tip-text">闭目养神或极目远眺，让眼睛完全放松</div>
           </div>
 
           <div class="rest-actions">
             <button class="btn btn-primary" onclick="window.honorScroll.startRestCountdown()">
               🌿 遵令休整（开始3分钟护眼倒计时）
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="window.honorScroll.snooze(5)">
-              ⏰ 稍后提醒（5分钟后再歇）
-            </button>
+            <div style="display:flex; gap:8px; width:100%; justify-content:center; flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="window.honorScroll.snooze(3)">
+                ⏰ 稍后提醒（3分钟后再歇）
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()">
+                📜 检阅军功状
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -400,6 +423,7 @@ class HonorScrollGenerator {
 // 统一挂载
 window.eyeRestGuard = new EyeRestGuard();
 window.honorScroll = new HonorScrollGenerator();
+window.honorScroll.eyeRestGuard = window.eyeRestGuard;
 
 // 代理方法供全局便捷调用
 window.honorScroll.startRestCountdown = () => window.eyeRestGuard.startRestCountdown();
