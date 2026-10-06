@@ -61,7 +61,7 @@ class UIManager {
         hint.id = 'mobile-orientation-hint';
         hint.className = 'orientation-toast';
         hint.innerHTML = `
-          <span>📱 建议旋转横屏体验，视野更开阔震撼！</span>
+          <span>📱 建议横屏游玩，操作视野更开阔</span>
           <span class="tip-close" onclick="sessionStorage.setItem('dismiss_orientation_hint', '1'); this.parentElement.remove();">✕</span>
         `;
         document.body.appendChild(hint);
@@ -360,7 +360,7 @@ class UIManager {
     });
 
     if (unlockedTitles.length > 0) {
-      this.showToast(`🎉 封印破除！【${unlockedTitles.join('、')}】现已解禁向你敞开！`, '🔓');
+      this.showToast(`🎉 揭封：【${unlockedTitles.join('、')}】！`, '🔓');
     }
   }
 
@@ -640,7 +640,7 @@ class UIManager {
       cardsHtml += `
         <div class="${cardClass}">
           <div class="stage-card-header">
-            <span class="stage-card-title">第 ${s} 关 · ${unitShortName} <small style="font-size:11px; color:#92400e; font-weight:800; margin-left:4px;">${cityName}</small></span>
+            <span class="stage-card-title">第 ${s} 关 · ${unitShortName} <small style="font-size:13px; color:#92400e; font-weight:800; margin-left:4px;">${cityName}</small></span>
             ${badgeHtml}
           </div>
           <div class="stage-words-list">
@@ -923,9 +923,9 @@ class UIManager {
 
         let perkHtml = '';
         if (item.phonicsPerk) {
-          perkHtml = `<div class="shop-perk" style="font-size:11px;color:#0284c7;background:#e0f2fe;padding:2px 6px;border-radius:6px;margin:3px 0;font-weight:700;">⚡ 拼读: ${item.phonicsPerk}</div>`;
+          perkHtml = `<div class="shop-perk" style="font-size:13px;color:#0284c7;background:#e0f2fe;padding:2px 8px;border-radius:6px;margin:3px 0;font-weight:700;">⚡ 拼读: ${item.phonicsPerk}</div>`;
         } else if (item.hearts) {
-          perkHtml = `<div class="shop-perk" style="font-size:11px;color:#dc2626;background:#fee2e2;padding:2px 6px;border-radius:6px;margin:3px 0;font-weight:700;">❤️ 生命: +${item.hearts}心</div>`;
+          perkHtml = `<div class="shop-perk" style="font-size:13px;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:6px;margin:3px 0;font-weight:700;">❤️ 生命: +${item.hearts}心</div>`;
         }
 
         return `
@@ -1024,7 +1024,7 @@ class UIManager {
     const totalStages = Math.ceil((allWords.length || 178) / 3);
     const curWord = (data && data.words && data.words[0]) || allWords[curIdx] || { unit: 'Unit 1: 结识新朋友' };
 
-    // 匹配第一回至第六回历史战役 (1554–1560)
+    // 匹配第一回至第六回历史战役 (1554 至 1560)
     const storyMap = [
       { id: 'story-ch1-one-coin', title: '第一回 · 怀揣一文闯天下 (1554)' },
       { id: 'story-ch1-warm-sandals', title: '第二回 · 雪中怀暖草鞋志 (1555)' },
@@ -1257,7 +1257,7 @@ class UIManager {
   }
 
   /**
-   * 切换全屏沉浸式体验 (支持 iPad/手机浏览器与 Webkit API)
+   * 切换全屏显示 (支持 iPad/手机浏览器与 Webkit API)
    */
   toggleFullscreen() {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -1267,7 +1267,7 @@ class UIManager {
       } else if (docEl.webkitRequestFullscreen) {
         docEl.webkitRequestFullscreen();
       }
-      this.showToast('⛶ 已开启全屏沉浸演武', '🌸');
+      this.showToast('⛶ 已开启全屏模式', '🏯');
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
@@ -2774,7 +2774,7 @@ class UIManager {
         <div class="estate-header-banner">
           <div>
             <span style="font-size:15px; font-weight:900;">${estate.icon} ${estate.name}</span>
-            <span style="font-size:11px; opacity:0.85; margin-left:6px;">${estate.desc}</span>
+            <span style="font-size:13px; opacity:0.85; margin-left:6px;">${estate.desc}</span>
           </div>
           <div style="font-size:14px; font-weight:900;">🪙 ${heroGold} 贯</div>
         </div>
@@ -2932,9 +2932,9 @@ class UIManager {
 
     const chapter = (window.theaterSystem.chapters && window.theaterSystem.chapters.find(c => c.id === chapterId)) || {
       id: 'ch1',
-      title: '第一篇章 · 尾张微末篇',
-      timeSpan: '1554 — 1560',
-      subtitle: '草鞋侍从的自驱萌芽：以过人见识与机智，在尾张初露峥嵘',
+      title: '第一卷 · 尾张出仕',
+      timeSpan: '1554 至 1560',
+      subtitle: '草鞋侍从展露锋芒，尾张立足',
       badge: '尾张风云 🌸'
     };
 
@@ -3138,13 +3138,13 @@ class UIManager {
         window.audioEngine.speak(optEn);
         window.audioEngine.playDrumHit();
       }
-      this.showToast('🎯 妙算大捷！破译完全正确！信长公大喜！', 2000);
+      this.showToast('🎯 破译正确！信长公准奏！', 2000);
       setTimeout(() => {
         this.advanceTheaterStep();
       }, 700);
     } else {
       if (window.audioEngine) window.audioEngine.playMistake();
-      this.showToast('🌟 信长公微微沉吟：“此意似乎欠妥，藤吉郎再深思一番！”', 2500);
+      this.showToast('⚠️ 信长公按剑沉吟：“词意不符，再思索一番！”', 2500);
     }
   }
 
@@ -3192,17 +3192,17 @@ class UIManager {
       return `
         <div style="background:#ffffff; border:2px solid ${isEquipped ? '#0284c7' : '#e2e8f0'}; border-radius:12px; padding:10px; min-width:140px; flex:1; text-align:center;">
           <div style="font-size:24px;">${std.icon}</div>
-          <div style="font-size:12px; font-weight:800; color:#0f172a; margin:4px 0;">${std.standardName}</div>
-          <div style="font-size:10px; color:#64748b; line-height:1.4;">${std.desc}</div>
+          <div style="font-size:14px; font-weight:800; color:#0f172a; margin:4px 0;">${std.standardName}</div>
+          <div style="font-size:13px; color:#334155; line-height:1.4;">${std.desc}</div>
           <div style="margin-top:8px;">
             ${isEquipped ? `
-              <span style="font-size:11px; font-weight:800; color:#0284c7;">🚩 佩戴中</span>
+              <span style="font-size:13px; font-weight:800; color:#0284c7;">🚩 佩戴中</span>
             ` : isUnlocked ? `
-              <button class="btn btn-sm btn-primary" onclick="window.ui.equipLexiconStandard(${std.unitId})" style="padding:2px 10px; font-size:11px;">
+              <button class="btn btn-sm btn-primary" onclick="window.ui.equipLexiconStandard(${std.unitId})" style="padding:3px 12px; font-size:13px;">
                 佩戴
               </button>
             ` : `
-              <span style="font-size:10px; color:#94a3b8;">🔒 攻克Unit${std.unitId}解锁</span>
+              <span style="font-size:13px; color:#475569;">🔒 攻克Unit${std.unitId}解锁</span>
             `}
           </div>
         </div>
@@ -3225,14 +3225,14 @@ class UIManager {
             <div style="font-size:17px; font-weight:900; color:#0f172a; margin-top:6px;">
               ${w.en}
             </div>
-            <div style="font-size:13px; font-weight:700; color:#0369a1;">
+            <div style="font-size:14px; font-weight:700; color:#0369a1;">
               ${w.cn}
             </div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">
+            <div style="font-size:13px; color:#475569; margin-top:2px;">
               ${w.phonetic || ''}
             </div>
           </div>
-          <div style="font-size:11px; color:#78350f; background:#fefce8; border-radius:8px; padding:6px 8px; margin-top:8px; line-height:1.4;">
+          <div style="font-size:13px; color:#78350f; background:#fefce8; border-radius:8px; padding:6px 8px; margin-top:8px; line-height:1.4;">
             📜 <strong>战国秘闻</strong>：${trivia}
           </div>
         </div>

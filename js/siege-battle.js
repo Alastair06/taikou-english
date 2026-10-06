@@ -96,7 +96,7 @@ class SiegeBattleEngine {
       { id: 45, name: '近江 · 甲贺山砦', chapter: '近江争霸', lord: '甲贺五十三家影忍', desc: '深山密林机关重重的忍术暗堡！' },
       { id: 46, name: '近江 · 伊贺隐之砦', chapter: '近江争霸', lord: '伊贺上忍头领', desc: '烟雾缭绕的飞镖暗器陷阱城关！' },
       { id: 47, name: '近江 · 坚田水军砦', chapter: '近江争霸', lord: '坚田水军大统领', desc: '琵琶湖水面浮桥相连的船坞堡垒！' },
-      { id: 48, name: '近江 · 安土山石垣天守', chapter: '近江争霸', lord: '南蛮修会与护卫军', desc: '信长天下布武象征，金碧辉煌的七层天守！' },
+      { id: 48, name: '近江 · 安土山石垣天守', chapter: '近江争霸', lord: '南蛮修会护卫队', desc: '信长天下布武要冲，七层巍峨石垣天守！' },
 
       // 天下布武 (49~60)
       { id: 49, name: '山城 · 胜龙寺城', chapter: '天下布武', lord: '山城郡代', desc: '细川藤孝筑造的双重石垣水濠城！' },
@@ -326,7 +326,7 @@ class SiegeBattleEngine {
     const hint = document.getElementById('siege-phonics-hint');
     if (hint) {
       const phaseNames = ['', '破除拒马', '轰碎城门', '天守斩将'];
-      hint.textContent = `${word.phonetic || ''} · 拼写言灵出招【${phaseNames[this.currentPhase]}】！`;
+      hint.textContent = `${word.phonetic || ''} · 发号施令【${phaseNames[this.currentPhase]}】`;
     }
 
     // 渲染字母卡槽

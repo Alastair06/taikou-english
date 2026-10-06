@@ -103,7 +103,7 @@ const TOKICHIRO_FURNITURE_CATALOG = [
     emoji: '🔭',
     cost: 130,
     slotType: 'garden',
-    desc: '可远眺尾张山海与夜空璀璨星辰的纯铜望远镜。'
+    desc: '可远眺尾张海防与夜空的纯铜望远镜。'
   },
   {
     id: 'furn-pond',
@@ -153,13 +153,13 @@ class TokichiroEstateSystem {
   getEstateInfo() {
     const merit = window.heroManager ? window.heroManager.hero.merit : 0;
     if (merit >= 3000) {
-      return { level: 4, name: '墨俣一夜城 · 雄伟小天守', icon: '🏰', bg: 'castle', desc: '傲视美浓的坚固山城天守，金碧辉煌，名扬天下。' };
+      return { level: 4, name: '墨俣一夜城 · 雄伟小天守', icon: '🏰', bg: 'castle', desc: '傲视美浓的山城天守，森严巍峨，名扬天下。' };
     } else if (merit >= 700) {
-      return { level: 3, name: '尾张清洲 · 武家气派大宅', icon: '🏯', bg: 'manor', desc: '庭院开阔的大名部将府邸，回廊通幽，气宇轩昂。' };
+      return { level: 3, name: '尾张清洲 · 武家气派大宅', icon: '🏯', bg: 'manor', desc: '庭院开阔的大名部将府邸，回廊通幽，气派沉稳。' };
     } else if (merit >= 100) {
-      return { level: 2, name: '清洲城下 · 雅致町屋', icon: '🏡', bg: 'townhouse', desc: '位于繁华城下町的独门町屋，前庭后院，温馨明亮。' };
+      return { level: 2, name: '清洲城下 · 雅致町屋', icon: '🏡', bg: 'townhouse', desc: '城下町正街的独门町屋，前庭后院，明净整洁。' };
     } else {
-      return { level: 1, name: '清洲松林 · 闲适草庵', icon: '🛖', bg: 'cottage', desc: '松林畔由木竹搭建的闲适草庐，虽简朴却充满生机。' };
+      return { level: 1, name: '清洲松林 · 简朴草庵', icon: '🛖', bg: 'cottage', desc: '松林畔由竹木搭建的质朴草庐，虽简朴却足避风雨。' };
     }
   }
 

@@ -50,7 +50,7 @@ class JapanOverworldManager {
       {
         id: 'sakai',
         name: '摄津 · 界港',
-        title: '南蛮贸易与茶道之都',
+        title: '堺港南蛮商都',
         x: 260,
         y: 450,
         radius: 40,

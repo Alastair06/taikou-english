@@ -8,7 +8,7 @@ const SENGOKU_UNITS = [
   {
     id: 'pep2024-3a-u1',
     chapter: '第一章',
-    name: 'Unit 1: 结识新朋友',
+    name: 'Unit 1: 结识新朋',
     historicalBattle: '那古野城入仕 · 桶狭间大雨奇袭',
     historicalDesc: '主角初入织田家，从替信长暖草鞋起步。面对今川义元四万大军，以南蛮密码刺探军情，助信长大雨奇袭桶狭间！',
     boss: { name: '今川义元 · 骏河之主', icon: '🏯', title: '东海道第一弓取', hp: 120 },
@@ -70,7 +70,7 @@ const SENGOKU_UNITS = [
   {
     id: 'pep2024-3a-u2',
     chapter: '第二章',
-    name: 'Unit 2: 快乐游戏与数字',
+    name: 'Unit 2: 游戏数字',
     historicalBattle: '墨俣之野 · 神速一夜城',
     historicalDesc: '面对斋藤家防线，木下藤吉郎领命在美浓腹地筑城。主角筹集物资、按数字调配巨木，一昼夜拔地建起坚固要塞，名动天下！',
     boss: { name: '斋藤龙兴 · 美浓巨鹫', icon: '🏯', title: '稻叶山城宿敌', hp: 150 },
@@ -128,7 +128,7 @@ const SENGOKU_UNITS = [
   {
     id: 'pep2024-3a-u3',
     chapter: '第三章',
-    name: 'Unit 3: 缤纷色彩与书包',
+    name: 'Unit 3: 文具色彩',
     historicalBattle: '美浓平定 · 岐阜天下布武',
     historicalDesc: '织田军攻克美浓稻叶山城，信长移镇岐阜，刻下“天下布武”大印。主角以斑斓色彩绘制战阵旗帜，受封部将！',
     boss: { name: '美浓三人众 · 铁壁阵', icon: '🛡️', title: '稻叶山城守将', hp: 180 },
@@ -181,7 +181,7 @@ const SENGOKU_UNITS = [
   {
     id: 'pep2024-3a-u4',
     chapter: '第四章',
-    name: 'Unit 4: 温馨家庭与职业',
+    name: 'Unit 4: 亲族生业',
     historicalBattle: '界港商船 · 南蛮秘卷与铁炮',
     historicalDesc: '信长支持南蛮商船停靠界港，主角随行出使，解密西洋医药、工匠技艺与先进大铳，晋封织田家家老！',
     boss: { name: '界港商魁 · 西洋炮舰', icon: '⛵', title: '南蛮船团首领', hp: 220 },

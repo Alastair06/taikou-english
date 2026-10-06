@@ -23,13 +23,13 @@ const SENGOKU_LEXICON_TRIVIA = {
   'desk': '信长处理全日本军政枢密的大案名为“漆金案”，上面铺满了万国洋图与兵法抄本！',
   'ruler': '建造墨俣一夜城时，藤吉郎用精准的量尺指挥工匠预制木料，一夜之间奇迹筑成！',
   'pencil': '葡萄牙使节弗洛伊斯赠予信长的石墨软铅笔，被信长誉为“无需蘸墨之神笔”！',
-  'eraser': '南蛮商人用天然橡胶特制的神奇擦拭物，能抹去铅迹，惊艳了整个尾张评定会！'
+  'eraser': '南蛮商人用天然橡胶特制的神奇擦拭物，能抹去铅迹，在尾张评定会上引得满座称奇！'
 };
 
 const SENGOKU_BATTLE_STANDARDS = [
   {
     unitId: 1,
-    unitName: 'Unit 1: 结识新朋友',
+    unitName: 'Unit 1: 结识新朋',
     standardName: '四海知己 · 结义令旗',
     icon: '🚩🤝',
     crest: '🤝',
@@ -38,7 +38,7 @@ const SENGOKU_BATTLE_STANDARDS = [
   },
   {
     unitId: 2,
-    unitName: 'Unit 2: 奇妙动物园',
+    unitName: 'Unit 2: 飞禽走兽',
     standardName: '生灵庇佑 · 瑞兽令旗',
     icon: '🚩🐾',
     crest: '🐾',
@@ -47,8 +47,8 @@ const SENGOKU_BATTLE_STANDARDS = [
   },
   {
     unitId: 3,
-    unitName: 'Unit 3: 斑斓七彩与数字',
-    standardName: '七彩斑斓 · 锦绣令旗',
+    unitName: 'Unit 3: 游戏数字',
+    standardName: '锦绣军阵 · 阵羽令旗',
     icon: '🚩🎨',
     crest: '🎨',
     color: '#d97706',
@@ -56,7 +56,7 @@ const SENGOKU_BATTLE_STANDARDS = [
   },
   {
     unitId: 4,
-    unitName: 'Unit 4: 文具与探索百宝',
+    unitName: 'Unit 4: 营造百宝',
     standardName: '文韬武略 · 智囊令旗',
     icon: '🚩📜',
     crest: '📜',
@@ -65,12 +65,12 @@ const SENGOKU_BATTLE_STANDARDS = [
   },
   {
     unitId: 5,
-    unitName: 'Unit 5: 美味膳食与水果',
+    unitName: 'Unit 5: 仓廪军粮',
     standardName: '兵粮丰足 · 仓廪令旗',
     icon: '🚩🌾',
     crest: '🌾',
     color: '#ea580c',
-    desc: '军粮满仓、万民富足，出勤打卡额外获赠听音兵粮丸！'
+    desc: '军粮满仓、民用丰足，出勤打卡额外获赠听音兵粮丸！'
   },
   {
     unitId: 6,

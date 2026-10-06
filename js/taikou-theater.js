@@ -2,15 +2,15 @@
  * 太阁英语立志传 · 战役主线剧情 (Taikou Campaign Story)
  * - 纯正自驱动力：英语不是考卷，而是藤吉郎在战国历史大事件中化解危机、崭露头角的“智谋破局”！
  * - 动态立绘、生动对话、纯正美音发音、零挫败鼓励式分支
- * - 战国大历史第一篇章：尾张微末篇 · 草鞋侍从的自驱萌芽（1554—1560，共6大回目）
+ * - 战国大历史第一卷：尾张出仕 · 草鞋侍从初露锋芒（1554 至 1560，共6大回目）
  */
 
 const TAIKOU_THEATER_CHAPTERS = [
   {
     id: 'ch1',
-    title: '第一篇章 · 尾张微末篇',
-    timeSpan: '1554 — 1560',
-    subtitle: '草鞋侍从的自驱萌芽：以过人见识与机智，在尾张初露峥嵘',
+    title: '第一卷 · 尾张出仕',
+    timeSpan: '1554 至 1560',
+    subtitle: '草鞋侍从展露锋芒，尾张立足',
     badge: '尾张风云 🌸'
   }
 ];
@@ -24,11 +24,11 @@ const TAIKOU_THEATER_STORIES = [
     chapterId: 'ch1',
     episodeNum: 1,
     title: '第一回 · 怀揣一文闯天下',
-    subtitle: '流浪少年初至清洲城下町，辨识南蛮货摊标牌与算账，赚取落脚第一步！',
+    subtitle: '初至清洲城下町，辨识南蛮货标盘算营生，赚取落脚盘缠！',
     bannerIcon: '🪙🧭',
     rewardMerit: 100,
     rewardGold: 80,
-    rewardTitle: '精明行商 · 破局初阵',
+    rewardTitle: '精明行商 · 初战告捷',
     coreWords: ['one', 'coin', 'needle', 'market'],
     steps: [
       {
@@ -117,7 +117,7 @@ const TAIKOU_THEATER_STORIES = [
         speaker: '织田家招募使',
         portrait: 'assets/portraits/nobunaga.jpg',
         role: '尾张武官',
-        text: '“城头告示：织田主公广开言路，招募机灵勤恳之殿前侍从！小兄弟，你算账精明、见识不凡，正是主公要找的人才！”',
+        text: '“城头告示：织田主公招募精明勤恳之殿前近侍！小兄弟，你算账利落、办事机敏，正合主公所求！”',
         action: 'finish'
       }
     ]
@@ -517,7 +517,7 @@ const TAIKOU_THEATER_STORIES = [
         speaker: '织田信长',
         portrait: 'assets/portraits/nobunaga.jpg',
         role: '尾张大名',
-        text: '“哈哈哈哈！好一场天地雷暴【storm】！上天助我织田家！全军冒雨秘密出阵，目标——今川义元本阵田乐洼！”',
+        text: '“哈哈哈哈！好一场天地雷暴【storm】！上天助我织田家！全军冒雨秘密出阵，目标直指今川义元本阵田乐洼！”',
         action: 'finish'
       }
     ]
@@ -535,14 +535,14 @@ const TAIKOU_THEATER_STORIES = [
     bannerIcon: '⚡🎌',
     rewardMerit: 220,
     rewardGold: 200,
-    rewardTitle: '破阵奇才 · 天下布武基石',
+    rewardTitle: '破阵功臣 · 奇袭名扬',
     coreWords: ['silent', 'listen', 'run', 'win'],
     steps: [
       {
         speaker: '织田信长',
         portrait: 'assets/portraits/nobunaga.jpg',
         role: '尾张大名',
-        text: '“暴雨如注，敌军毫无防备！藤吉郎，命你为全军先锋传令官，各队马蹄裹厚布、军士衔枚，悄然包围田乐洼！”',
+        text: '“暴雨如注，敌军毫无防备！藤吉郎，命你为全军先锋传令官，各队马蹄裹布、军士衔枚，火速包围田乐洼！”',
         action: 'continue'
       },
       {

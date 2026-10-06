@@ -10,19 +10,19 @@ class ProgressManager {
   constructor() {
     this.storageKey = 'taikou_english_progress_v2';
     this.featureUnlocks = {
-      parent:   { minStage: 0, title: '学校教学对齐', hint: '始终可用', icon: '📌' },
-      lexicon:  { minStage: 1, title: '万国物语绘卷', hint: '第 1 关揭封', icon: '📜' },
-      chapters: { minStage: 1, title: '攻城关卡',     hint: '第 1 关揭封', icon: '🏯' },
-      cards:    { minStage: 2, title: '太阁卡片绘卷', hint: '第 2 关揭封', icon: '🎴' },
-      town:     { minStage: 3, title: '清洲城下町',   hint: '第 3 关揭封', icon: '🏮' },
-      clues:    { minStage: 4, title: '寻宝线索囊',   hint: '第 4 关揭封', icon: '🗺️' },
-      estate:   { minStage: 5, title: '藤吉郎宅邸',   hint: '第 5 关揭封', icon: '🏡' },
-      speech:   { minStage: 6, title: '言灵发音演武', hint: '第 6 关揭封', icon: '🎙️' },
-      officer:  { minStage: 7, title: '武家名将宅邸', hint: '第 7 关揭封', icon: '📜' },
-      hyojo:    { minStage: 8, title: '信长大名评定', hint: '第 8 关揭封', icon: '🏯' },
-      trade:    { minStage: 9, title: '战国特产跑商', hint: '第 9 关揭封', icon: '🚢' },
-      theater:  { minStage: 1, title: '战役',         hint: '即刻出征', icon: '⚔️' },
-      overworld:{ minStage: 10, title: '战国日本大世界', hint: '第 10 关揭封', icon: '🗺️' }
+      parent:   { minStage: 0, title: '教学对齐', hint: '始终可用', icon: '📌' },
+      lexicon:  { minStage: 1, title: '词汇图鉴', hint: '第 1 关揭封', icon: '📜' },
+      chapters: { minStage: 1, title: '攻城关卡', hint: '第 1 关揭封', icon: '🏯' },
+      cards:    { minStage: 2, title: '卡片录',   hint: '第 2 关揭封', icon: '🎴' },
+      town:     { minStage: 3, title: '城下町',   hint: '第 3 关揭封', icon: '🏮' },
+      clues:    { minStage: 4, title: '寻宝',     hint: '第 4 关揭封', icon: '🗺️' },
+      estate:   { minStage: 5, title: '宅邸',     hint: '第 5 关揭封', icon: '🏡' },
+      speech:   { minStage: 6, title: '发音演武', hint: '第 6 关揭封', icon: '🎙️' },
+      officer:  { minStage: 7, title: '武将列传', hint: '第 7 关揭封', icon: '📜' },
+      hyojo:    { minStage: 8, title: '大名评定', hint: '第 8 关揭封', icon: '🏯' },
+      trade:    { minStage: 9, title: '特产商行', hint: '第 9 关揭封', icon: '🚢' },
+      theater:  { minStage: 1, title: '战役',     hint: '即刻出征', icon: '⚔️' },
+      overworld:{ minStage: 10, title: '天下舆图', hint: '第 10 关揭封', icon: '🗺️' }
     };
     this.state = this.loadState();
   }
