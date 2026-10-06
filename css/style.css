@@ -6652,3 +6652,697 @@ body, html {
     font-size: 11px !important;
   }
 }
+
+/* ============================================================================
+   太阁英语立志传 · 攻城战役合战大舞台 (Castle Siege Campaign Screen Styles)
+   移动端单屏零滚动自适应设计：包含合战顶栏、战场对决、言灵军令台与触屏出招键
+   ============================================================================ */
+
+.scene-siege-battle {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0b1120;
+  z-index: 100;
+  user-select: none;
+  font-family: var(--font-primary, system-ui, sans-serif);
+}
+
+.scene-siege-battle.hidden {
+  display: none !important;
+}
+
+/* 顶栏 HUD */
+.siege-hud {
+  height: clamp(42px, 6vh, 50px);
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(8px, 1.8vw, 16px);
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border-bottom: 2px solid #b45309;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.siege-hud-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.siege-castle-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.siege-castle-icon {
+  font-size: clamp(16px, 2vw, 20px);
+}
+
+.siege-castle-names {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.siege-castle-title {
+  font-weight: 900;
+  font-size: clamp(12.5px, 1.5vw, 15px);
+  color: #fef08a;
+  white-space: nowrap;
+}
+
+.siege-stage-sub {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.siege-hud-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.siege-phase-steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.siege-step-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.siege-step-node .step-num {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  text-align: center;
+  line-height: 14px;
+  font-size: 9.5px;
+  font-weight: 900;
+}
+
+.siege-step-node.active {
+  background: linear-gradient(135deg, #b91c1c, #ea580c);
+  color: #fff;
+  border-color: #fca5a5;
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.5);
+}
+
+.siege-step-node.completed {
+  background: #15803d;
+  color: #dcfce7;
+  border-color: #86efac;
+}
+
+.siege-step-arrow {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.siege-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.siege-combo-pill {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid #fde047;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+/* 攻城合战大舞台 (Arena) */
+.siege-arena {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(8px, 1.5vh, 18px) clamp(12px, 2.5vw, 36px);
+  background: linear-gradient(180deg, #0284c7 0%, #38bdf8 35%, #bae6fd 70%, #94a3b8 92%, #475569 100%);
+  border-bottom: 3px solid #b45309;
+  box-shadow: inset 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.siege-castle-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.siege-bg-tenshu {
+  position: absolute;
+  right: 6%;
+  bottom: 22px;
+  width: clamp(140px, 28vw, 260px);
+  height: clamp(140px, 28vh, 260px);
+  background: url('../assets/environment/tenshu_castle.png') no-repeat bottom center;
+  background-size: contain;
+  opacity: 0.38;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.siege-bg-wall {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 26px;
+  background: repeating-linear-gradient(90deg, #475569 0px, #475569 36px, #334155 36px, #334155 38px);
+  border-top: 3px solid #64748b;
+}
+
+.siege-side-hero,
+.siege-side-enemy {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-banner-flag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #dc2626;
+  border: 1.5px solid #fef08a;
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.hero-unit-box,
+.enemy-unit-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-avatar-wrap,
+.enemy-avatar-wrap {
+  position: relative;
+  width: clamp(70px, 13vw, 130px);
+  height: clamp(80px, 15vh, 150px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hero-battle-sprite,
+.enemy-battle-sprite {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+  transition: transform 0.12s ease;
+}
+
+.hero-attack-slash {
+  position: absolute;
+  top: 15%;
+  right: -25px;
+  width: 60px;
+  height: 60px;
+  border-top: 5px solid #fef08a;
+  border-right: 5px solid #f59e0b;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  opacity: 0.9;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px #f59e0b);
+  animation: slash-swing 0.2s ease;
+}
+
+.enemy-hit-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(239, 68, 68, 0.45);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.hero-meta-card,
+.enemy-meta-card {
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid #d97706;
+  border-radius: 10px;
+  padding: 3px 8px;
+  text-align: center;
+  color: #fff;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  min-width: clamp(75px, 12vw, 110px);
+}
+
+.hero-battle-name,
+.enemy-battle-name {
+  font-weight: 800;
+  font-size: clamp(11.5px, 1.3vw, 14px);
+  color: #fef08a;
+  white-space: nowrap;
+}
+
+.hero-battle-rank,
+.enemy-battle-title {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.enemy-hp-bar-wrap {
+  width: 100%;
+  height: 7px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.enemy-hp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  border-radius: 999px;
+  transition: width 0.22s ease;
+}
+
+/* 中间 VS 与阶段标牌 */
+.siege-vs-center {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.siege-vs-crest {
+  font-size: clamp(20px, 3.2vw, 32px);
+  font-weight: 900;
+  font-style: italic;
+  color: #dc2626;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 16px #fef08a;
+}
+
+.siege-phase-banner {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid #e11d48;
+  border-radius: 999px;
+  padding: 3px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.phase-badge-pill {
+  background: #e11d48;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 1.5px 6px;
+  border-radius: 999px;
+}
+
+.phase-title-text {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.siege-impact-vfx {
+  position: absolute;
+  top: -30px;
+  font-weight: 900;
+  font-size: clamp(14px, 2vw, 18px);
+  color: #fef08a;
+  text-shadow: 0 2px 6px #dc2626;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* 底部言灵军令指挥台 */
+.siege-command-deck {
+  background: #0f172a;
+  padding: clamp(6px, 1.2vh, 12px) clamp(10px, 2vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1vh, 10px);
+  border-top: 2px solid #b45309;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.siege-word-card {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1.5px solid #b45309;
+  border-radius: 12px;
+  padding: clamp(5px, 0.9vh, 8px) clamp(8px, 1.8vw, 14px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.word-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.word-sound-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.word-sound-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.word-sound-btn .sound-icon {
+  font-size: 16px;
+}
+
+.sound-word-cn {
+  font-size: clamp(14px, 1.8vw, 17px);
+  font-weight: 900;
+  color: #fde047;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.word-phonics-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.siege-letter-slots {
+  display: flex;
+  gap: clamp(6px, 1.2vw, 10px);
+  justify-content: center;
+  align-items: center;
+  margin-top: clamp(4px, 0.8vh, 8px);
+}
+
+.slot-char {
+  min-width: clamp(34px, 5.5vw, 44px);
+  height: clamp(38px, 5.5vh, 48px);
+  background: #334155;
+  border: 2.5px solid #64748b;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(19px, 2.6vw, 26px);
+  font-weight: 900;
+  color: #94a3b8;
+  font-family: var(--font-en, system-ui, sans-serif);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+}
+
+.slot-char.is-filled {
+  background: linear-gradient(180deg, #15803d 0%, #166534 100%);
+  border-color: #86efac;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.slot-char.is-active {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  color: #fde047;
+  animation: pulse-border 0.8s infinite alternate;
+}
+
+/* 触屏键盘 */
+.siege-keypad-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vh, 8px);
+  align-items: center;
+}
+
+.siege-keypad-candidates {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(4px, 0.9vw, 8px);
+  max-width: 540px;
+}
+
+.siege-key-btn {
+  min-width: clamp(36px, 5.5vw, 46px);
+  height: clamp(36px, 5vh, 44px);
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  border: 2px solid #475569;
+  border-radius: 9px;
+  color: #f8fafc;
+  font-size: clamp(15px, 2vw, 19px);
+  font-weight: 900;
+  font-family: var(--font-en, system-ui, sans-serif);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.08s, background 0.12s;
+  touch-action: manipulation;
+}
+
+.siege-key-btn:active {
+  transform: scale(0.92);
+  background: #0284c7;
+}
+
+.siege-key-btn.is-recommended {
+  border-color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+  background: linear-gradient(180deg, #475569 0%, #1e293b 100%);
+}
+
+.siege-keypad-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+  max-width: 380px;
+}
+
+.siege-act-btn {
+  flex: 1;
+  height: clamp(32px, 4.2vh, 38px);
+  border-radius: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  font-weight: 800;
+  font-size: clamp(11.5px, 1.3vw, 13px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
+  transition: transform 0.08s;
+}
+
+.siege-act-btn:active {
+  transform: scale(0.95);
+}
+
+.siege-act-btn.btn-hint {
+  background: linear-gradient(135deg, #d97706, #b45309);
+}
+
+.siege-act-btn.btn-speak {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+
+.siege-act-btn.btn-del {
+  background: linear-gradient(135deg, #475569, #334155);
+}
+
+/* 动效 */
+@keyframes pulse-border {
+  0% {
+    border-color: #f59e0b;
+    box-shadow: 0 0 4px rgba(245, 158, 11, 0.3);
+  }
+  100% {
+    border-color: #fde047;
+    box-shadow: 0 0 12px rgba(253, 224, 71, 0.7);
+  }
+}
+
+@keyframes shake-hit {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.anim-hit-shake {
+  animation: shake-hit 0.25s ease;
+}
+
+.anim-slash {
+  transform: rotate(-15deg) translateX(10px);
+}
+
+@keyframes slash-swing {
+  0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: rotate(60deg) scale(1.2); opacity: 0; }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-24px); opacity: 0; }
+}
+
+.anim-float-up {
+  animation: float-up 0.5s ease forwards;
+}
+
+/* 移动端横屏专项自适应 */
+@media (orientation: landscape) and (max-height: 520px) {
+  .siege-hud {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 8px !important;
+  }
+  .siege-arena {
+    min-height: 0 !important;
+    height: 44vh !important;
+    padding: 4px 16px !important;
+  }
+  .hero-avatar-wrap,
+  .enemy-avatar-wrap {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .siege-command-deck {
+    padding: 4px 10px !important;
+    gap: 4px !important;
+  }
+  .siege-word-card {
+    padding: 3px 8px !important;
+  }
+  .slot-char {
+    min-width: 30px !important;
+    height: 32px !important;
+    font-size: 17px !important;
+  }
+  .siege-key-btn {
+    min-width: 32px !important;
+    height: 30px !important;
+    font-size: 14px !important;
+  }
+/* 移动端竖屏顶部 HUD 自适应 */
+@media (max-width: 600px) {
+  .siege-hud {
+    padding: 0 6px !important;
+    gap: 4px !important;
+  }
+  .siege-hud-left {
+    flex: 0 0 auto !important;
+    max-width: 120px !important;
+  }
+  .siege-castle-title {
+    font-size: 11px !important;
+    max-width: 95px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .siege-stage-sub {
+    font-size: 9px !important;
+  }
+  .siege-hud-center {
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+  }
+  .siege-phase-steps {
+    gap: 2px !important;
+  }
+  .siege-step-node {
+    padding: 2px 4px !important;
+  }
+  .siege-step-node .step-text {
+    display: none !important;
+  }
+  .siege-hud-right {
+    flex: 0 0 auto !important;
+    gap: 3px !important;
+  }
+  #btn-siege-fullscreen {
+    display: none !important;
+  }
+  .siege-hud-right button#btn-siege-voice {
+    padding: 2px 5px !important;
+    font-size: 10.5px !important;
+  }
+  .siege-combo-pill {
+    padding: 2px 5px !important;
+    font-size: 9.5px !important;
+  }
+}
+

@@ -17,8 +17,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- 样式表 -->
-  <link rel="stylesheet" href="css/style.css?v=29">
-  <link rel="stylesheet" href="css/modal.css?v=29">
+  <link rel="stylesheet" href="css/style.css?v=31">
+  <link rel="stylesheet" href="css/modal.css?v=31">
 </head>
 <body>
   <!-- 游戏主视口：HTML5 Canvas 60FPS 大世界 (已由晴和漫游绘卷替代，保留底层兼容) -->
@@ -51,7 +51,7 @@
         <button class="btn btn-secondary btn-sm" id="btn-hud-estate" onclick="window.ui.openEstateModal()" style="font-weight:700;">🏡 宅邸</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-clues" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-lexicon" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
-        <button class="btn btn-secondary btn-sm" id="btn-hud-theater" onclick="window.ui.openTheaterModal()" style="font-weight:700;">🎭 剧场</button>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-theater" onclick="window.ui.openTheaterModal()" style="font-weight:700;">⚔️ 战役</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-fullscreen" onclick="window.ui.toggleFullscreen()" style="font-weight:700;" title="切换全屏沉浸">⛶ 全屏</button>
         <div class="hud-gold" title="军资金 · 战国金小判"><img src="assets/ui/coin_koban.png" class="koban-icon" alt="贯"> <span id="hud-gold-text">100 贯</span></div>
         <button class="btn btn-secondary btn-sm" id="btn-hud-home" onclick="window.ui.showHomeScreen()">🏠 返回大本营</button>
@@ -100,6 +100,134 @@
     <div class="encounter-keyboard hidden" id="encounter-keyboard"></div>
   </div>
 
+  <!-- 核心主线：攻城战役合战大舞台 (Castle Siege Campaign Screen) -->
+  <div id="scene-siege-battle" class="scene-siege-battle hidden">
+    <!-- 攻城合战顶栏 HUD -->
+    <header class="siege-hud">
+      <div class="siege-hud-left">
+        <div class="siege-castle-badge">
+          <span class="siege-castle-icon">🏯</span>
+          <div class="siege-castle-names">
+            <span class="siege-castle-title" id="siege-castle-title">尾张 · 那古野城</span>
+            <span class="siege-stage-sub" id="siege-stage-sub">第 1 关 · 主命攻拔</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="siege-hud-center">
+        <!-- 攻城三段推进步进条 -->
+        <div class="siege-phase-steps">
+          <div class="siege-step-node active" id="siege-step-1">
+            <span class="step-num">1</span>
+            <span class="step-text">破除鹿砦</span>
+          </div>
+          <div class="siege-step-arrow">➔</div>
+          <div class="siege-step-node" id="siege-step-2">
+            <span class="step-num">2</span>
+            <span class="step-text">轰破城门</span>
+          </div>
+          <div class="siege-step-arrow">➔</div>
+          <div class="siege-step-node" id="siege-step-3">
+            <span class="step-num">3</span>
+            <span class="step-text">本丸斩将</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="siege-hud-right">
+        <button class="btn btn-secondary btn-sm" id="btn-siege-voice" onclick="window.siegeBattle.speakCurrentWord()" title="纯正美音示范">🔊 发音</button>
+        <button class="btn btn-secondary btn-sm" id="btn-siege-fullscreen" onclick="window.ui.toggleFullscreen()" title="全屏沉浸">⛶</button>
+        <div class="siege-combo-pill" id="siege-combo-pill">⚔️ 连击 x<span id="siege-combo-val">0</span></div>
+        <button class="btn btn-secondary btn-sm" onclick="window.siegeBattle.retreat()" title="撤退回大本营">✕ 撤军</button>
+      </div>
+    </header>
+
+    <!-- 攻城合战对决大舞台 (Siege Arena) -->
+    <div class="siege-arena" id="siege-arena">
+      <!-- 远景城池石垣与天守壁画 -->
+      <div class="siege-castle-backdrop" id="siege-castle-backdrop">
+        <div class="siege-bg-sky"></div>
+        <div class="siege-bg-tenshu" id="siege-bg-tenshu"></div>
+        <div class="siege-bg-wall"></div>
+      </div>
+
+      <!-- 左侧：我方大将 · 木下藤吉郎 与 织田军本阵 -->
+      <div class="siege-side-hero" id="siege-side-hero">
+        <div class="hero-banner-flag">
+          <span class="flag-crest">🌸</span>
+          <span class="flag-text">织田</span>
+        </div>
+        <div class="hero-unit-box">
+          <div class="hero-avatar-wrap" id="siege-hero-avatar">
+            <img src="assets/characters/tokichiro.png" class="hero-battle-sprite" id="siege-hero-img" alt="木下藤吉郎">
+            <div class="hero-attack-slash hidden" id="siege-attack-slash"></div>
+          </div>
+          <div class="hero-meta-card">
+            <div class="hero-battle-name">木下藤吉郎</div>
+            <div class="hero-battle-rank" id="siege-hero-rank">🔰 足轻组头</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间：合战冲击与斩击特效区 -->
+      <div class="siege-vs-center">
+        <div class="siege-vs-crest">VS</div>
+        <div class="siege-phase-banner" id="siege-phase-banner">
+          <span class="phase-badge-pill" id="siege-phase-badge">阶段一</span>
+          <span class="phase-title-text" id="siege-phase-title">破除鹿砦拒马木栅</span>
+        </div>
+        <div class="siege-impact-vfx hidden" id="siege-impact-vfx"></div>
+      </div>
+
+      <!-- 右侧：守城防御阵地与敌将 -->
+      <div class="siege-side-enemy" id="siege-side-enemy">
+        <div class="enemy-unit-box">
+          <div class="enemy-meta-card">
+            <div class="enemy-battle-title" id="siege-enemy-title">拒马守备</div>
+            <div class="enemy-battle-name" id="siege-enemy-name">🥷 鹿砦守备斥候</div>
+            <!-- 城防/士气血条 -->
+            <div class="enemy-hp-bar-wrap">
+              <div class="enemy-hp-bar-fill" id="siege-enemy-hp-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+          <div class="enemy-avatar-wrap" id="siege-enemy-avatar">
+            <img src="assets/characters/goblin.png" class="enemy-battle-sprite" id="siege-enemy-img" alt="守城敌将">
+            <div class="enemy-hit-flash hidden" id="siege-enemy-flash"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 攻城言灵破阵军令台 (Phonics & Command Deck) -->
+    <div class="siege-command-deck" id="siege-command-deck">
+      <!-- 破阵提示卡 -->
+      <div class="siege-word-card">
+        <div class="word-card-top">
+          <button class="word-sound-btn" onclick="window.siegeBattle.speakCurrentWord()">
+            <span class="sound-icon">🔊</span>
+            <span class="sound-word-cn" id="siege-word-cn">相见 / 结识</span>
+          </button>
+          <div class="word-phonics-hint" id="siege-phonics-hint">点击字母或按键盘破城！</div>
+        </div>
+
+        <!-- 字母拼词卡槽 (Spelling Slots) -->
+        <div class="siege-letter-slots" id="siege-letter-slots">
+          <!-- 动态注入字母槽位 -->
+        </div>
+      </div>
+
+      <!-- 移动端便携字母出招按键阵列 (On-screen Keypad) -->
+      <div class="siege-keypad-wrap" id="siege-keypad-wrap">
+        <div class="siege-keypad-candidates" id="siege-keypad-candidates"></div>
+        <div class="siege-keypad-actions">
+          <button class="siege-act-btn btn-hint" onclick="window.siegeBattle.useHint()" title="锦囊点拨">💡 洞察</button>
+          <button class="siege-act-btn btn-speak" onclick="window.siegeBattle.speakCurrentWord()" title="重播真人发音">🔊 听音</button>
+          <button class="siege-act-btn btn-del" onclick="window.siegeBattle.backspace()" title="退格删除">⌫ 删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 晴和盛景漫游大绘卷：吉卜力全景画卷探索视口 (彻底替代旧版打怪走格页面) -->
   <div id="scene-scenic-world" class="scene-scenic-world hidden">
     <!-- 飘落落樱花瓣容器 -->
@@ -130,7 +258,7 @@
         <button class="btn btn-secondary btn-sm" onclick="window.ui.openEstateModal()" style="font-weight:700;">🏡 宅邸</button>
         <button class="btn btn-secondary btn-sm" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
         <button class="btn btn-secondary btn-sm" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
-        <button class="btn btn-secondary btn-sm" onclick="window.ui.openTheaterModal()" style="font-weight:700;">🎭 剧场</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.ui.openTheaterModal()" style="font-weight:700;">⚔️ 战役</button>
         <button class="btn btn-secondary btn-sm" id="btn-scenic-fullscreen" onclick="window.ui.toggleFullscreen()" style="font-weight:700;" title="切换全屏沉浸">⛶ 全屏</button>
         <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()" style="font-weight:700;" title="生成今日亲子立志勋绩卡">📜 勋绩</button>
         <button class="btn btn-secondary btn-sm" onclick="if(window.honorScroll) window.honorScroll.triggerEyeRestForTesting()" style="font-weight:700;" title="信长护眼御令(模拟触发)">🍵 护眼</button>
@@ -379,7 +507,7 @@
           <span class="mission-tag">进军中</span>
         </div>
         <div class="mission-desc" id="home-mission-desc">
-          踏破清洲城下町名胜，探寻言灵秘宝，向织田信长公受封升官！
+          率织田军攻拔敌城：破除外丸鹿砦，轰破大手城门，本丸斩将落城！
         </div>
         <div class="mission-stat-grid">
           <div class="mission-stat-cell">
@@ -400,8 +528,8 @@
       <!-- 核心行动主按钮 -->
       <div class="home-actions">
         <button class="btn-home-start" onclick="window.ui.startAdventure()">
-          <span class="start-icon">🗺️</span>
-          <span class="start-main-text" id="home-start-btn-title">出 发 · 第 1 关</span>
+          <span class="start-icon">⚔️</span>
+          <span class="start-main-text" id="home-start-btn-title">⚔️ 攻城出征 · 第 1 关</span>
         </button>
 
         <!-- 次级功能卡片网格 (战国雕花木牌札) -->
@@ -415,8 +543,8 @@
             <span class="home-nav-label">寻宝线索囊</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-theater" data-feature="theater" onclick="window.ui.handleNavFeatureClick('theater', () => window.ui.openTheaterModal())">
-            <span class="home-nav-icon">🎭</span>
-            <span class="home-nav-label">信长智将剧场</span>
+            <span class="home-nav-icon">⚔️</span>
+            <span class="home-nav-label">战役</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-lexicon" data-feature="lexicon" onclick="window.ui.handleNavFeatureClick('lexicon', () => window.ui.openLexiconModal())">
             <span class="home-nav-icon">📜</span>
@@ -447,8 +575,8 @@
             <span class="home-nav-label">战国特产跑商</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-chapters" data-feature="chapters" onclick="window.ui.handleNavFeatureClick('chapters', () => window.ui.openChaptersModal())">
-            <span class="home-nav-icon">⚔️</span>
-            <span class="home-nav-label">战役关卡选择</span>
+            <span class="home-nav-icon">🏯</span>
+            <span class="home-nav-label">攻城关卡</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-honor" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()">
             <span class="home-nav-icon">📜</span>
@@ -553,7 +681,7 @@
   <div class="modal-overlay hidden" id="modal-chapters">
     <div class="modal-container modal-stages-container" style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;vertical-align:middle;margin-right:6px;"> 战役合战关卡 · 自由出征与温故</h3>
+        <h3><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;vertical-align:middle;margin-right:6px;"> 攻城关卡 · 自由出征与温故</h3>
         <button class="modal-close" onclick="document.getElementById('modal-chapters').classList.add('hidden')">✕</button>
       </div>
       <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1;">
@@ -852,7 +980,7 @@
     </div>
   </div>
 
-  <!-- 弹窗：信长智将主线危机小剧场 -->
+  <!-- 弹窗：战役 -->
   <div class="modal-overlay hidden" id="modal-taikou-theater">
     <div class="modal-container" style="max-width: 780px;">
       <button class="modal-close" onclick="window.ui.closeTheaterModal()">✕</button>
@@ -926,6 +1054,7 @@
   <script src="js/overworld.js?v=26"></script>
   <script src="js/game-engine.js?v=26"></script>
   <script src="js/scenic-world.js?v=26"></script>
+  <script src="js/siege-battle.js?v=30"></script>
   <script src="js/honor-scroll.js?v=26"></script>
   <script src="js/ui.js?v=26"></script>
   <script src="js/app.js?v=26"></script>

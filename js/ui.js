@@ -144,13 +144,14 @@ class UIManager {
       window.audioEngine.unlockAudio();
       window.audioEngine.playTaikoDrum();
     }
-    if (window.gameEngine) {
-      window.gameEngine.loadTodayEncounters();
-      window.gameEngine.activeEncounter = null;
-      window.gameEngine.updateHUDStats();
-    }
-    if (window.scenicWorld) {
-      window.scenicWorld.show();
+    
+    const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
+    const curStage = Math.floor(curIdx / 3) + 1;
+
+    if (window.siegeBattle) {
+      window.siegeBattle.startSiege(curStage);
+    } else if (window.scenicWorld) {
+      window.scenicWorld.show(curStage);
     }
   }
 
@@ -204,7 +205,7 @@ class UIManager {
 
     const startBtnTitle = document.getElementById('home-start-btn-title') || document.querySelector('.start-main-text');
     if (startBtnTitle) {
-      startBtnTitle.textContent = `出 发 · 第 ${curStage} 关`;
+      startBtnTitle.textContent = `⚔️ 攻城出征 · 第 ${curStage} 关`;
     }
     const stageSub = document.getElementById('home-start-stage-sub');
     if (stageSub) {
@@ -614,7 +615,7 @@ class UIManager {
       if (isCurrent) {
         cardClass += ' is-school-target';
         badgeHtml = '<span class="stage-badge current">🏫 学校主线</span>';
-        btnHtml = `<button class="btn btn-sm btn-primary stage-action-btn" onclick="window.ui.launchStage(${s})">主命决战 ⚔️</button>`;
+        btnHtml = `<button class="btn btn-sm btn-primary stage-action-btn" onclick="window.ui.launchStage(${s})">攻城出征 ⚔️</button>`;
       } else if (isPassed) {
         badgeHtml = '<span class="stage-badge passed">⭐ 已平定</span>';
         btnHtml = `<button class="btn btn-sm btn-secondary stage-action-btn" onclick="window.ui.launchStage(${s})">温故出征 🔄</button>`;
@@ -691,10 +692,9 @@ class UIManager {
       window.audioEngine.playTaikoDrum();
     }
 
-    if (window.gameEngine) {
-      window.gameEngine.startCustomStage(stageNum, stageWords, isReplay, targetCity);
-    }
-    if (window.scenicWorld) {
+    if (window.siegeBattle) {
+      window.siegeBattle.startSiege(stageNum, stageWords, isReplay);
+    } else if (window.scenicWorld) {
       window.scenicWorld.show(stageNum);
     }
 
@@ -1024,7 +1024,7 @@ class UIManager {
     const totalStages = Math.ceil((allWords.length || 178) / 3);
     const curWord = (data && data.words && data.words[0]) || allWords[curIdx] || { unit: 'Unit 1: 结识新朋友' };
 
-    // 匹配战国物语第一回至第六回历史剧场 (1554–1560)
+    // 匹配第一回至第六回历史战役 (1554–1560)
     const storyMap = [
       { id: 'story-ch1-one-coin', title: '第一回 · 怀揣一文闯天下 (1554)' },
       { id: 'story-ch1-warm-sandals', title: '第二回 · 雪中怀暖草鞋志 (1555)' },
@@ -1073,8 +1073,8 @@ class UIManager {
               <button class="btn btn-primary btn-claim-main" id="btn-victory-claim" onclick="window.ui.claimVictoryReward()">
                 🎌 领赏入仕 · 晋升官位
               </button>
-              <button class="btn btn-secondary btn-theater-link" onclick="window.ui.openTheaterModal('${currentStory.id}')" title="进入织田信长主线历史物语">
-                📜 战国物语：${currentStory.title.split(' · ')[1] || '微末立志'}
+              <button class="btn btn-secondary btn-theater-link" onclick="window.ui.openTheaterModal('${currentStory.id}')" title="进入织田信长主线历史战役">
+                ⚔️ 战役：${currentStory.title.split(' · ')[1] || '微末立志'}
               </button>
             </div>
           </div>
@@ -1224,14 +1224,14 @@ class UIManager {
             </div>
           </div>
 
-          <!-- 右侧：尾张战国物语剧场剧情联动 -->
+          <!-- 右侧：尾张战役剧情联动 -->
           <div class="victory-col-words">
             <div class="v-story-teaser-card">
-              <div class="v-teaser-tag">📜 战国物语剧场 · 第 ${currentStory.num} 回目 (${currentStory.time})</div>
+              <div class="v-teaser-tag">⚔️ 战役 · 第 ${currentStory.num} 回目 (${currentStory.time})</div>
               <div class="v-teaser-title">${currentStory.title}</div>
               <div class="v-teaser-desc">${currentStory.desc}</div>
               <button class="btn btn-primary btn-teaser-btn" onclick="window.ui.openTheaterModal('${currentStory.id}')">
-                🎭 亲历这段战国历史
+                ⚔️ 亲历这场战役
               </button>
             </div>
             <div class="v-stage-stats-mini">
@@ -1288,18 +1288,14 @@ class UIManager {
     const vp = document.getElementById('game-viewport');
     if (vp) vp.classList.add('hidden');
 
-    if (window.gameEngine) {
-      window.gameEngine.loadTodayEncounters();
-      window.gameEngine.activeEncounter = null;
-      window.gameEngine.updateHUDStats();
-    }
-
     const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
     const stageNum = Math.floor(curIdx / 3) + 1;
-    if (window.scenicWorld) {
+    if (window.siegeBattle) {
+      window.siegeBattle.startSiege(stageNum);
+    } else if (window.scenicWorld) {
       window.scenicWorld.show(stageNum);
     }
-    this.showToast(`🌸 已进军第 ${stageNum} 关！探索清洲城下新名胜！`, '🚩');
+    this.showToast(`⚔️ 进军第 ${stageNum} 关攻城战役！`, '🚩');
   }
 
   /**
@@ -1312,17 +1308,14 @@ class UIManager {
     const vp = document.getElementById('game-viewport');
     if (vp) vp.classList.add('hidden');
 
-    if (window.gameEngine) {
-      window.gameEngine.loadTodayEncounters();
-      window.gameEngine.activeEncounter = null;
-      window.gameEngine.updateHUDStats();
-    }
     const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
     const stageNum = Math.floor(curIdx / 3) + 1;
-    if (window.scenicWorld) {
+    if (window.siegeBattle) {
+      window.siegeBattle.startSiege(stageNum);
+    } else if (window.scenicWorld) {
       window.scenicWorld.show(stageNum);
     }
-    this.showToast(`🏫 已回到学校主线第 ${stageNum} 关！`, '🚩');
+    this.showToast(`🏫 回到主线第 ${stageNum} 关攻城出征！`, '🚩');
   }
 
   /**
@@ -1337,25 +1330,21 @@ class UIManager {
 
     const data = this.lastVictoryData || {};
     if (data.isReplay && data.stageNum && data.words) {
-      if (window.gameEngine) {
-        window.gameEngine.startCustomStage(data.stageNum, data.words, true);
-      }
-      if (window.scenicWorld) {
+      if (window.siegeBattle) {
+        window.siegeBattle.startSiege(data.stageNum, data.words, true);
+      } else if (window.scenicWorld) {
         window.scenicWorld.show(data.stageNum);
       }
-      this.showToast(`🔄 重新演武第 ${data.stageNum} 关，温故知新！`, '🌸');
+      this.showToast(`🔄 重新出征第 ${data.stageNum} 关，温故知新！`, '⚔️');
     } else {
       const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
       const stageNum = Math.floor(curIdx / 3) + 1;
-      if (window.gameEngine) {
-        window.gameEngine.loadTodayEncounters();
-        window.gameEngine.activeEncounter = null;
-        window.gameEngine.updateHUDStats();
-      }
-      if (window.scenicWorld) {
+      if (window.siegeBattle) {
+        window.siegeBattle.startSiege(stageNum);
+      } else if (window.scenicWorld) {
         window.scenicWorld.show(stageNum);
       }
-      this.showToast('🔄 重新巡游本关，温故知新！', '🌸');
+      this.showToast(`🔄 重新出征第 ${stageNum} 关，温故知新！`, '⚔️');
     }
   }
 
@@ -2916,7 +2905,7 @@ class UIManager {
   }
 
   // =========================================================================
-  // 支柱三：信长智将主线危机小剧场 (Taikou Story Theater UI)
+  // 战役系统 (Campaign Battles UI)
   // =========================================================================
 
   openTheaterModal(storyId = null) {
@@ -2961,10 +2950,10 @@ class UIManager {
             <div class="episode-card-top">
               <span class="episode-tag-num">第 ${s.episodeNum || 1} 回目</span>
               <span class="episode-status-badge ${isDone ? 'badge-done' : 'badge-pending'}">
-                ${isDone ? '✅ 已通达参透' : '⏳ 待演武智破'}
+                ${isDone ? '✅ 已平定' : '⏳ 待出征'}
               </span>
             </div>
-            <div class="episode-title">${s.bannerIcon || '📜'} ${s.title}</div>
+            <div class="episode-title">${s.bannerIcon || '⚔️'} ${s.title}</div>
             <div class="episode-desc">${s.subtitle}</div>
             <div class="episode-words-wrap">
               ${wordsHtml}
@@ -2974,7 +2963,7 @@ class UIManager {
             <div class="episode-rewards">⭐ +${s.rewardMerit} 武勋 · 🪙 +${s.rewardGold} 贯</div>
             <button class="btn btn-sm ${isDone ? 'btn-secondary' : 'btn-primary'}"
               onclick="window.ui.openTheaterModal('${s.id}')" style="font-weight:800; font-size:12px; padding:5px 12px;">
-              ${isDone ? '🔄 再次重温' : '⚔️ 智谋入阵'}
+              ${isDone ? '🔄 再次重温' : '⚔️ 战役出征'}
             </button>
           </div>
         </div>
@@ -2986,14 +2975,14 @@ class UIManager {
         <div class="theater-chapter-header">
           <div class="theater-chapter-info">
             <div class="theater-chapter-title">
-              <span>🎭 ${chapter.title}</span>
+              <span>⚔️ ${chapter.title}</span>
               <span class="theater-chapter-timespan">${chapter.timeSpan}</span>
             </div>
             <div class="theater-chapter-sub">${chapter.subtitle}</div>
           </div>
           <div>
             <div class="theater-progress-badge">
-              参悟进度：${completedCount} / ${stories.length} 回
+              平定进度：${completedCount} / ${stories.length} 回
             </div>
           </div>
         </div>
@@ -3004,10 +2993,10 @@ class UIManager {
 
         <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid #e2e8f0; margin-top:8px;">
           <div style="font-size:12px; color:#64748b;">
-            💡 历史回响：以语言洞察局势，用智谋破解死局！无战斗不刷怪！
+            💡 战国历史战役：以语言洞察局势，以言灵破解死局！
           </div>
           <button class="btn btn-secondary" onclick="window.ui.closeTheaterModal()" style="font-weight:700; font-size:13px;">
-            ✕ 暂退演武堂
+            ✕ 退出战役
           </button>
         </div>
       </div>
@@ -3028,7 +3017,7 @@ class UIManager {
       content.innerHTML = `
         <div class="theater-card" style="text-align:center; padding:18px 12px;">
           <div style="font-size:38px; margin-bottom:6px;">🏆</div>
-          <div style="font-size:11.5px; font-weight:800; color:#b45309; margin-bottom:4px;">${story.bannerIcon || '📜'} 第 ${story.episodeNum || 1} 回目大功成</div>
+          <div style="font-size:11.5px; font-weight:800; color:#b45309; margin-bottom:4px;">${story.bannerIcon || '⚔️'} 第 ${story.episodeNum || 1} 回目大功成</div>
           <h3 style="font-size:20px; color:#b91c1c; font-weight:900; margin-bottom:10px;">${story.title} · 圆满大捷！</h3>
           
           <div style="display:flex; gap:12px; align-items:center; background:#fffbeb; border:1px solid #fef3c7; border-radius:14px; padding:12px; margin-bottom:14px; text-align:left;">
@@ -3048,14 +3037,14 @@ class UIManager {
           <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
             ${nextStory ? `
               <button class="btn btn-primary" onclick="window.ui.openTheaterModal('${nextStory.id}')" style="padding:9px 18px; font-weight:900; font-size:13.5px;">
-                ⚔️ 进军第 ${nextStory.episodeNum} 回：${nextStory.title.split('·')[1] || nextStory.title} ➡️
+                ⚔️ 进军下一战役：${nextStory.title.split('·')[1] || nextStory.title} ➡️
               </button>
             ` : ''}
             <button class="btn btn-secondary" onclick="window.ui.renderTheaterCatalog('${story.chapterId || 'ch1'}')" style="padding:9px 16px; font-weight:800; font-size:13px;">
-              📜 返回剧目总目
+              📜 返回战役总览
             </button>
             <button class="btn btn-secondary" onclick="window.ui.closeTheaterModal()" style="padding:9px 16px; font-weight:800; font-size:13px;">
-              领旨谢恩 · 返回大地图
+              领旨谢恩 · 返回大本营
             </button>
           </div>
         </div>
@@ -3149,7 +3138,7 @@ class UIManager {
         window.audioEngine.speak(optEn);
         window.audioEngine.playDrumHit();
       }
-      this.showToast('🎯 智将妙算！破译完全正确！信长公大喜！', 2000);
+      this.showToast('🎯 妙算大捷！破译完全正确！信长公大喜！', 2000);
       setTimeout(() => {
         this.advanceTheaterStep();
       }, 700);

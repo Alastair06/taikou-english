@@ -12,7 +12,7 @@ class ProgressManager {
     this.featureUnlocks = {
       parent:   { minStage: 0, title: '学校教学对齐', hint: '始终可用', icon: '📌' },
       lexicon:  { minStage: 1, title: '万国物语绘卷', hint: '第 1 关揭封', icon: '📜' },
-      chapters: { minStage: 1, title: '战役关卡选择', hint: '第 1 关揭封', icon: '⚔️' },
+      chapters: { minStage: 1, title: '攻城关卡',     hint: '第 1 关揭封', icon: '🏯' },
       cards:    { minStage: 2, title: '太阁卡片绘卷', hint: '第 2 关揭封', icon: '🎴' },
       town:     { minStage: 3, title: '清洲城下町',   hint: '第 3 关揭封', icon: '🏮' },
       clues:    { minStage: 4, title: '寻宝线索囊',   hint: '第 4 关揭封', icon: '🗺️' },
@@ -21,7 +21,7 @@ class ProgressManager {
       officer:  { minStage: 7, title: '武家名将宅邸', hint: '第 7 关揭封', icon: '📜' },
       hyojo:    { minStage: 8, title: '信长大名评定', hint: '第 8 关揭封', icon: '🏯' },
       trade:    { minStage: 9, title: '战国特产跑商', hint: '第 9 关揭封', icon: '🚢' },
-      theater:  { minStage: 1, title: '战国物语剧场', hint: '即刻启幕', icon: '📜' },
+      theater:  { minStage: 1, title: '战役',         hint: '即刻出征', icon: '⚔️' },
       overworld:{ minStage: 10, title: '战国日本大世界', hint: '第 10 关揭封', icon: '🗺️' }
     };
     this.state = this.loadState();
