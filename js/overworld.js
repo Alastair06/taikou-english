@@ -622,6 +622,8 @@ class JapanOverworldManager {
   }
 
   checkAndTriggerDailyTribute() {
+    if (window.siegeBattle && window.siegeBattle.isActive) return;
+
     const today = new Date().toISOString().slice(0, 10);
     const lastDate = localStorage.getItem('taikou_tribute_date');
     if (lastDate === today) return;

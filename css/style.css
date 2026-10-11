@@ -6387,6 +6387,11 @@ body, html {
   }
 }
 
+/* 攻城合战期间隐藏横屏浮动气泡，避免遮挡底部军令卡片 */
+body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
+  display: none !important;
+}
+
 /* ==========================================================================
    移动端与手机横屏终极自适应排版引擎 (Mobile & Landscape Master Suite)
    确保在任何手机（横屏或竖屏）下，字号与卡片均严整收纳，杜绝“字充满屏幕”

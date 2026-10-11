@@ -173,6 +173,8 @@ class SiegeBattleEngine {
     // 关闭可能遮挡战场的悬浮弹窗
     const tribute = document.getElementById('modal-feudal-tribute');
     if (tribute) tribute.remove();
+    const hint = document.getElementById('mobile-orientation-hint');
+    if (hint) hint.remove();
     const chaptersModal = document.getElementById('modal-chapters');
     if (chaptersModal) chaptersModal.classList.add('hidden');
     const theaterModal = document.getElementById('modal-taikou-theater');

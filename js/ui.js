@@ -54,6 +54,7 @@ class UIManager {
     if (!isMobile) return;
 
     const checkAndShow = () => {
+      if (window.siegeBattle && window.siegeBattle.isActive) return;
       const isPortrait = window.innerHeight > window.innerWidth;
       const existing = document.getElementById('mobile-orientation-hint');
       if (isPortrait && !existing && !sessionStorage.getItem('dismiss_orientation_hint')) {
