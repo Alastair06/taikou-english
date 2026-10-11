@@ -116,6 +116,126 @@ class PhonicsHelper {
       phonicsTip: `请跟着标准英音仔细听原声，辅音干脆、元音饱满：<strong>${cleanEn.toUpperCase()}</strong>！`
     };
   }
+
+  /**
+   * 获取自然拼读乐高积木块 (用于阶段二：大手轰城拼读装填)
+   */
+  static getPhonicsBlocks(wordObj) {
+    if (!wordObj || !wordObj.en) return { targetBlocks: ['m', 'eet'], distractors: ['oat'] };
+    const cleanEn = wordObj.en.toLowerCase().replace(/[^a-z]/g, '');
+
+    const customBlocks = {
+      'meet': ['m', 'eet'],
+      'friend': ['fr', 'iend'],
+      'nice': ['n', 'ice'],
+      'hello': ['hel', 'lo'],
+      'name': ['n', 'ame'],
+      'school': ['sch', 'ool'],
+      'good': ['g', 'ood'],
+      'morning': ['mor', 'ning'],
+      'apple': ['ap', 'ple'],
+      'banana': ['ba', 'na', 'na'],
+      'cat': ['c', 'at'],
+      'dog': ['d', 'og'],
+      'ruler': ['ru', 'ler'],
+      'pencil': ['pen', 'cil'],
+      'book': ['b', 'ook'],
+      'fish': ['f', 'ish'],
+      'egg': ['e', 'gg'],
+      'this': ['th', 'is'],
+      'day': ['d', 'ay'],
+      'have': ['h', 'ave'],
+      'boy': ['b', 'oy'],
+      'girl': ['g', 'irl'],
+      'classroom': ['class', 'room'],
+      'afternoon': ['after', 'noon'],
+      'goodbye': ['good', 'bye'],
+      'fine': ['f', 'ine'],
+      'thank': ['th', 'ank'],
+      'miss': ['m', 'iss'],
+      'gate': ['g', 'ate'],
+      'home': ['h', 'ome']
+    };
+
+    let targetBlocks = customBlocks[cleanEn];
+    if (!targetBlocks) {
+      if (cleanEn.length <= 3) {
+        targetBlocks = [cleanEn.slice(0, 1), cleanEn.slice(1)];
+      } else {
+        const vowels = 'aeiouy';
+        let vIdx = -1;
+        for (let i = 0; i < cleanEn.length; i++) {
+          if (vowels.includes(cleanEn[i])) {
+            vIdx = i;
+            break;
+          }
+        }
+        if (vIdx > 0 && vIdx < cleanEn.length - 1) {
+          targetBlocks = [cleanEn.slice(0, vIdx), cleanEn.slice(vIdx)];
+        } else {
+          const mid = Math.ceil(cleanEn.length / 2);
+          targetBlocks = [cleanEn.slice(0, mid), cleanEn.slice(mid)];
+        }
+      }
+    }
+
+    const distractorPool = ['sh', 'ch', 'th', 'ing', 'ed', 'un', 'op', 'at', 'it', 'en', 'ay', 'ee', 'ar', 'ow', 'oo'];
+    const filtered = distractorPool.filter(d => !targetBlocks.includes(d));
+    const distractor = filtered[Math.floor(Math.random() * filtered.length)] || 'ing';
+
+    return {
+      targetBlocks,
+      distractors: [distractor]
+    };
+  }
+
+  /**
+   * 获取人教版 2024 新课标真实语境整句 (用于阶段三：本丸斩将语境交际)
+   */
+  static getPedagogySentence(wordObj) {
+    if (!wordObj || !wordObj.en) {
+      return { prefix: 'This is ', blank: 'it', suffix: '.', full: 'This is it.', cn: '就是这个。' };
+    }
+    const en = wordObj.en.toLowerCase().replace(/[^a-z]/g, '');
+
+    const sentenceDict = {
+      'meet': { prefix: 'Nice to ', blank: 'meet', suffix: ' you!', full: 'Nice to meet you!', cn: '很高兴遇见你！' },
+      'friend': { prefix: 'This is my good ', blank: 'friend', suffix: '.', full: 'This is my good friend.', cn: '这是我的好朋友。' },
+      'nice': { prefix: 'Have a ', blank: 'nice', suffix: ' day!', full: 'Have a nice day!', cn: '祝你有美好的一天！' },
+      'hello': { prefix: '', blank: 'Hello', suffix: ', my teacher!', full: 'Hello, my teacher!', cn: '你好，我的老师！' },
+      'hi': { prefix: '', blank: 'Hi', suffix: '! How are you?', full: 'Hi! How are you?', cn: '嗨！你好吗？' },
+      'you': { prefix: 'Nice to meet ', blank: 'you', suffix: '!', full: 'Nice to meet you!', cn: '很高兴认识你！' },
+      'name': { prefix: "What is your ", blank: 'name', suffix: '?', full: "What is your name?", cn: '你叫什么名字？' },
+      'school': { prefix: 'Let us go to ', blank: 'school', suffix: '!', full: 'Let us go to school!', cn: '我们一起去上学吧！' },
+      'morning': { prefix: 'Good ', blank: 'morning', suffix: ', everyone!', full: 'Good morning, everyone!', cn: '大家早上好！' },
+      'apple': { prefix: 'I want a red ', blank: 'apple', suffix: '.', full: 'I want a red apple.', cn: '我想要一个红苹果。' },
+      'banana': { prefix: 'This is a sweet ', blank: 'banana', suffix: '.', full: 'This is a sweet banana.', cn: '这是一根甜香蕉。' },
+      'cat': { prefix: 'Look at the cute ', blank: 'cat', suffix: '.', full: 'Look at the cute cat.', cn: '看这只可爱的小猫。' },
+      'dog': { prefix: 'I have a loyal ', blank: 'dog', suffix: '.', full: 'I have a loyal dog.', cn: '我有一只忠诚的狗。' },
+      'boy': { prefix: 'He is a brave ', blank: 'boy', suffix: '.', full: 'He is a brave boy.', cn: '他是一个勇敢的男孩。' },
+      'girl': { prefix: 'She is a clever ', blank: 'girl', suffix: '.', full: 'She is a clever girl.', cn: '她是一个聪明的女孩。' },
+      'book': { prefix: 'Open your English ', blank: 'book', suffix: '.', full: 'Open your English book.', cn: '打开你的英语书。' },
+      'ruler': { prefix: 'Use the long ', blank: 'ruler', suffix: '.', full: 'Use the long ruler.', cn: '使用这把长尺子。' },
+      'pencil': { prefix: 'Write with a ', blank: 'pencil', suffix: '.', full: 'Write with a pencil.', cn: '用铅笔写字。' },
+      'fish': { prefix: 'The little ', blank: 'fish', suffix: ' can swim.', full: 'The little fish can swim.', cn: '小鱼会游泳。' },
+      'good': { prefix: 'You did a ', blank: 'good', suffix: ' job!', full: 'You did a good job!', cn: '你做得很好！' },
+      'afternoon': { prefix: 'Good ', blank: 'afternoon', suffix: ', sir!', full: 'Good afternoon, sir!', cn: '下午好，先生！' },
+      'goodbye': { prefix: '', blank: 'Goodbye', suffix: ', see you tomorrow!', full: 'Goodbye, see you tomorrow!', cn: '再见，明天见！' },
+      'classroom': { prefix: 'Our ', blank: 'classroom', suffix: ' is very clean.', full: 'Our classroom is very clean.', cn: '我们的教室很干净。' }
+    };
+
+    if (sentenceDict[en]) {
+      return sentenceDict[en];
+    }
+
+    return {
+      prefix: 'Look at this ',
+      blank: wordObj.en,
+      suffix: '!',
+      full: `Look at this ${wordObj.en}!`,
+      cn: `看这个${wordObj.cn || ''}！`
+    };
+  }
 }
 
 window.PhonicsHelper = PhonicsHelper;

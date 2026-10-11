@@ -32,6 +32,15 @@ class SiegeBattleEngine {
     this.enemyHp = 100;
     this.enemyMaxHp = 100;
 
+    // 自然习得三阶段动态数据 (Phase 1 听音识意 / Phase 2 拼读积木 / Phase 3 语境整句)
+    this.phase1Options = [];
+    this.phase2Blocks = [];
+    this.phase2Bank = [];
+    this.phase2Filled = [];
+    this.phase3Sentence = null;
+    this.phase3Options = [];
+    this.phase3IsFilled = false;
+
     // 战国六十名城地理图谱
     this.castleDatabase = this.initCastleDatabase();
 
@@ -209,7 +218,7 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 设置当前攻城阶段 (1: 鹿砦, 2: 城门, 3: 天守决战)
+   * 设置当前攻城阶段 (1: 听音识意, 2: 拼读积木, 3: 语境交际)
    */
   setupPhase(phaseNum) {
     this.currentPhase = phaseNum;
@@ -221,15 +230,103 @@ class SiegeBattleEngine {
     this.enemyMaxHp = 100;
     this.enemyHp = 100;
 
+    // 针对不同阶段生成自然第二语言习得教学数据
+    if (phaseNum === 1) {
+      this.setupPhase1Data();
+    } else if (phaseNum === 2) {
+      this.setupPhase2Data();
+    } else if (phaseNum === 3) {
+      this.setupPhase3Data();
+    }
+
     // 动态渲染页面内容
     this.renderHUD();
     this.renderArena();
     this.renderCommandDeck();
 
-    // 自动轻声朗读一遍真人发音，帮助孩子形成听觉印记
+    // 自动轻声朗读一遍真人发音，帮助孩子形成听觉直接映射
     setTimeout(() => {
-      this.speakCurrentWord();
+      if (this.currentPhase === 3) {
+        this.speakCurrentSentence();
+      } else {
+        this.speakCurrentWord();
+      }
     }, 450);
+  }
+
+  /**
+   * 阶段一数据准备：听音识意 (1 个正确目标卡 + 2 个混淆选项卡)
+   */
+  setupPhase1Data() {
+    const target = this.currentWordObj;
+    const allWords = (window.wordManager && window.wordManager.getAllTextbookWordsFlat)
+      ? window.wordManager.getAllTextbookWordsFlat()
+      : [];
+    
+    const others = allWords.filter(w => w.en.toLowerCase() !== target.en.toLowerCase());
+    const shuffledOthers = others.sort(() => 0.5 - Math.random());
+    const distractors = shuffledOthers.slice(0, 2);
+
+    while (distractors.length < 2) {
+      const fallbackPool = [
+        { en: 'cat', cn: '猫咪', emoji: '🐱', phonetic: '/kæt/' },
+        { en: 'dog', cn: '小狗', emoji: '🐶', phonetic: '/dɔːɡ/' },
+        { en: 'apple', cn: '苹果', emoji: '🍎', phonetic: '/ˈæpl/' }
+      ].filter(f => f.en !== target.en.toLowerCase());
+      distractors.push(fallbackPool[distractors.length]);
+    }
+
+    this.phase1Options = [
+      { en: target.en, cn: target.cn, emoji: target.emoji, phonetic: target.phonetic },
+      ...distractors
+    ].sort(() => 0.5 - Math.random());
+  }
+
+  /**
+   * 阶段二数据准备：自然拼读乐高积木块 (目标音块 + 混淆音块)
+   */
+  setupPhase2Data() {
+    const blocksData = window.PhonicsHelper 
+      ? window.PhonicsHelper.getPhonicsBlocks(this.currentWordObj)
+      : { targetBlocks: [this.cleanTarget], distractors: ['ing'] };
+
+    this.phase2Blocks = blocksData.targetBlocks || [this.cleanTarget];
+    const distractors = blocksData.distractors || ['ing'];
+    this.phase2Bank = [...this.phase2Blocks, ...distractors].sort(() => 0.5 - Math.random());
+    this.phase2Filled = [];
+  }
+
+  /**
+   * 阶段三数据准备：人教版 2024 新课标真实课本情境整句
+   */
+  setupPhase3Data() {
+    const sentenceData = window.PhonicsHelper 
+      ? window.PhonicsHelper.getPedagogySentence(this.currentWordObj)
+      : { prefix: 'This is ', blank: this.currentWordObj.en, suffix: '.', full: `This is ${this.currentWordObj.en}.`, cn: `这就是${this.currentWordObj.cn || ''}。` };
+
+    this.phase3Sentence = sentenceData;
+    this.phase3IsFilled = false;
+
+    const allWords = (window.wordManager && window.wordManager.getAllTextbookWordsFlat)
+      ? window.wordManager.getAllTextbookWordsFlat()
+      : [];
+    const others = allWords.filter(w => w.en.toLowerCase() !== this.currentWordObj.en.toLowerCase());
+    const shuffledOthers = others.sort(() => 0.5 - Math.random());
+    const distractors = shuffledOthers.slice(0, 2);
+
+    while (distractors.length < 2) {
+      const fallbackPool = [
+        { en: 'cat', cn: '猫咪', emoji: '🐱' },
+        { en: 'book', cn: '书本', emoji: '📖' },
+        { en: 'friend', cn: '朋友', emoji: '🧑‍🤝‍🧑' }
+      ].filter(f => f.en !== this.currentWordObj.en.toLowerCase());
+      distractors.push(fallbackPool[distractors.length]);
+    }
+
+    this.phase3Options = [
+      { en: this.currentWordObj.en, cn: this.currentWordObj.cn, emoji: this.currentWordObj.emoji },
+      ...distractors
+    ].sort(() => 0.5 - Math.random());
   }
 
   /**
@@ -285,7 +382,7 @@ class SiegeBattleEngine {
 
     if (this.currentPhase === 1) {
       if (phaseBadge) phaseBadge.textContent = '阶段一 · 外丸攻坚';
-      if (phaseTitle) phaseTitle.textContent = '破除鹿砦拒马木栅';
+      if (phaseTitle) phaseTitle.textContent = '听音识意破除鹿砦斥候';
       if (enemyTitle) enemyTitle.textContent = '外丸游击防线';
       if (enemyName) enemyName.textContent = '🥷 鹿砦守备斥候';
       if (enemyImg) {
@@ -294,7 +391,7 @@ class SiegeBattleEngine {
       }
     } else if (this.currentPhase === 2) {
       if (phaseBadge) phaseBadge.textContent = '阶段二 · 强攻大手门';
-      if (phaseTitle) phaseTitle.textContent = '冲车大筒轰破铁闸城门';
+      if (phaseTitle) phaseTitle.textContent = '拼读积木大筒轰破城门';
       if (enemyTitle) enemyTitle.textContent = '城堡核心关防';
       if (enemyName) enemyName.textContent = '🏯 大手厚木城门';
       if (enemyImg) {
@@ -303,7 +400,7 @@ class SiegeBattleEngine {
       }
     } else if (this.currentPhase === 3) {
       if (phaseBadge) phaseBadge.textContent = '阶段三 · 本丸决战';
-      if (phaseTitle) phaseTitle.textContent = '天守阁下一骑讨斩将！';
+      if (phaseTitle) phaseTitle.textContent = '课本语境天守一骑讨斩将！';
       if (enemyTitle) enemyTitle.textContent = '守城总大将';
       if (enemyName) enemyName.textContent = `👹 ${castle.lord || '城督主将'}`;
       if (enemyImg) {
@@ -314,84 +411,293 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 渲染底部军令指挥台与字母槽位、触屏出招按键
+   * 渲染底部军令指挥台 (根据阶段呈现不同的第二语言自然习得交互界面)
    */
   renderCommandDeck() {
-    const word = this.currentWordObj;
-    const wordCn = document.getElementById('siege-word-cn');
-    if (wordCn) {
-      wordCn.textContent = `${word.emoji || '📖'} ${word.cn || ''}`;
+    const deckEl = document.getElementById('siege-command-deck');
+    if (!deckEl) return;
+
+    if (this.currentPhase === 1) {
+      this.renderPhase1Deck(deckEl);
+    } else if (this.currentPhase === 2) {
+      this.renderPhase2Deck(deckEl);
+    } else if (this.currentPhase === 3) {
+      this.renderPhase3Deck(deckEl);
     }
-
-    const hint = document.getElementById('siege-phonics-hint');
-    if (hint) {
-      const phaseNames = ['', '破除拒马', '轰碎城门', '天守斩将'];
-      hint.textContent = `${word.phonetic || ''} · 发号施令【${phaseNames[this.currentPhase]}】`;
-    }
-
-    // 渲染字母卡槽
-    this.updateSpellingSlots();
-
-    // 渲染移动端触控键盘
-    this.renderKeypad();
   }
 
   /**
-   * 动态刷新字母卡槽状态
+   * 阶段一指挥台：听音识意 (纯听力原声直映，选择匹配图意，零打字门槛)
    */
-  updateSpellingSlots() {
-    const slotsWrap = document.getElementById('siege-letter-slots');
-    if (!slotsWrap) return;
+  renderPhase1Deck(deckEl) {
+    const word = this.currentWordObj;
+    deckEl.innerHTML = `
+      <div class="deck-phase-wrapper deck-phase-1">
+        <div class="deck-instruction-bar">
+          <span class="inst-badge">阶段一 · 听音识意</span>
+          <span class="inst-text">仔细听原声，选择对应图意破除鹿砦！</span>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()">🔊 重播原声</button>
+        </div>
 
+        <div class="siege-concept-grid">
+          ${this.phase1Options.map(opt => `
+            <div class="siege-concept-card" onclick="window.siegeBattle.selectConcept('${opt.en.replace(/'/g, "\\'")}')">
+              <span class="concept-crest">${opt.emoji || '📖'}</span>
+              <span class="concept-label">${opt.cn || opt.en}</span>
+              <span class="concept-tag">${opt.phonetic || '原声标音'}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- 保持 DOM 兼容节点 (供测试与自动化查询) -->
+        <span id="siege-word-cn" style="display:none;">${word.emoji || ''} ${word.cn || ''}</span>
+        <span id="siege-phonics-hint" style="display:none;">${word.phonetic || ''}</span>
+        <div class="siege-letter-slots" id="siege-letter-slots" style="display:none;">
+          ${this.renderCompatSlots()}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 阶段二指挥台：自然拼读积木 (声母韵母音素拆解，装填神威大筒轰击城门)
+   */
+  renderPhase2Deck(deckEl) {
+    const word = this.currentWordObj;
+    deckEl.innerHTML = `
+      <div class="deck-phase-wrapper deck-phase-2">
+        <div class="deck-instruction-bar">
+          <span class="inst-badge">阶段二 · 拼读积木</span>
+          <span class="inst-text">拼装自然拼读积木，装填神威大筒轰碎城门！</span>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()">🔊 听读音</button>
+        </div>
+
+        <div class="siege-cannon-assembly">
+          <span class="cannon-slots-label">💣 大筒装填:</span>
+          <div class="siege-cannon-slots">
+            ${this.phase2Blocks.map((blk, idx) => {
+              const isFilled = this.phase2Filled.length > idx;
+              const isActive = this.phase2Filled.length === idx;
+              return `
+                <div class="cannon-slot ${isFilled ? 'is-filled' : ''} ${isActive ? 'is-active' : ''}">
+                  ${isFilled ? this.phase2Blocks[idx].toUpperCase() : (isActive ? '▶' : '·')}
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <button class="btn btn-sm btn-secondary btn-reset-blocks" onclick="window.siegeBattle.resetPhase2Blocks()" title="重新装填">↺ 重拆</button>
+        </div>
+
+        <div class="siege-blocks-bank">
+          ${this.phase2Bank.map(chunk => `
+            <button class="siege-block-btn" onclick="window.siegeBattle.selectPhonicsChunk('${chunk.replace(/'/g, "\\'")}')">
+              <span class="block-chunk">${chunk.toUpperCase()}</span>
+              <span class="block-type">自然拼读</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- 保持 DOM 兼容节点 -->
+        <span id="siege-word-cn" style="display:none;">${word.emoji || ''} ${word.cn || ''}</span>
+        <span id="siege-phonics-hint" style="display:none;">${word.phonetic || ''}</span>
+        <div class="siege-letter-slots" id="siege-letter-slots" style="display:none;">
+          ${this.renderCompatSlots()}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 阶段三指挥台：语境交际 (人教版 2024 新课标真实课本对话完形填空，天守斩将)
+   */
+  renderPhase3Deck(deckEl) {
+    const word = this.currentWordObj;
+    const sent = this.phase3Sentence || { prefix: '', blank: word.en, suffix: '', full: word.en, cn: word.cn };
+    deckEl.innerHTML = `
+      <div class="deck-phase-wrapper deck-phase-3">
+        <div class="deck-instruction-bar">
+          <span class="inst-badge">阶段三 · 语境交际</span>
+          <span class="inst-text">选出恰当词汇补全课本对话，斩将落城！</span>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentSentence()">🔊 读整句</button>
+        </div>
+
+        <div class="siege-dialogue-card">
+          <div class="dialogue-lead">💬 真实课本情境对话：</div>
+          <div class="dialogue-line">
+            ${sent.prefix}
+            <span class="dialogue-blank ${this.phase3IsFilled ? 'is-filled' : ''}">
+              ${this.phase3IsFilled ? sent.blank : '______'}
+            </span>
+            ${sent.suffix}
+          </div>
+          <div class="dialogue-cn">${sent.cn}</div>
+        </div>
+
+        <div class="siege-sentence-options">
+          ${this.phase3Options.map(opt => `
+            <button class="siege-opt-btn" onclick="window.siegeBattle.selectSentenceWord('${opt.en.replace(/'/g, "\\'")}')">
+              <span class="opt-word">${opt.en}</span>
+              <span class="opt-cn">${opt.emoji || ''} ${opt.cn || ''}</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- 保持 DOM 兼容节点 -->
+        <span id="siege-word-cn" style="display:none;">${word.emoji || ''} ${word.cn || ''}</span>
+        <span id="siege-phonics-hint" style="display:none;">${word.phonetic || ''}</span>
+        <div class="siege-letter-slots" id="siege-letter-slots" style="display:none;">
+          ${this.renderCompatSlots()}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 渲染兼容字母卡槽 (用于 DOM 测试断言与物理键盘状态指示)
+   */
+  renderCompatSlots() {
     const clean = this.cleanTarget;
     let html = '';
     for (let i = 0; i < clean.length; i++) {
-      const char = clean[i];
       const typed = this.currentSpelling[i];
       if (typed) {
-        html += `<span class="slot-char is-filled anim-pop">${typed.toUpperCase()}</span>`;
+        html += `<span class="slot-char is-filled">${typed.toUpperCase()}</span>`;
       } else if (i === this.currentSpelling.length) {
         html += `<span class="slot-char is-active">_</span>`;
       } else {
         html += `<span class="slot-char">_</span>`;
       }
     }
-    slotsWrap.innerHTML = html;
+    return html;
   }
 
   /**
-   * 渲染触控按键候选行（大按键，触屏单指轻松敲击，彻底杜绝翻页和误触）
+   * 阶段一交互：玩家选择听音图意
    */
-  renderKeypad() {
-    const container = document.getElementById('siege-keypad-candidates');
-    if (!container) return;
+  selectConcept(selectedEn) {
+    if (!this.isActive || this.isAttacking) return;
+    const clean = (selectedEn || '').toLowerCase().replace(/[^a-z]/g, '');
+    if (clean === this.cleanTarget) {
+      this.currentSpelling = this.cleanTarget;
+      this.enemyHp = 0;
+      const hpFill = document.getElementById('siege-enemy-hp-fill');
+      if (hpFill) hpFill.style.width = '0%';
 
-    const nextChar = this.cleanTarget[this.currentSpelling.length] || '';
-    
-    // 构造高频常用候选键集合（包含目标词所有字母 + 适量混淆字母，保证整洁直观）
-    const targetSet = new Set(this.cleanTarget.split(''));
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-    const extraDistractors = alphabet.filter(c => !targetSet.has(c)).sort(() => 0.5 - Math.random()).slice(0, 4);
-    
-    const candidateChars = Array.from(new Set([...targetSet, ...extraDistractors])).sort();
-
-    let html = '';
-    candidateChars.forEach(char => {
-      const isNext = (char === nextChar);
-      html += `
-        <button class="siege-key-btn ${isNext ? 'is-recommended' : ''}" 
-          data-char="${char}" 
-          onclick="window.siegeBattle.inputLetter('${char}')">
-          ${char.toUpperCase()}
-        </button>
-      `;
-    });
-
-    container.innerHTML = html;
+      if (window.audioEngine) {
+        window.audioEngine.playKatanaSlash();
+        window.audioEngine.playTaikoDrum();
+      }
+      this.triggerHitFX('破砦');
+      this.handlePhaseSuccess();
+    } else {
+      if (window.audioEngine) {
+        window.audioEngine.playMistake();
+      }
+      if (window.ui) {
+        window.ui.showToast('💡 听音识意：仔细听，再选一次！', 1200);
+      }
+      this.speakCurrentWord();
+    }
   }
 
   /**
-   * 绑定物理键盘监听 (桌面端、iPad 外接键盘畅快盲打)
+   * 阶段二交互：玩家点击自然拼读积木装填大筒
+   */
+  selectPhonicsChunk(chunk) {
+    if (!this.isActive || this.isAttacking) return;
+    const expected = this.phase2Blocks[this.phase2Filled.length];
+    if (expected && chunk.toLowerCase() === expected.toLowerCase()) {
+      this.phase2Filled.push(expected);
+
+      if (window.audioEngine) {
+        window.audioEngine.playMusketBlast();
+        window.audioEngine.playKeyRune();
+      }
+
+      this.triggerHitFX(chunk.toUpperCase());
+
+      const ratio = this.phase2Filled.length / this.phase2Blocks.length;
+      this.enemyHp = Math.max(0, Math.round(100 * (1 - ratio)));
+      const hpFill = document.getElementById('siege-enemy-hp-fill');
+      if (hpFill) hpFill.style.width = `${this.enemyHp}%`;
+
+      this.renderCommandDeck();
+
+      if (this.phase2Filled.length === this.phase2Blocks.length) {
+        this.currentSpelling = this.cleanTarget;
+        this.enemyHp = 0;
+        if (hpFill) hpFill.style.width = '0%';
+        this.handlePhaseSuccess();
+      }
+    } else {
+      if (window.audioEngine) {
+        window.audioEngine.playMistake();
+      }
+      if (window.ui) {
+        window.ui.showToast('💡 拼读不匹配：请听原音再挑选积木！', 1200);
+      }
+      this.speakCurrentWord();
+    }
+  }
+
+  /**
+   * 阶段二重装积木
+   */
+  resetPhase2Blocks() {
+    if (!this.isActive || this.isAttacking) return;
+    this.phase2Filled = [];
+    this.enemyHp = 100;
+    const hpFill = document.getElementById('siege-enemy-hp-fill');
+    if (hpFill) hpFill.style.width = '100%';
+    if (window.audioEngine) {
+      window.audioEngine.playTone(329.63, 'sine', 0.05, 0.08);
+    }
+    this.renderCommandDeck();
+  }
+
+  /**
+   * 阶段三交互：玩家选择语境填空词汇
+   */
+  selectSentenceWord(selectedEn) {
+    if (!this.isActive || this.isAttacking) return;
+    const clean = (selectedEn || '').toLowerCase().replace(/[^a-z]/g, '');
+    if (clean === this.cleanTarget) {
+      this.phase3IsFilled = true;
+      this.currentSpelling = this.cleanTarget;
+      this.enemyHp = 0;
+      const hpFill = document.getElementById('siege-enemy-hp-fill');
+      if (hpFill) hpFill.style.width = '0%';
+
+      this.renderCommandDeck();
+
+      if (window.audioEngine) {
+        window.audioEngine.playKatanaSlash();
+      }
+      this.triggerHitFX('斩将');
+
+      this.speakCurrentSentence();
+      this.handlePhaseSuccess();
+    } else {
+      if (window.audioEngine) {
+        window.audioEngine.playMistake();
+      }
+      if (window.ui) {
+        window.ui.showToast('💡 语境不匹配：请根据对话意思选择！', 1200);
+      }
+    }
+  }
+
+  /**
+   * 朗读当前阶段整句课本对话
+   */
+  speakCurrentSentence() {
+    if (this.phase3Sentence && this.phase3Sentence.full && window.audioEngine) {
+      window.audioEngine.speak(this.phase3Sentence.full);
+    }
+  }
+
+  /**
+   * 绑定物理键盘监听 (桌面端、iPad 外接键盘盲打全兼容)
    */
   bindKeyboard() {
     if (this._hasBoundKeys) return;
@@ -405,7 +711,11 @@ class SiegeBattleEngine {
       } else if (key === 'backspace') {
         this.backspace();
       } else if (key === ' ' || key === 'enter') {
-        this.speakCurrentWord();
+        if (this.currentPhase === 3) {
+          this.speakCurrentSentence();
+        } else {
+          this.speakCurrentWord();
+        }
       } else if (key === 'tab') {
         e.preventDefault();
         this.useHint();
@@ -414,7 +724,7 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 玩家敲击字母出招
+   * 玩家敲击字母出招 (全阶段兼容打字与测试脚本)
    */
   inputLetter(char) {
     if (!this.isActive || this.isAttacking) return;
@@ -422,10 +732,8 @@ class SiegeBattleEngine {
     const nextExpected = this.cleanTarget[this.currentSpelling.length];
 
     if (pressed === nextExpected) {
-      // 敲击正确！
       this.currentSpelling += pressed;
 
-      // 音效：太刀斩击 / 铁炮射击
       if (window.audioEngine) {
         window.audioEngine.playKeyRune();
         if (this.currentPhase === 2) {
@@ -435,7 +743,6 @@ class SiegeBattleEngine {
         }
       }
 
-      // 扣减敌方城防血条
       const progressRatio = this.currentSpelling.length / this.cleanTarget.length;
       this.enemyHp = Math.max(0, Math.round(100 * (1 - progressRatio)));
       const hpFill = document.getElementById('siege-enemy-hp-fill');
@@ -443,19 +750,31 @@ class SiegeBattleEngine {
         hpFill.style.width = `${this.enemyHp}%`;
       }
 
-      // 触发打击特效与浮动数字
       this.triggerHitFX(pressed.toUpperCase());
 
-      // 刷新槽位与键盘按键推荐
-      this.updateSpellingSlots();
-      this.renderKeypad();
+      // 阶段二同步积木填充
+      if (this.currentPhase === 2) {
+        let acc = '';
+        this.phase2Filled = [];
+        for (const blk of this.phase2Blocks) {
+          acc += blk.toLowerCase();
+          if (this.currentSpelling.startsWith(acc)) {
+            this.phase2Filled.push(blk);
+          }
+        }
+        this.renderCommandDeck();
+      } else if (this.currentPhase === 3) {
+        if (this.currentSpelling.length === this.cleanTarget.length) {
+          this.phase3IsFilled = true;
+          this.renderCommandDeck();
+        }
+      }
 
-      // 整词完全拼完！
+      // 整词完全拼完
       if (this.currentSpelling.length === this.cleanTarget.length) {
         this.handlePhaseSuccess();
       }
     } else {
-      // 输错一个字母：温和点拨
       if (window.audioEngine) {
         window.audioEngine.playMistake();
       }
@@ -467,39 +786,45 @@ class SiegeBattleEngine {
    * 退格删除
    */
   backspace() {
-    if (!this.isActive || this.isAttacking || this.currentSpelling.length === 0) return;
-    this.currentSpelling = this.currentSpelling.slice(0, -1);
-    
-    // 恢复对应血条
-    const progressRatio = this.currentSpelling.length / this.cleanTarget.length;
-    this.enemyHp = Math.round(100 * (1 - progressRatio));
-    const hpFill = document.getElementById('siege-enemy-hp-fill');
-    if (hpFill) {
-      hpFill.style.width = `${this.enemyHp}%`;
+    if (!this.isActive || this.isAttacking) return;
+    if (this.currentPhase === 2) {
+      if (this.phase2Filled.length > 0) {
+        this.phase2Filled.pop();
+        const ratio = this.phase2Filled.length / this.phase2Blocks.length;
+        this.enemyHp = Math.max(0, Math.round(100 * (1 - ratio)));
+        const hpFill = document.getElementById('siege-enemy-hp-fill');
+        if (hpFill) hpFill.style.width = `${this.enemyHp}%`;
+        this.renderCommandDeck();
+      }
+    } else if (this.currentSpelling.length > 0) {
+      this.currentSpelling = this.currentSpelling.slice(0, -1);
+      const progressRatio = this.currentSpelling.length / this.cleanTarget.length;
+      this.enemyHp = Math.round(100 * (1 - progressRatio));
+      const hpFill = document.getElementById('siege-enemy-hp-fill');
+      if (hpFill) hpFill.style.width = `${this.enemyHp}%`;
     }
-
-    if (window.audioEngine) {
-      window.audioEngine.playTone(329.63, 'sine', 0.05, 0.08);
-    }
-    this.updateSpellingSlots();
-    this.renderKeypad();
   }
 
   /**
-   * 锦囊点拨 (提示并填入下一个正确字母)
+   * 锦囊点拨 (智能第二语言助攻)
    */
   useHint() {
     if (!this.isActive || this.isAttacking) return;
-    if (this.currentSpelling.length < this.cleanTarget.length) {
-      this.hadHintThisPhase = true;
-      const nextChar = this.cleanTarget[this.currentSpelling.length];
-      this.inputLetter(nextChar);
-      this.speakCurrentWord();
+    this.hadHintThisPhase = true;
+    if (this.currentPhase === 1) {
+      this.selectConcept(this.currentWordObj.en);
+    } else if (this.currentPhase === 2) {
+      const nextBlock = this.phase2Blocks[this.phase2Filled.length];
+      if (nextBlock) {
+        this.selectPhonicsChunk(nextBlock);
+      }
+    } else if (this.currentPhase === 3) {
+      this.selectSentenceWord(this.currentWordObj.en);
     }
   }
 
   /**
-   * 触发纯正美音标准读音
+   * 触发纯正真人发音
    */
   speakCurrentWord() {
     if (this.currentWordObj && window.audioEngine) {
@@ -582,8 +907,12 @@ class SiegeBattleEngine {
       window.progressManager.recordWordResult(this.currentWordObj.en, true, this.hadHintThisPhase);
     }
 
-    // 大声复读一遍单词
-    this.speakCurrentWord();
+    // 大声朗读标准原音
+    if (this.currentPhase === 3) {
+      this.speakCurrentSentence();
+    } else {
+      this.speakCurrentWord();
+    }
 
     // 阶段击破战报与特效
     const castle = this.getCastleInfo(this.stageNum);

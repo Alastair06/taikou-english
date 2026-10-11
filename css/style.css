@@ -7349,6 +7349,309 @@ body, html {
   background: linear-gradient(135deg, #475569, #334155);
 }
 
+/* ==========================================================================
+   合战三阶自然认知指挥台样式 (Natural Pedagogical Command Deck)
+   ========================================================================== */
+
+.deck-phase-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1vh, 10px);
+  width: 100%;
+}
+
+.deck-instruction-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid #475569;
+  border-radius: 10px;
+  padding: 4px 10px;
+}
+
+.inst-badge {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fef08a;
+  background: #78350f;
+  border: 1px solid #b45309;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.inst-text {
+  font-size: 13px;
+  color: #cbd5e1;
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-replay-sound {
+  flex-shrink: 0;
+  padding: 3px 10px !important;
+  font-size: 13px !important;
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* 阶段一：听音识意卡片网格 */
+.siege-concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(6px, 1.5vw, 12px);
+}
+
+.siege-concept-card {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 2px solid #b45309;
+  border-radius: 12px;
+  padding: clamp(8px, 1.4vh, 14px) 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+  touch-action: manipulation;
+}
+
+.siege-concept-card:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+}
+
+.siege-concept-card:active {
+  transform: scale(0.96);
+}
+
+.concept-crest {
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1;
+}
+
+.concept-label {
+  font-size: clamp(14px, 1.8vw, 17px);
+  font-weight: 800;
+  color: #fde047;
+  text-align: center;
+}
+
+.concept-tag {
+  font-size: 13px;
+  color: #94a3b8;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* 阶段二：大筒装填与音素积木 */
+.siege-cannon-assembly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #1e293b;
+  border: 1.5px solid #d97706;
+  border-radius: 12px;
+  padding: clamp(6px, 1vh, 10px);
+}
+
+.cannon-slots-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fde047;
+  white-space: nowrap;
+}
+
+.siege-cannon-slots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cannon-slot {
+  min-width: clamp(48px, 9vw, 68px);
+  height: clamp(38px, 5vh, 46px);
+  background: #0f172a;
+  border: 2px dashed #64748b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(16px, 2.4vw, 22px);
+  font-weight: 900;
+  color: #64748b;
+  font-family: var(--font-en, system-ui, sans-serif);
+  transition: all 0.15s ease;
+}
+
+.cannon-slot.is-filled {
+  background: linear-gradient(180deg, #15803d 0%, #166534 100%);
+  border: 2px solid #86efac;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+.cannon-slot.is-active {
+  border: 2px dashed #f59e0b;
+  color: #fde047;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.siege-blocks-bank {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(6px, 1.2vw, 12px);
+}
+
+.siege-block-btn {
+  min-width: clamp(60px, 11vw, 86px);
+  height: clamp(38px, 5.2vh, 48px);
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  color: #f8fafc;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.1s, border-color 0.1s;
+  touch-action: manipulation;
+}
+
+.siege-block-btn:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+}
+
+.siege-block-btn:active {
+  transform: scale(0.95);
+  background: #0284c7;
+}
+
+.block-chunk {
+  font-size: clamp(16px, 2.4vw, 22px);
+  font-weight: 900;
+  color: #ffffff;
+  font-family: var(--font-en, system-ui, sans-serif);
+  line-height: 1.1;
+}
+
+.block-type {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.btn-reset-blocks {
+  min-width: 44px;
+  background: #475569;
+  border-color: #64748b;
+}
+
+/* 阶段三：语境交际整句 */
+.siege-dialogue-card {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1.5px solid #b45309;
+  border-radius: 12px;
+  padding: clamp(8px, 1.2vh, 12px) 14px;
+  text-align: center;
+}
+
+.dialogue-lead {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.dialogue-line {
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: 900;
+  color: #f8fafc;
+  font-family: var(--font-en, system-ui, sans-serif);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.dialogue-blank {
+  display: inline-block;
+  min-width: 70px;
+  border-bottom: 2.5px dashed #f59e0b;
+  color: #fde047;
+  padding: 0 6px;
+  font-weight: 900;
+  transition: all 0.2s ease;
+}
+
+.dialogue-blank.is-filled {
+  color: #4ade80;
+  border-bottom-style: solid;
+  border-bottom-color: #22c55e;
+}
+
+.dialogue-cn {
+  font-size: 13.5px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.siege-sentence-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(6px, 1.5vw, 12px);
+}
+
+.siege-opt-btn {
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  border: 2px solid #d97706;
+  border-radius: 10px;
+  padding: clamp(6px, 1vh, 10px) 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s, border-color 0.1s;
+  touch-action: manipulation;
+}
+
+.siege-opt-btn:hover {
+  transform: translateY(-2px);
+  border-color: #fbbf24;
+}
+
+.siege-opt-btn:active {
+  transform: scale(0.95);
+  background: #0284c7;
+}
+
+.opt-word {
+  font-size: clamp(15px, 2vw, 20px);
+  font-weight: 900;
+  color: #ffffff;
+  font-family: var(--font-en, system-ui, sans-serif);
+}
+
+.opt-cn {
+  font-size: 13px;
+  color: #fde047;
+  font-weight: 600;
+}
+
 /* 动效 */
 @keyframes pulse-border {
   0% {
@@ -7424,6 +7727,46 @@ body, html {
     height: 30px !important;
     font-size: 14px !important;
   }
+  .deck-instruction-bar {
+    padding: 2px 8px !important;
+  }
+  .siege-concept-card {
+    padding: 4px 6px !important;
+    gap: 2px !important;
+  }
+  .concept-crest {
+    font-size: 22px !important;
+  }
+  .concept-label {
+    font-size: 13px !important;
+  }
+  .cannon-slot {
+    min-width: 44px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+  .siege-block-btn {
+    min-width: 52px !important;
+    height: 32px !important;
+  }
+  .block-chunk {
+    font-size: 14px !important;
+  }
+  .siege-dialogue-card {
+    padding: 4px 8px !important;
+  }
+  .dialogue-line {
+    font-size: 14px !important;
+    margin-bottom: 2px !important;
+  }
+  .siege-opt-btn {
+    padding: 4px 6px !important;
+  }
+  .opt-word {
+    font-size: 14px !important;
+  }
+}
+
 /* 移动端竖屏顶部 HUD 自适应 */
 @media (max-width: 600px) {
   .siege-hud {
