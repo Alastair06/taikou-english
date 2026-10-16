@@ -1405,6 +1405,226 @@
 }
 
 /* ==========================================================================
+   战国名将成就与名城攻拔视觉体系 (Conquest & Retainer Suite)
+   ========================================================================== */
+
+/* 关卡总览顶层平定进度看板 */
+.conquest-summary-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  background: linear-gradient(135deg, #2b1f17 0%, #1a130e 100%);
+  border: 1.5px solid #d4a359;
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.conquest-summary-strip .strip-item {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fde68a;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.conquest-summary-strip .strip-item strong {
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 14.5px;
+}
+
+/* 关卡卡片强化 */
+.stage-card.is-conquered {
+  border-color: #059669;
+  background: linear-gradient(180deg, #f0fdf4 0%, #fbf6ec 100%);
+}
+
+.stage-castle-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 13px;
+  margin-top: -2px;
+  margin-bottom: 4px;
+}
+
+.stage-castle-meta .castle-lord {
+  color: #78350f;
+  font-weight: 700;
+}
+
+.stage-castle-meta .castle-lord.target {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.stage-castle-meta .castle-yield {
+  color: #059669;
+  font-weight: 800;
+  background: #dcfce7;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid #86efac;
+}
+
+.stage-castle-meta .castle-chapter {
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* 宅邸家臣常驻与互动展位 */
+.room-companion-spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 8;
+  touch-action: manipulation;
+  transition: transform 0.15s ease;
+}
+
+.room-companion-spot:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.room-companion-spot:active {
+  transform: translate(-50%, -50%) scale(0.96);
+}
+
+.companion-sprite-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2.5px solid #d4a359;
+  background: #1e1b18;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.companion-sprite-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.companion-name-pill {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fef08a;
+  background: rgba(28, 22, 18, 0.9);
+  border: 1px solid #d4a359;
+  padding: 1px 7px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+/* 宅邸家臣独立标签页 (Retainers Tab) */
+.estate-companions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  padding: 4px;
+}
+
+.estate-companion-card {
+  background: linear-gradient(180deg, #fbf6ec 0%, #f4ebd9 100%);
+  border: 1.5px solid #c4af92;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.15s;
+}
+
+.estate-companion-card.is-active-companion {
+  border: 2px solid #b91c1c;
+  background: linear-gradient(180deg, #fffdfa 0%, #fee2e2 100%);
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+}
+
+.estate-companion-card .companion-portrait-box {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #d4a359;
+  overflow: hidden;
+  background: #2b1f17;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.estate-companion-card .companion-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.estate-companion-card .companion-info-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.companion-header-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.companion-title-name {
+  font-size: 14.5px;
+  font-weight: 900;
+  color: #1e1713;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.companion-role-badge {
+  font-size: 13px;
+  font-weight: 800;
+  color: #78350f;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  padding: 1px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.companion-desc-text {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.35;
+  margin: 3px 0 6px;
+}
+
+.companion-actions-row {
+  display: flex;
+  gap: 6px;
+}
+
+/* ==========================================================================
    言灵演武 · 麦克风跟读发音评测 (Speech Evaluation Modal)
    ========================================================================== */
 .speech-eval-card {

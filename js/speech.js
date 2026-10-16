@@ -489,6 +489,10 @@ class AudioEngine {
     setTimeout(() => this.playTone(1318.51, 'sine', 0.12, 0.18), 70);
   }
 
+  playKobanCollect() {
+    this.playCoin();
+  }
+
   // 6. 晋升封赏法螺贝号角 (Sengoku Fanfare)
   playPromotionFanfare() {
     if (window.haptics) window.haptics.success();

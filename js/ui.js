@@ -235,7 +235,7 @@ class UIManager {
     // 动态刷新每日立志军令主命看板
     const subMerit = document.getElementById('home-sub-merit');
     if (subMerit) {
-      const merit = window.rankManager ? (window.rankManager.state?.merit || 0) : 0;
+      const merit = window.heroManager ? (window.heroManager.hero.merit || 0) : 0;
       subMerit.textContent = `⭐ ${merit} 点`;
     }
     const subVocab = document.getElementById('home-sub-vocab');
@@ -245,8 +245,18 @@ class UIManager {
     }
     const subRank = document.getElementById('home-sub-rank');
     if (subRank) {
-      const nextRank = window.rankManager ? window.rankManager.getNextRank() : null;
+      const nextRank = window.heroManager ? window.heroManager.getNextRank() : null;
       subRank.textContent = nextRank ? `🔰 ${nextRank.title}` : '👑 天下人';
+    }
+
+    // 动态强化主命看板描述：名城攻拔与随行家臣状态
+    const missionDesc = document.getElementById('home-mission-desc');
+    if (missionDesc) {
+      const conqueredCount = Math.min(60, Math.max(0, curStage - 1));
+      const activeCompanion = window.estateSystem ? window.estateSystem.getActiveCompanion() : { name: '木下秀长', role: '错题军师' };
+      const castleInfo = (window.siegeBattle && window.siegeBattle.getCastleInfo) ? window.siegeBattle.getCastleInfo(curStage) : null;
+      const targetCastle = castleInfo ? castleInfo.name : `第 ${curStage} 关`;
+      missionDesc.innerHTML = `目标名城：<strong>${targetCastle}</strong> · 随行先锋：<strong>${activeCompanion.name}</strong>（${activeCompanion.role}）<br><span style="font-size:12.5px; color:#78350f;">已平定名城 <strong>${conqueredCount} / 60</strong> 座 · 每日领地进贡 +${conqueredCount * 45} 贯</span>`;
     }
 
     // 动态刷新九大次级功能牌札的渐进式封印/解禁状态
@@ -693,11 +703,40 @@ class UIManager {
     const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
     const curSchoolStage = Math.floor(curIdx / 3) + 1;
     const allWords = window.wordManager ? window.wordManager.getAllTextbookWordsFlat() : [];
-    const curWord = allWords[curIdx] || allWords[0] || { unit: 'Unit 1: 结识新朋友' };
+    const curWord = allWords[curIdx] || allWords[0] || { unit: 'Unit 1: 结识新朋' };
 
     const bannerInfo = document.getElementById('banner-school-stage-info');
     if (bannerInfo) {
       bannerInfo.innerHTML = `当前正挑战：<strong>第 ${curSchoolStage} 关</strong> · 【${curWord.unit || 'Unit 1'}】`;
+    }
+
+    // 天下六十名城攻拔平定顶层看板
+    let summaryStrip = document.getElementById('chapters-conquest-summary');
+    const banner = document.getElementById('stage-school-status-banner');
+    if (!summaryStrip && banner) {
+      summaryStrip = document.createElement('div');
+      summaryStrip.id = 'chapters-conquest-summary';
+      summaryStrip.className = 'conquest-summary-strip';
+      banner.parentNode.insertBefore(summaryStrip, banner.nextSibling);
+    }
+    if (summaryStrip) {
+      const conqueredCount = Math.min(60, Math.max(0, curSchoolStage - 1));
+      const pct = Math.round((conqueredCount / 60) * 100);
+      const activeCompanion = window.estateSystem ? window.estateSystem.getActiveCompanion() : { name: '木下秀长' };
+      summaryStrip.innerHTML = `
+        <div class="strip-item">
+          <span>🏯 平定名城：</span>
+          <strong>${conqueredCount} / 60 座 (${pct}%)</strong>
+        </div>
+        <div class="strip-item">
+          <span>💰 每日领地进贡：</span>
+          <strong>+${conqueredCount * 45} 贯 / 日</strong>
+        </div>
+        <div class="strip-item">
+          <span>👥 随行先锋：</span>
+          <strong>${activeCompanion.name}</strong>
+        </div>
+      `;
     }
 
     this.renderStagesGrid();
@@ -753,23 +792,48 @@ class UIManager {
       const firstWord = stageWords[0] || { unit: `Unit ${unitNum}` };
       const unitShortName = (firstWord.unit || `Unit ${unitNum}`).replace(/^Unit \d+:\s*/, '');
 
+      // 从 60 名城史实档案库动态提取城池与敌将数据
+      const castle = (window.siegeBattle && window.siegeBattle.getCastleInfo)
+        ? window.siegeBattle.getCastleInfo(s)
+        : { id: s, name: `战国名城 · 第 ${s} 关`, chapter: `第 ${unitNum} 章`, lord: '敌城守将' };
+
       const isCurrent = (s === curSchoolStage);
       const isPassed = (s < curSchoolStage);
 
       let badgeHtml = '';
       let btnHtml = '';
       let cardClass = 'stage-card';
+      let metaHtml = '';
 
       if (isCurrent) {
         cardClass += ' is-school-target';
-        badgeHtml = '<span class="stage-badge current">🏫 学校主线</span>';
+        badgeHtml = '<span class="stage-badge current">🎯 攻城主命</span>';
+        metaHtml = `
+          <div class="stage-castle-meta">
+            <span class="castle-lord target">⚔️ 守将：【${castle.lord}】</span>
+            <span class="castle-chapter">${castle.chapter}</span>
+          </div>
+        `;
         btnHtml = `<button class="btn btn-sm btn-primary stage-action-btn" onclick="window.ui.launchStage(${s})">攻城出征 ⚔️</button>`;
       } else if (isPassed) {
-        badgeHtml = '<span class="stage-badge passed">⭐ 已平定</span>';
-        btnHtml = `<button class="btn btn-sm btn-secondary stage-action-btn" onclick="window.ui.launchStage(${s})">温故出征 🔄</button>`;
+        cardClass += ' is-conquered';
+        badgeHtml = '<span class="stage-badge passed">🚩 织田直辖 · 已平定</span>';
+        metaHtml = `
+          <div class="stage-castle-meta">
+            <span class="castle-lord">⚔️ 守将【${castle.lord}】已授首</span>
+            <span class="castle-yield">💰 产出 +45贯 · 🍙 +1</span>
+          </div>
+        `;
+        btnHtml = `<button class="btn btn-sm btn-secondary stage-action-btn" onclick="window.ui.launchStage(${s})">温故演武 🔄</button>`;
       } else {
-        badgeHtml = '<span class="stage-badge locked">⚔️ 预习试炼</span>';
-        btnHtml = `<button class="btn btn-sm btn-secondary stage-action-btn" onclick="window.ui.launchStage(${s})">先行挑战 ➔</button>`;
+        badgeHtml = '<span class="stage-badge locked">🔒 未开拔</span>';
+        metaHtml = `
+          <div class="stage-castle-meta">
+            <span class="castle-lord" style="color:#64748b;">守将：【${castle.lord}】</span>
+            <span class="castle-chapter">${castle.chapter}</span>
+          </div>
+        `;
+        btnHtml = `<button class="btn btn-sm btn-secondary stage-action-btn" onclick="window.ui.launchStage(${s})">先行探敌 ➔</button>`;
       }
 
       const wordsChips = stageWords.map(w => `
@@ -778,19 +842,13 @@ class UIManager {
         </span>
       `).join('');
 
-      let cityName = '🏯 尾张清洲';
-      if (s >= 51) cityName = '👑 近江安土';
-      else if (s >= 41) cityName = '🛡️ 相模小田原';
-      else if (s >= 31) cityName = '🌸 山城京都';
-      else if (s >= 21) cityName = '🚢 摄津界港';
-      else if (s >= 11) cityName = '⛰️ 美浓稻叶山';
-
       cardsHtml += `
         <div class="${cardClass}">
           <div class="stage-card-header">
-            <span class="stage-card-title">第 ${s} 关 · ${unitShortName} <small style="font-size:13px; color:#92400e; font-weight:800; margin-left:4px;">${cityName}</small></span>
+            <span class="stage-card-title">第 ${s} 关 · ${castle.name} <small style="font-size:13px; color:#92400e; font-weight:800; margin-left:4px;">${unitShortName}</small></span>
             ${badgeHtml}
           </div>
+          ${metaHtml}
           <div class="stage-words-list">
             ${wordsChips}
           </div>
@@ -2827,6 +2885,11 @@ class UIManager {
     const heroGold = window.heroManager ? window.heroManager.hero.gold : 0;
     const unlockedCount = catalog.filter(f => window.estateSystem?.isUnlocked(f.id)).length;
 
+    // 家臣名将系统数据
+    const companions = window.estateSystem ? window.estateSystem.getCompanions() : [];
+    const unlockedCompanions = companions.filter(c => c.isUnlocked);
+    const activeCompanion = window.estateSystem ? window.estateSystem.getActiveCompanion() : { id: 'hidenaga', name: '木下秀长' };
+
     // 房间插槽配置
     const slots = [
       { id: 'slot-room-1', name: '书房案头', type: 'room', icon: '🪑' },
@@ -2863,6 +2926,30 @@ class UIManager {
       }
     }).join('');
 
+    // 动态在和风居室中摆放已出仕的常驻家臣名将小人
+    const companionCoords = {
+      'hidenaga': { x: 22, y: 76 },
+      'nene': { x: 38, y: 76 },
+      'toshiie': { x: 78, y: 76 },
+      'hanbei': { x: 86, y: 60 }
+    };
+
+    const roomCompanionsHtml = unlockedCompanions.map(comp => {
+      const coord = companionCoords[comp.id] || { x: 50, y: 80 };
+      const isPortraitImg = comp.portrait && (comp.portrait.endsWith('.jpg') || comp.portrait.endsWith('.png'));
+      return `
+        <div class="room-companion-spot" style="left:${coord.x}%; top:${coord.y}%;" onclick="window.ui.interactEstateCompanion('${comp.id}')" title="点击与【${comp.name}】交谈">
+          <div class="companion-sprite-wrap">
+            ${isPortraitImg
+              ? `<img src="${comp.portrait}" class="companion-sprite-img" alt="${comp.name}">`
+              : `<span style="font-size:24px;">${comp.portrait}</span>`
+            }
+          </div>
+          <span class="companion-name-pill">${comp.name}</span>
+        </div>
+      `;
+    }).join('');
+
     const tatamiRoomHtml = `
       <div class="estate-tatami-room-stage">
         <div class="room-wall-bg"></div>
@@ -2877,6 +2964,9 @@ class UIManager {
           <div class="tokichiro-speech-bubble" id="estate-tokichiro-bubble">🍵 居所渐具规模，继续立志！</div>
           <div class="tokichiro-sit-sprite">🥷</div>
         </div>
+
+        <!-- 战国常驻名将家臣团 -->
+        ${roomCompanionsHtml}
 
         <!-- 房间家具实景槽位 -->
         ${roomFurnSpotsHtml}
@@ -2944,6 +3034,46 @@ class UIManager {
       `;
     }).join('');
 
+    // 家臣名将卡片网格
+    const companionsHtml = companions.map(comp => {
+      const isPortraitImg = comp.portrait && (comp.portrait.endsWith('.jpg') || comp.portrait.endsWith('.png'));
+      const isCurrentActive = comp.isActive;
+      return `
+        <div class="estate-companion-card ${isCurrentActive ? 'is-active-companion' : ''}">
+          <div class="companion-portrait-box">
+            ${isPortraitImg
+              ? `<img src="${comp.portrait}" class="companion-portrait-img" alt="${comp.name}">`
+              : `<span>${comp.portrait}</span>`
+            }
+          </div>
+          <div class="companion-info-col">
+            <div class="companion-header-line">
+              <span class="companion-title-name">${comp.name} <small style="font-size:12px;color:#78350f;">(${comp.nickname})</small></span>
+              <span class="companion-role-badge">${comp.role}</span>
+            </div>
+            <div class="companion-desc-text">${comp.desc}</div>
+            <div style="font-size:12px; color:#b45309; font-weight:700; margin-bottom:6px;">✨ ${comp.bonusText}</div>
+            <div class="companion-actions-row">
+              ${comp.isUnlocked ? `
+                ${isCurrentActive
+                  ? `<span style="font-size:12px; color:#15803d; font-weight:800; padding:3px 8px; background:#dcfce7; border-radius:6px; border:1px solid #86efac;">🚩 随行先锋中</span>`
+                  : `<button class="btn btn-sm btn-primary" onclick="window.ui.setEstateActiveCompanion('${comp.id}')">随行出征 🚩</button>`
+                }
+                ${comp.id === 'nene' ? `
+                  <button class="btn btn-sm btn-secondary" onclick="window.ui.interactEstateCompanion('nene')">🍙 领便当</button>
+                ` : `
+                  <button class="btn btn-sm btn-secondary" onclick="window.ui.interactEstateCompanion('${comp.id}')">💬 问候</button>
+                `}
+                <button class="btn btn-sm btn-secondary" onclick="if(window.audioEngine) window.audioEngine.speak('${comp.voiceEn}')" title="名将英文录音">🔊</button>
+              ` : `
+                <span style="font-size:12px; color:#64748b; font-weight:700; background:#f1f5f9; padding:4px 8px; border-radius:6px;">🔒 功勋达 ${comp.reqMerit} 点出仕</span>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
     content.innerHTML = `
       <div class="estate-container">
         <!-- 顶部信息栏 -->
@@ -2962,6 +3092,9 @@ class UIManager {
           </button>
           <button class="estate-tab-btn ${this._estateTab === 'shop' ? 'active' : ''}" onclick="window.ui.openEstateModal('shop')">
             🪑 南蛮洋物工坊 (${unlockedCount}/${catalog.length})
+          </button>
+          <button class="estate-tab-btn ${this._estateTab === 'companions' ? 'active' : ''}" onclick="window.ui.openEstateModal('companions')">
+            👥 随行家臣 (${unlockedCompanions.length}/${companions.length})
           </button>
         </div>
 
@@ -2982,7 +3115,7 @@ class UIManager {
               </div>
             </div>
           </div>
-        ` : `
+        ` : this._estateTab === 'shop' ? `
           <!-- 视图 2：洋物工坊分类与分页订购 (单页4件，整屏零滚动) -->
           <div class="estate-shop-container">
             <div class="estate-filter-bar">
@@ -3014,6 +3147,17 @@ class UIManager {
               <button class="btn btn-sm btn-primary" onclick="window.ui.openEstateModal('view')" style="margin-left:auto; font-size:11.5px;">
                 🏡 返回居所查看
               </button>
+            </div>
+          </div>
+        ` : `
+          <!-- 视图 3：战国名将家臣团总览与随行调遣 -->
+          <div class="estate-companions-container" style="padding: 4px;">
+            <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+              <span>任命随行名将护卫出征，获专属合战加成；在宅邸可随时互动问候！</span>
+              <span style="font-weight: 800; color: #b91c1c;">当前随行先锋：【${activeCompanion.name}】</span>
+            </div>
+            <div class="estate-companions-grid">
+              ${companionsHtml}
             </div>
           </div>
         `}
@@ -3048,6 +3192,46 @@ class UIManager {
       }, 3000);
     }
     this.showToast(`✨【${item.name} · ${item.en}】发音：${item.phonetic}`, item.emoji || '🪑');
+  }
+
+  interactEstateCompanion(companionId) {
+    if (!window.estateSystem) return;
+    const res = window.estateSystem.interactCompanion(companionId);
+    if (!res) return;
+
+    const bubble = document.getElementById('estate-tokichiro-bubble');
+    if (bubble) {
+      bubble.textContent = `【${res.companion.name}】：“${res.dialogue}”`;
+      bubble.style.transform = 'translateX(-50%) scale(1.08)';
+      bubble.style.borderColor = '#b91c1c';
+      setTimeout(() => {
+        bubble.textContent = '🍵 居所渐具规模，继续立志！';
+        bubble.style.transform = 'translateX(-50%) scale(1)';
+        bubble.style.borderColor = '#fed7aa';
+      }, 4000);
+    }
+
+    if (window.audioEngine?.playCoin) {
+      window.audioEngine.playCoin();
+    }
+    this.showToast(`【${res.companion.name}】：“${res.dialogue}”${res.extraMsg || ''}`, 3500);
+
+    if (companionId === 'nene') {
+      this.updateHomeProfile();
+    }
+  }
+
+  setEstateActiveCompanion(companionId) {
+    if (!window.estateSystem) return;
+    const res = window.estateSystem.setActiveCompanion(companionId);
+    if (res.success) {
+      this.showToast(`✨ ${res.msg}`, 2500);
+      if (window.audioEngine?.playCoin) window.audioEngine.playCoin();
+      this.updateHomeProfile();
+      this.openEstateModal('companions');
+    } else {
+      this.showToast(res.msg, 2000);
+    }
   }
 
   buyEstateFurniture(furnId) {

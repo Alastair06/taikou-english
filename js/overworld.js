@@ -466,17 +466,36 @@ class JapanOverworldManager {
       ctx.fillStyle = '#fff3d0';
       ctx.fillText(cName, c.x, c.y + 24);
 
-      // 织田直辖朱印旗帜
+      // 织田直辖朱印旗帜与领地进贡标牌
       const capturedCities = this.getCapturedCities();
       if (capturedCities.includes(c.id)) {
+        // 金边赤红战国直辖阵旗
+        const flagW = 74;
+        const flagH = 20;
+        const flagX = c.x + 12;
+        const flagY = c.y - c.radius - 8;
+
         ctx.fillStyle = '#b91c1c';
-        ctx.fillRect(c.x + 18, c.y - c.radius - 4, 46, 20);
+        ctx.fillRect(flagX, flagY, flagW, flagH);
         ctx.strokeStyle = '#d4a359';
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(c.x + 18, c.y - c.radius - 4, 46, 20);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px "Noto Serif SC", serif';
-        ctx.fillText('织田领', c.x + 41, c.y - c.radius + 6);
+        ctx.lineWidth = 1.4;
+        ctx.strokeRect(flagX, flagY, flagW, flagH);
+
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 11px "Noto Serif SC", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌸 织田直辖', flagX + flagW / 2, flagY + 14);
+
+        // 每日进贡加成浮签
+        ctx.fillStyle = 'rgba(6, 95, 70, 0.95)';
+        ctx.fillRect(flagX, flagY + flagH + 1, flagW, 15);
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(flagX, flagY + flagH + 1, flagW, 15);
+
+        ctx.fillStyle = '#ecfdf5';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('+45贯 · 🍙+1', flagX + flagW / 2, flagY + flagH + 12);
       }
       ctx.restore();
     });
@@ -584,40 +603,34 @@ class JapanOverworldManager {
   }
 
   getCapturedCities() {
-    const captured = [];
-    if (!window.wordManager || !window.progressManager) return ['kiyosu'];
+    const captured = ['kiyosu'];
+    if (!window.progressManager) return captured;
 
-    const units = window.wordManager.units || [];
-    // Unit 1 (尾张清洲)
-    if (units[0]) {
-      const p1 = window.progressManager.getUnitProgress(units[0]);
-      if (p1.pct >= 25) captured.push('kiyosu');
-    } else {
-      captured.push('kiyosu');
-    }
+    const curIdx = window.progressManager.getCurrentIndex ? window.progressManager.getCurrentIndex() : 0;
+    const curStage = Math.floor(curIdx / 3) + 1;
 
-    // Unit 2 (美浓稻叶山)
-    if (units[1]) {
-      const p2 = window.progressManager.getUnitProgress(units[1]);
-      if (p2.pct >= 35) captured.push('inabayama');
-    }
+    // 根据攻城战役关卡进度动态解锁天下名城直辖据点
+    if (curStage >= 19) captured.push('inabayama'); // 美浓平定
+    if (curStage >= 35) captured.push('azuchi');    // 近江平定
+    if (curStage >= 49) captured.push('kyoto');     // 上洛京都
+    if (curStage >= 51) captured.push('sakai');     // 摄津界港
+    if (curStage >= 57) captured.push('odawara');   // 关东小田原
 
-    // Unit 3 (近江安土)
-    if (units[2]) {
-      const p3 = window.progressManager.getUnitProgress(units[2]);
-      if (p3.pct >= 35) captured.push('azuchi');
-    }
-
-    // Unit 4 (山城京都 & 摄津界港)
-    if (units[3]) {
-      const p4 = window.progressManager.getUnitProgress(units[3]);
-      if (p4.pct >= 35) {
-        captured.push('kyoto');
-        captured.push('sakai');
+    // 兼容根据教材单元进度的判定
+    if (window.wordManager && window.wordManager.units) {
+      const units = window.wordManager.units;
+      if (units[1] && window.progressManager.getUnitProgress(units[1])?.pct >= 30 && !captured.includes('inabayama')) {
+        captured.push('inabayama');
+      }
+      if (units[2] && window.progressManager.getUnitProgress(units[2])?.pct >= 30 && !captured.includes('azuchi')) {
+        captured.push('azuchi');
+      }
+      if (units[3] && window.progressManager.getUnitProgress(units[3])?.pct >= 30) {
+        if (!captured.includes('kyoto')) captured.push('kyoto');
+        if (!captured.includes('sakai')) captured.push('sakai');
       }
     }
 
-    if (captured.length === 0) captured.push('kiyosu');
     return captured;
   }
 
