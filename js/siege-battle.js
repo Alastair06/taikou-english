@@ -220,7 +220,7 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 设置当前攻城阶段 (1: 听音识意, 2: 拼读积木, 3: 语境交际)
+   * 设置当前攻城阶段 (1: 军机密报排查敌谍, 2: 阵前号令大筒破门, 3: 本丸天守决战斩将)
    */
   setupPhase(phaseNum) {
     this.currentPhase = phaseNum;
@@ -246,21 +246,27 @@ class SiegeBattleEngine {
     this.renderArena();
     this.renderCommandDeck();
 
-    // 自动轻声朗读一遍真人发音，帮助孩子形成听觉直接映射
+    // 自动轻声朗读一遍真人发音或情报线索，帮助孩子形成听觉直接映射
     setTimeout(() => {
       if (this.currentPhase === 3) {
         this.speakCurrentSentence();
+      } else if (this.currentPhase === 1) {
+        this.speakCurrentClue();
       } else {
-        this.speakCurrentWord();
+        this.speakTacticalOrder();
       }
     }, 450);
   }
 
   /**
-   * 阶段一数据准备：听音识意 (1 个正确目标卡 + 2 个混淆选项卡)
+   * 阶段一数据准备：军机密报与嫌疑人阵列 (截获信件情报 + 1 目标奸细 + 2 混淆目标)
    */
   setupPhase1Data() {
     const target = this.currentWordObj;
+    this.phase1Intel = (window.PhonicsHelper && window.PhonicsHelper.getSpyIntelClue)
+      ? window.PhonicsHelper.getSpyIntelClue(target)
+      : { en: `The spy is holding ${target.en}!`, highlightEn: target.en, cn: `密报：细作持有【${target.cn || target.en}】暗号！`, suspectTitle: `🥷 疑犯 · 持有【${target.en}】`, suspectDesc: '神色匆匆' };
+
     const allWords = (window.wordManager && window.wordManager.getAllTextbookWordsFlat)
       ? window.wordManager.getAllTextbookWordsFlat()
       : [];
@@ -278,10 +284,32 @@ class SiegeBattleEngine {
       distractors.push(fallbackPool[distractors.length]);
     }
 
-    this.phase1Options = [
-      { en: target.en, cn: target.cn, emoji: target.emoji, phonetic: target.phonetic },
-      ...distractors
-    ].sort(() => 0.5 - Math.random());
+    const distractorRoles = [
+      { role: '🥋 巡逻卫士', desc: '身佩短刃守卫要塞' },
+      { role: '🌾 挑担翁', desc: '沿街叫卖神色自若' }
+    ];
+
+    const targetOpt = {
+      en: target.en,
+      cn: target.cn,
+      emoji: target.emoji || '🥷',
+      phonetic: target.phonetic,
+      suspectTitle: this.phase1Intel.suspectTitle || `🥷 嫌疑人 · [${target.en}]`,
+      suspectDesc: this.phase1Intel.suspectDesc || '怀揣接头暗号纸条',
+      isSpy: true
+    };
+
+    const distractorOpts = distractors.map((d, idx) => ({
+      en: d.en,
+      cn: d.cn,
+      emoji: d.emoji || (idx === 0 ? '🥋' : '🌾'),
+      phonetic: d.phonetic,
+      suspectTitle: distractorRoles[idx]?.role || `🥋 盘查目标`,
+      suspectDesc: distractorRoles[idx]?.desc || `随身携带【${d.cn || d.en}】`,
+      isSpy: false
+    }));
+
+    this.phase1Options = [targetOpt, ...distractorOpts].sort(() => 0.5 - Math.random());
   }
 
   /**
@@ -429,24 +457,57 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 阶段一指挥台：听音识意 (纯听力原声直映，选择匹配图意，零打字门槛)
+   * 阶段一指挥台：军机密报 · 截获敌信排查潜伏奸细
    */
   renderPhase1Deck(deckEl) {
     const word = this.currentWordObj;
+    const intel = this.phase1Intel || {
+      en: `The spy carries a secret item: ${word.en}! Catch him!`,
+      highlightEn: word.en,
+      cn: `密报破译：敌方密探持有【${word.cn || word.en}】暗号！速去擒拿！`,
+      suspectTitle: `🥷 疑犯 · 持有【${word.en}】`,
+      suspectDesc: '怀揣接头暗号纸条'
+    };
+
+    // 高亮英文线索中的核心特征词
+    const hlWord = intel.highlightEn || word.en;
+    const formattedClueEn = intel.en.replace(
+      new RegExp(`\\b(${hlWord})\\b`, 'gi'),
+      '<strong style="color:#fde047; text-decoration:underline; text-underline-offset:2px;">$1</strong>'
+    );
+
     deckEl.innerHTML = `
       <div class="deck-phase-wrapper deck-phase-1">
         <div class="deck-instruction-bar">
-          <span class="inst-badge">阶段一 · 听音识意</span>
+          <span class="inst-badge">军机密报 · 潜伏排查</span>
           <span class="inst-text">仔细听原声，选择对应图意破除鹿砦！</span>
-          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()">🔊 重播原声</button>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentClue()" title="倾听斥候原声密报">🔊 听密报</button>
         </div>
 
+        <!-- 信长军机密报展开羊皮卷轴 -->
+        <div class="siege-intel-scroll">
+          <div class="intel-scroll-header">
+            <div class="intel-scroll-title">
+              <span class="seal-tag">信长朱印状</span>
+              <span>📜 织田军机密报 · 辨识潜伏敌谍</span>
+            </div>
+            <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()" title="单字真人发音">🔊 听暗号</button>
+          </div>
+          <div class="intel-scroll-body">
+            <div class="intel-scroll-en">“${formattedClueEn}”</div>
+            <div class="intel-scroll-cn">${intel.cn}</div>
+          </div>
+        </div>
+
+        <!-- 嫌疑人排查阵容卡片 -->
         <div class="siege-concept-grid">
-          ${this.phase1Options.map(opt => `
-            <div class="siege-concept-card" onclick="window.siegeBattle.selectConcept('${opt.en.replace(/'/g, "\\'")}')">
-              <span class="concept-crest">${opt.emoji || '📖'}</span>
-              <span class="concept-label">${opt.cn || opt.en}</span>
-              <span class="concept-tag">${opt.phonetic || '原声标音'}</span>
+          ${this.phase1Options.map((opt, idx) => `
+            <div class="siege-concept-card is-suspect" onclick="window.siegeBattle.selectConcept('${opt.en.replace(/'/g, "\\'")}')" title="点击指认该嫌疑人">
+              <span class="suspect-order-badge">嫌疑人 0${idx + 1}</span>
+              <span class="concept-crest">${opt.emoji || '🥷'}</span>
+              <span class="concept-label">${opt.suspectTitle || opt.cn || opt.en}</span>
+              <span class="suspect-role-tag">${opt.suspectDesc || '神色可疑'}</span>
+              <span class="concept-tag">${opt.en} ${opt.phonetic ? `[${opt.phonetic}]` : ''}</span>
             </div>
           `).join('')}
         </div>
@@ -462,20 +523,30 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 阶段二指挥台：自然拼读积木 (声母韵母音素拆解，装填神威大筒轰击城门)
+   * 阶段二指挥台：阵前战术 · 神威大筒装填破门
    */
   renderPhase2Deck(deckEl) {
     const word = this.currentWordObj;
+    const blockOrderStr = this.phase2Blocks.map(b => b.toUpperCase()).join(' + ');
     deckEl.innerHTML = `
       <div class="deck-phase-wrapper deck-phase-2">
         <div class="deck-instruction-bar">
-          <span class="inst-badge">阶段二 · 拼读积木</span>
+          <span class="inst-badge">阵前战术 · 破门突击</span>
           <span class="inst-text">拼装自然拼读积木，装填神威大筒轰碎城门！</span>
-          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()">🔊 听读音</button>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakTacticalOrder()" title="听战阵号令">🔊 听号令</button>
+        </div>
+
+        <!-- 大手门战阵传令号角 -->
+        <div class="siege-tactical-banner">
+          <div class="tactical-banner-text">
+            <span>📢 阵前急报：</span>
+            <span>城门厚木裹铁！前锋下令：<strong>“Load cannon charges [${blockOrderStr}] to break the gate!”</strong></span>
+          </div>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()" title="听读音">🔊 听读音</button>
         </div>
 
         <div class="siege-cannon-assembly">
-          <span class="cannon-slots-label">💣 大筒装填:</span>
+          <span class="cannon-slots-label">💣 神威大筒装填:</span>
           <div class="siege-cannon-slots">
             ${this.phase2Blocks.map((blk, idx) => {
               const isFilled = this.phase2Filled.length > idx;
@@ -494,7 +565,7 @@ class SiegeBattleEngine {
           ${this.phase2Bank.map(chunk => `
             <button class="siege-block-btn" onclick="window.siegeBattle.selectPhonicsChunk('${chunk.replace(/'/g, "\\'")}')">
               <span class="block-chunk">${chunk.toUpperCase()}</span>
-              <span class="block-type">自然拼读</span>
+              <span class="block-type">战术大筒令</span>
             </button>
           `).join('')}
         </div>
@@ -510,21 +581,23 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 阶段三指挥台：语境交际 (人教版 2024 新课标真实课本对话完形填空，天守斩将)
+   * 阶段三指挥台：本丸决战 · 战术交锋斩将落城
    */
   renderPhase3Deck(deckEl) {
     const word = this.currentWordObj;
     const sent = this.phase3Sentence || { prefix: '', blank: word.en, suffix: '', full: word.en, cn: word.cn };
+    const castle = this.getCastleInfo(this.stageNum);
+
     deckEl.innerHTML = `
       <div class="deck-phase-wrapper deck-phase-3">
         <div class="deck-instruction-bar">
-          <span class="inst-badge">阶段三 · 语境交际</span>
+          <span class="inst-badge">本丸决战 · 斩将落城</span>
           <span class="inst-text">选出恰当词汇补全课本对话，斩将落城！</span>
           <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentSentence()">🔊 读整句</button>
         </div>
 
         <div class="siege-dialogue-card">
-          <div class="dialogue-lead">💬 真实课本情境对话：</div>
+          <div class="dialogue-lead">⚔️ 天守决战对峙 · 【${castle.lord || '城督总大将'}】：</div>
           <div class="dialogue-line">
             ${sent.prefix}
             <span class="dialogue-blank ${this.phase3IsFilled ? 'is-filled' : ''}">
@@ -539,7 +612,7 @@ class SiegeBattleEngine {
           ${this.phase3Options.map(opt => `
             <button class="siege-opt-btn" onclick="window.siegeBattle.selectSentenceWord('${opt.en.replace(/'/g, "\\'")}')">
               <span class="opt-word">${opt.en}</span>
-              <span class="opt-cn">${opt.emoji || ''} ${opt.cn || ''}</span>
+              <span class="opt-cn">${opt.emoji || '⚔️'} ${opt.cn || ''}</span>
             </button>
           `).join('')}
         </div>
@@ -574,7 +647,30 @@ class SiegeBattleEngine {
   }
 
   /**
-   * 阶段一交互：玩家选择听音图意
+   * 朗读当前阶段军机密报情报
+   */
+  speakCurrentClue() {
+    if (this.phase1Intel && this.phase1Intel.en && window.audioEngine) {
+      window.audioEngine.speak(this.phase1Intel.en);
+    } else {
+      this.speakCurrentWord();
+    }
+  }
+
+  /**
+   * 朗读当前战阵战术指令口令
+   */
+  speakTacticalOrder() {
+    if (this.phase2Blocks && window.audioEngine) {
+      const order = `Load the cannon: ${this.phase2Blocks.join(', ')}!`;
+      window.audioEngine.speak(order);
+    } else {
+      this.speakCurrentWord();
+    }
+  }
+
+  /**
+   * 阶段一交互：玩家排查指认敌谍嫌疑人
    */
   selectConcept(selectedEn) {
     if (!this.isActive || this.isAttacking) return;
@@ -589,16 +685,19 @@ class SiegeBattleEngine {
         window.audioEngine.playKatanaSlash();
         window.audioEngine.playTaikoDrum();
       }
-      this.triggerHitFX('破砦');
+      this.triggerHitFX('破谍');
+      if (window.ui) {
+        window.ui.showToast('🎯 前田利家一枪制伏敌谍！搜获【城门布防密图】！', 1600);
+      }
       this.handlePhaseSuccess();
     } else {
       if (window.audioEngine) {
         window.audioEngine.playMistake();
       }
       if (window.ui) {
-        window.ui.showToast('💡 听音识意：仔细听，再选一次！', 1200);
+        window.ui.showToast('💡 军师点拨：仔细核对密报线索，再探一次！', 1400);
       }
-      this.speakCurrentWord();
+      this.speakCurrentClue();
     }
   }
 
@@ -629,6 +728,9 @@ class SiegeBattleEngine {
         this.currentSpelling = this.cleanTarget;
         this.enemyHp = 0;
         if (hpFill) hpFill.style.width = '0%';
+        if (window.ui) {
+          window.ui.showToast('💥 神威大筒破空轰鸣！大手城门轰然粉碎！', 1600);
+        }
         this.handlePhaseSuccess();
       }
     } else {
@@ -676,6 +778,9 @@ class SiegeBattleEngine {
         window.audioEngine.playKatanaSlash();
       }
       this.triggerHitFX('斩将');
+      if (window.ui) {
+        window.ui.showToast('⚔️ 决战对峙大捷！敌将弃刃受缚，名城告破！', 1600);
+      }
 
       this.speakCurrentSentence();
       this.handlePhaseSuccess();

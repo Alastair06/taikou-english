@@ -236,6 +236,150 @@ class PhonicsHelper {
       cn: `看这个${wordObj.cn || ''}！`
     };
   }
+
+  /**
+   * 战国名侦探 · 军机密报破案线索生成器 (用于阶段一：截获密报排查抓奸细)
+   */
+  static getSpyIntelClue(wordObj) {
+    if (!wordObj || !wordObj.en) {
+      return {
+        en: 'The spy carries a secret scroll!',
+        highlightEn: 'scroll',
+        cn: '密报线索：敌方细作怀揣接头密卷！速去擒拿！',
+        suspectTitle: '🥷 怀揣密信者',
+        suspectDesc: '可疑黑衣密探'
+      };
+    }
+    const en = wordObj.en.toLowerCase().replace(/[^a-z]/g, '');
+    const cn = wordObj.cn || '';
+
+    const clueDict = {
+      'meet': {
+        en: 'The spy will meet a traitor near the gate. Arrest the spy!',
+        highlightEn: 'meet',
+        cn: '密报：敌军细作正赶往关前【接头相见 meet】，速去擒拿！',
+        suspectTitle: '🥷 怀揣密信者',
+        suspectDesc: '东张西望等待接头'
+      },
+      'friend': {
+        en: 'The spy is disguised as an old friend with a bamboo hat.',
+        highlightEn: 'friend',
+        cn: '密报：细作伪装成戴斗笠的【友人知己 friend】潜伏在侧！',
+        suspectTitle: '🧑‍🤝‍🧑 伪装故交者',
+        suspectDesc: '神色慌张假装熟络'
+      },
+      'nice': {
+        en: 'Look for a nice box hidden under the cart!',
+        highlightEn: 'nice',
+        cn: '密报：细作把粮饷暗号藏在【精致匣子 nice】之中！',
+        suspectTitle: '📦 护送宝匣者',
+        suspectDesc: '紧抱雕花漆木精匣'
+      },
+      'hello': {
+        en: 'The spy said hello to the guard with a strange accent.',
+        highlightEn: 'hello',
+        cn: '密报：细作操着外邦口音向前哨打招呼【问好 hello】！',
+        suspectTitle: '🗣️ 攀谈问候者',
+        suspectDesc: '口音生硬攀附守卫'
+      },
+      'hi': {
+        en: 'The scout heard the spy whisper hi in the shadows.',
+        highlightEn: 'hi',
+        cn: '密报：斥候听见潜伏者在阴影中发出【暗号问候 hi】！',
+        suspectTitle: '🥷 暗影低语者',
+        suspectDesc: '躲在暗处发出暗号'
+      },
+      'name': {
+        en: 'The spy gave a fake name to pass the gate inspection.',
+        highlightEn: 'name',
+        cn: '密报：细作在关所查验时报出了虚假的【姓名 name】！',
+        suspectTitle: '📜 谎报姓名者',
+        suspectDesc: '通关文牒字迹涂改'
+      },
+      'school': {
+        en: 'The spy is hiding near the village school building.',
+        highlightEn: 'school',
+        cn: '密报：细作正潜伏在町屋【学堂 school】旁的古树下！',
+        suspectTitle: '🏫 学堂潜伏者',
+        suspectDesc: '倚靠学堂外墙窥视'
+      },
+      'morning': {
+        en: 'The attack will begin early in the morning before sunrise.',
+        highlightEn: 'morning',
+        cn: '密报：敌军计划在明日【清晨 morning】天明前突袭！',
+        suspectTitle: '🌅 拂晓斥候',
+        suspectDesc: '观测日出测算天色'
+      },
+      'apple': {
+        en: 'The spy stole a sweet red apple from the supply camp.',
+        highlightEn: 'apple',
+        cn: '密报：敌军细作在粮仓旁偷拿了一个【红苹果 apple】！',
+        suspectTitle: '🍎 偷藏苹果者',
+        suspectDesc: '袖口露出鲜红苹果'
+      },
+      'banana': {
+        en: 'Look for the merchant with a basket of yellow banana fruit.',
+        highlightEn: 'banana',
+        cn: '密报：细作假扮成挑着【香蕉 banana】的南蛮果贩！',
+        suspectTitle: '🍌 挑担果贩',
+        suspectDesc: '果筐下藏有短刃'
+      },
+      'cat': {
+        en: 'The spy has a black cat sleeping in his bamboo basket.',
+        highlightEn: 'cat',
+        cn: '密报：敌方密探竹篓里藏着一只【黑色猫咪 cat】！',
+        suspectTitle: '🐱 怀抱猫咪者',
+        suspectDesc: '竹篓中传出猫叫声'
+      },
+      'dog': {
+        en: 'Follow the suspicious traveler walking a brown dog.',
+        highlightEn: 'dog',
+        cn: '密报：可疑分子正牵着一条【忠犬小狗 dog】四处刺探！',
+        suspectTitle: '🐶 牵犬游荡者',
+        suspectDesc: '借遛犬暗探城防鹿砦'
+      },
+      'book': {
+        en: 'The spy dropped an English book on the path.',
+        highlightEn: 'book',
+        cn: '密报：敌军信使在山径遗落了一卷【英文书本 book】！',
+        suspectTitle: '📖 携带书卷者',
+        suspectDesc: '腰间别着古旧行军书'
+      },
+      'ruler': {
+        en: 'The engineer is measuring our stone wall with a ruler.',
+        highlightEn: 'ruler',
+        cn: '密报：敌方工兵正用【尺子 ruler】暗测我方城墙石垣！',
+        suspectTitle: '📏 量度石垣者',
+        suspectDesc: '持尺测量城垣高度'
+      },
+      'pencil': {
+        en: 'The spy is drawing our castle map with a pencil.',
+        highlightEn: 'pencil',
+        cn: '密报：密探正用【铅笔 pencil】在手绘城防要塞草图！',
+        suspectTitle: '✏️ 执笔绘图者',
+        suspectDesc: '怀中藏有炭笔图纸'
+      },
+      'fish': {
+        en: 'The spy is disguised as a fishmonger carrying fish.',
+        highlightEn: 'fish',
+        cn: '密报：密探假扮成提着【活鱼 fish】的渔夫混入正街！',
+        suspectTitle: '🐟 提篮渔夫',
+        suspectDesc: '鱼鳞中暗藏敌军令旗'
+      }
+    };
+
+    if (clueDict[en]) {
+      return clueDict[en];
+    }
+
+    return {
+      en: `The spy carries a secret item marked with "${wordObj.en}". Catch him!`,
+      highlightEn: wordObj.en,
+      cn: `密报：斥候探得敌方细作持有与【${cn || wordObj.en}】相关的暗号证物！`,
+      suspectTitle: `🥷 疑犯 · 持有【${wordObj.en}】`,
+      suspectDesc: `携带【${cn || wordObj.en}】密记证物`
+    };
+  }
 }
 
 window.PhonicsHelper = PhonicsHelper;
