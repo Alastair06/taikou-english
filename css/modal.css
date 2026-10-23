@@ -1746,16 +1746,21 @@
 }
 
 .tactical-banner-text {
-  font-size: 13px;
+  font-size: 12.5px;
+  line-height: 1.35;
   font-weight: 700;
   color: #fee2e2;
   display: flex;
   align-items: center;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 4px;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.siege-tactical-banner .btn-replay-sound {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 12px;
 }
 
 .tactical-banner-text strong {

@@ -271,7 +271,12 @@ class SiegeBattleEngine {
       ? window.wordManager.getAllTextbookWordsFlat()
       : [];
     
-    const others = allWords.filter(w => w.en.toLowerCase() !== target.en.toLowerCase());
+    // 优先从当前课本单元或邻近词段（±10 词范围）选取学龄相符的混淆目标
+    const startIdx = Math.max(0, (this.stageNum - 1) * 3 - 5);
+    const nearbyPool = allWords.slice(startIdx, startIdx + 18);
+    const candidatePool = nearbyPool.length >= 5 ? nearbyPool : allWords;
+
+    const others = candidatePool.filter(w => w.en.toLowerCase() !== target.en.toLowerCase());
     const shuffledOthers = others.sort(() => 0.5 - Math.random());
     const distractors = shuffledOthers.slice(0, 2);
 
@@ -284,11 +289,6 @@ class SiegeBattleEngine {
       distractors.push(fallbackPool[distractors.length]);
     }
 
-    const distractorRoles = [
-      { role: '🥋 巡逻卫士', desc: '身佩短刃守卫要塞' },
-      { role: '🌾 挑担翁', desc: '沿街叫卖神色自若' }
-    ];
-
     const targetOpt = {
       en: target.en,
       cn: target.cn,
@@ -299,15 +299,20 @@ class SiegeBattleEngine {
       isSpy: true
     };
 
-    const distractorOpts = distractors.map((d, idx) => ({
-      en: d.en,
-      cn: d.cn,
-      emoji: d.emoji || (idx === 0 ? '🥋' : '🌾'),
-      phonetic: d.phonetic,
-      suspectTitle: distractorRoles[idx]?.role || `🥋 盘查目标`,
-      suspectDesc: distractorRoles[idx]?.desc || `随身携带【${d.cn || d.en}】`,
-      isSpy: false
-    }));
+    const distractorOpts = distractors.map((d, idx) => {
+      const dIntel = (window.PhonicsHelper && window.PhonicsHelper.getSpyIntelClue)
+        ? window.PhonicsHelper.getSpyIntelClue(d)
+        : null;
+      return {
+        en: d.en,
+        cn: d.cn,
+        emoji: d.emoji || (idx === 0 ? '🥋' : '🌾'),
+        phonetic: d.phonetic,
+        suspectTitle: dIntel?.suspectTitle || (idx === 0 ? '🥋 巡逻卫士' : '🌾 挑担老翁'),
+        suspectDesc: dIntel?.suspectDesc || `随身携带【${d.cn || d.en}】`,
+        isSpy: false
+      };
+    });
 
     this.phase1Options = [targetOpt, ...distractorOpts].sort(() => 0.5 - Math.random());
   }
@@ -539,10 +544,10 @@ class SiegeBattleEngine {
         <!-- 大手门战阵传令号角 -->
         <div class="siege-tactical-banner">
           <div class="tactical-banner-text">
-            <span>📢 阵前急报：</span>
-            <span>城门厚木裹铁！前锋下令：<strong>“Load cannon charges [${blockOrderStr}] to break the gate!”</strong></span>
+            <span>📢 阵前号令：</span>
+            <span>装填大筒药包 <strong>[ ${blockOrderStr} ]</strong> 轰破城门！</span>
           </div>
-          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentWord()" title="听读音">🔊 听读音</button>
+          <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakTacticalOrder()" title="听战阵号令">🔊 听号令</button>
         </div>
 
         <div class="siege-cannon-assembly">

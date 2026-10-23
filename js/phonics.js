@@ -258,14 +258,28 @@ class PhonicsHelper {
         en: 'The spy will meet a traitor near the gate. Arrest the spy!',
         highlightEn: 'meet',
         cn: '密报：敌军细作正赶往关前【接头相见 meet】，速去擒拿！',
-        suspectTitle: '🥷 怀揣密信者',
-        suspectDesc: '东张西望等待接头'
+        suspectTitle: '🤝 接头密客',
+        suspectDesc: '正欲与同伙握手接头'
+      },
+      'happy': {
+        en: 'The spy pretended to be a happy merchant laughing in the crowd.',
+        highlightEn: 'happy',
+        cn: '密报：细作伪装成【开怀大笑 happy】的货郎潜伏在人群中！',
+        suspectTitle: '😄 欢笑货郎',
+        suspectDesc: '沿街嬉笑满面春风'
+      },
+      'colorful': {
+        en: 'Look out for the spy in colorful clothes near the watchtower.',
+        highlightEn: 'colorful',
+        cn: '密报：细作身穿【五彩斑斓 colorful】的行头在望楼旁游荡！',
+        suspectTitle: '🌈 彩衣浪人',
+        suspectDesc: '身披五彩斑斓锦袍'
       },
       'friend': {
         en: 'The spy is disguised as an old friend with a bamboo hat.',
         highlightEn: 'friend',
         cn: '密报：细作伪装成戴斗笠的【友人知己 friend】潜伏在侧！',
-        suspectTitle: '🧑‍🤝‍🧑 伪装故交者',
+        suspectTitle: '🧑‍🤝‍🧑 伪装故交',
         suspectDesc: '神色慌张假装熟络'
       },
       'nice': {
@@ -288,6 +302,69 @@ class PhonicsHelper {
         cn: '密报：斥候听见潜伏者在阴影中发出【暗号问候 hi】！',
         suspectTitle: '🥷 暗影低语者',
         suspectDesc: '躲在暗处发出暗号'
+      },
+      'gate': {
+        en: 'The spy was seen sneaking around the castle gate.',
+        highlightEn: 'gate',
+        cn: '密报：敌方奸细正在要塞【城门大门 gate】附近鬼祟窥探！',
+        suspectTitle: '🚪 窥门谍探',
+        suspectDesc: '在厚木城门前探头徘徊'
+      },
+      'street': {
+        en: 'The spy dropped an infiltration map on the main street.',
+        highlightEn: 'street',
+        cn: '密报：敌军斥候在町屋【街道大街 street】失落了布防图！',
+        suspectTitle: '🛣️ 巡街行者',
+        suspectDesc: '快步穿行于主道大街'
+      },
+      'fine': {
+        en: 'The spy claims he is fine and has a clean pass.',
+        highlightEn: 'fine',
+        cn: '密报：细作声称自己【安好无恙 fine】试图强闯木栅！',
+        suspectTitle: '☀️ 逞强行人',
+        suspectDesc: '强作镇定自称安好'
+      },
+      'thank': {
+        en: 'The spy bowed low and whispered thank you to the informant.',
+        highlightEn: 'thank',
+        cn: '密报：细作躬身对内应道出【感谢 thank】，形迹可疑！',
+        suspectTitle: '🙏 躬身致谢者',
+        suspectDesc: '低头连连躬身道谢'
+      },
+      'goodbye': {
+        en: 'The spy waved goodbye hurriedly to catch the boat.',
+        highlightEn: 'goodbye',
+        cn: '密报：细作仓促挥手【告别再见 goodbye】正欲登船逃遁！',
+        suspectTitle: '👋 仓皇辞行者',
+        suspectDesc: '挥手作别急于脱身'
+      },
+      'boy': {
+        en: 'A suspicious young boy was seen carrying arrow bundles.',
+        highlightEn: 'boy',
+        cn: '密报：一名形迹可疑的【少年男孩 boy】正搬运箭簇！',
+        suspectTitle: '👦 搬箭小童',
+        suspectDesc: '年纪尚轻步履沉重'
+      },
+      'girl': {
+        en: 'A clever girl in red kimono noticed the secret code.',
+        highlightEn: 'girl',
+        cn: '密报：一位着绯红衣衫的【少女姑娘 girl】藏匿了密条！',
+        suspectTitle: '👧 红衣姑娘',
+        suspectDesc: '袖中暗藏织田密纸'
+      },
+      'egg': {
+        en: 'The spy hid an explosive ball inside an egg shell basket.',
+        highlightEn: 'egg',
+        cn: '密报：细作把焙烙火玉藏在贩卖的【鸡蛋 egg】竹筐中！',
+        suspectTitle: '🥚 提筐蛋贩',
+        suspectDesc: '小心翼翼护着蛋筐'
+      },
+      'hen': {
+        en: 'Follow the peasant clutching a squawking hen.',
+        highlightEn: 'hen',
+        cn: '密报：可疑农夫怀抱一只叫唤的【母鸡 hen】企图混关！',
+        suspectTitle: '🐔 抱鸡农夫',
+        suspectDesc: '怀中母鸡羽毛夹信'
       },
       'name': {
         en: 'The spy gave a fake name to pass the gate inspection.',
