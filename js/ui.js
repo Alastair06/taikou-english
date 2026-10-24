@@ -3040,6 +3040,37 @@ class UIManager {
     const companionsHtml = companions.map(comp => {
       const isPortraitImg = comp.portrait && (comp.portrait.endsWith('.jpg') || comp.portrait.endsWith('.png'));
       const isCurrentActive = comp.isActive;
+      const wish = window.estateSystem ? window.estateSystem.getCompanionWish(comp.id) : null;
+      let wishHtml = '';
+      if (wish && comp.isUnlocked) {
+        const canFulfill = wish.haveCount >= wish.count;
+        wishHtml = `
+          <div class="companion-wish-pod">
+            <div class="wish-header">
+              <span class="wish-badge">📜 今日英文心愿</span>
+              <button class="btn btn-sm btn-sound-circle" onclick="event.stopPropagation(); window.audioEngine?.speak('${wish.textEn.replace(/'/g, "\\'")}')" title="倾听英文心愿朗读">🔊 听心愿</button>
+            </div>
+            <div class="wish-text-en">“${wish.textEn}”</div>
+            <div class="wish-text-cn">${wish.textCn}</div>
+            <div class="wish-status-line">
+              <span class="wish-item-need">${wish.itemIcon} ${wish.itemName}: 持有 <strong>${wish.haveCount}</strong> / 需求 ${wish.count}</span>
+              ${wish.isRelicUnlocked ? `<span class="wish-relic-badge">✨ 已获信物: ${wish.relicName}</span>` : `<span class="wish-reward-tag">🎁 奖: +${wish.rewardMerit}武勋 / ${wish.relicName}</span>`}
+            </div>
+            <div class="wish-action-bar">
+              ${canFulfill ? `
+                <button class="btn btn-sm btn-success btn-fulfill-wish" onclick="event.stopPropagation(); window.ui.fulfillEstateCompanionWish('${comp.id}')">
+                  🎁 交付心愿 (达成羁绊)
+                </button>
+              ` : `
+                <button class="btn btn-sm btn-primary btn-go-market" onclick="event.stopPropagation(); window.ui.closeEstateModal(); window.nanbanTrade.openTradeModal();">
+                  🛒 前往城下町采购 (${wish.haveCount}/${wish.count}) ➡️
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }
+
       return `
         <div class="estate-companion-card ${isCurrentActive ? 'is-active-companion' : ''}">
           <div class="companion-portrait-box">
@@ -3055,6 +3086,7 @@ class UIManager {
             </div>
             <div class="companion-desc-text">${comp.desc}</div>
             <div style="font-size:12px; color:#b45309; font-weight:700; margin-bottom:6px;">✨ ${comp.bonusText}</div>
+            ${wishHtml}
             <div class="companion-actions-row">
               ${comp.isUnlocked ? `
                 ${isCurrentActive
@@ -3242,6 +3274,18 @@ class UIManager {
       this.openEstateModal('companions');
     } else {
       this.showToast(res.msg, 2000);
+    }
+  }
+
+  fulfillEstateCompanionWish(companionId) {
+    if (!window.estateSystem) return;
+    const res = window.estateSystem.fulfillWish(companionId);
+    if (res.success) {
+      this.showToast(`✨ ${res.msg}`, 3500);
+      this.updateHomeProfile();
+      this.openEstateModal('companions');
+    } else {
+      this.showToast(res.msg, 2500);
     }
   }
 

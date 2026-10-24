@@ -8516,3 +8516,354 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
   color: #fef08a;
 }
 
+/* ==========================================================================
+   南蛮商肆与有声生鲜集市 (Nanban Voice Market & Goods)
+   ========================================================================== */
+
+.market-merchant-card {
+  display: flex;
+  gap: 12px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1.5px solid #d4a359;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.merchant-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.merchant-avatar {
+  font-size: 38px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.merchant-speech-box {
+  flex-grow: 1;
+}
+
+.merchant-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.merchant-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fef08a;
+}
+
+.trade-gold-pill {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.merchant-quote-en {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+  margin-bottom: 2px;
+}
+
+.merchant-quote-cn {
+  font-size: 10.5px;
+  color: #cbd5e1;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.merchant-polite-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.polite-lead {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.polite-chip {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid #38bdf8;
+  color: #e0f2fe;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.polite-chip:active, .polite-chip.is-active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #7dd3fc;
+  transform: scale(0.96);
+}
+
+.discount-active-banner {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid #10b981;
+  color: #6ee7b7;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-top: 4px;
+}
+
+/* 选项卡切换 */
+.market-nav-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.market-tab-btn {
+  flex: 1;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.market-tab-btn.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+/* 货物网格 */
+.market-goods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.market-good-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.good-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.good-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.good-title-col {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.good-en {
+  font-size: 13px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.good-cn {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.btn-sound-circle {
+  background: rgba(2, 132, 199, 0.1);
+  border: 1px solid #7dd3fc;
+  color: #0284c7;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.good-desc {
+  font-size: 10px;
+  color: #64748b;
+  line-height: 1.35;
+  margin: 0 0 6px;
+}
+
+.good-card-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 4px;
+}
+
+.good-price-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.price-val {
+  font-weight: 900;
+  color: #b45309;
+}
+
+.good-stock-chip {
+  font-size: 9.5px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.btn-buy-good {
+  width: 100%;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 0;
+  border-radius: 6px;
+}
+
+/* ==========================================================================
+   家臣日常英文心愿卡片 (Companion Wish Pod)
+   ========================================================================== */
+
+.companion-wish-pod {
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.6) 0%, rgba(254, 240, 138, 0.3) 100%);
+  border: 1.5px solid #f59e0b;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: 6px 0;
+  text-align: left;
+}
+
+.wish-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.wish-badge {
+  font-size: 10px;
+  font-weight: 800;
+  background: #f59e0b;
+  color: #78350f;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.wish-text-en {
+  font-size: 12px;
+  font-weight: 800;
+  color: #92400e;
+  line-height: 1.35;
+}
+
+.wish-text-cn {
+  font-size: 10.5px;
+  color: #78350f;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.wish-status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.wish-item-need {
+  font-weight: 800;
+  color: #b45309;
+}
+
+.wish-reward-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #15803d;
+  background: #dcfce7;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid #86efac;
+}
+
+.wish-relic-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid #fde68a;
+}
+
+.wish-action-bar {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-fulfill-wish {
+  width: 100%;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #34d399;
+}
+
+.btn-go-market {
+  width: 100%;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+}
+

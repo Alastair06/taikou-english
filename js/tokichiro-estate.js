@@ -174,6 +174,69 @@ const SENGOKU_COMPANIONS = [
   }
 ];
 
+const COMPANION_WISHES = {
+  nene: {
+    companionId: 'nene',
+    itemId: 'apple',
+    itemIcon: '🍎',
+    itemName: '鲜红苹果',
+    itemEn: 'Apple',
+    count: 2,
+    textEn: "Tohkichiro, I need 2 fresh Apples to make sweet dessert for the estate!",
+    textCn: "藤吉郎，我想做甜点，需要 2 个新鲜苹果 Apple 呢~",
+    rewardMerit: 60,
+    rewardGold: 30,
+    relicId: 'relic-nene-sachet',
+    relicName: '宁宁的樱花香囊',
+    relicDesc: '【内助贤妻信物】随身佩戴，合战主角生命上限 +5'
+  },
+  hidenaga: {
+    companionId: 'hidenaga',
+    itemId: 'rice',
+    itemIcon: '🌾',
+    itemName: '越光大米',
+    itemEn: 'Rice',
+    count: 2,
+    textEn: "Brother! The storehouse needs 2 bags of Rice to ensure troop rations!",
+    textCn: "兄长！军粮库需要 2 袋大米 Rice 稳固军心！",
+    rewardMerit: 60,
+    rewardGold: 40,
+    relicId: 'relic-hidenaga-abacus',
+    relicName: '秀长的黄金算盘',
+    relicDesc: '【胞弟理财信物】每日领地名城进贡金币额外 +20%'
+  },
+  toshiie: {
+    companionId: 'toshiie',
+    itemId: 'fish',
+    itemIcon: '🐟',
+    itemName: '肥美真鲷',
+    itemEn: 'Fish',
+    count: 1,
+    textEn: "Tohkichiro! Bring me 1 fine Fish, and we shall drink together tonight!",
+    textCn: "藤吉郎！带 1 条肥鱼 Fish 来，今晚痛饮庆功！",
+    rewardMerit: 70,
+    rewardGold: 20,
+    relicId: 'relic-toshiie-spear-tassel',
+    relicName: '枪之又左的大枪红缨',
+    relicDesc: '【至交猛将信物】合战全卡牌伤害永久 +2'
+  },
+  hanbei: {
+    companionId: 'hanbei',
+    itemId: 'tea',
+    itemIcon: '🍵',
+    itemName: '宇治名茶',
+    itemEn: 'Tea',
+    count: 1,
+    textEn: "My Lord, a cup of fine Tea helps calm the mind for strategy.",
+    textCn: "主公，若有宇治名茶 Tea，在下可多筹谋三条奇策。",
+    rewardMerit: 80,
+    rewardGold: 50,
+    relicId: 'relic-hanbei-fan',
+    relicName: '半兵卫的白羽军扇',
+    relicDesc: '【奇策军师信物】合战开局手牌额外多摸 1 张'
+  }
+};
+
 class TokichiroEstateSystem {
   constructor() {
     this.storageKey = 'taikou_estate_data_v1';
@@ -198,7 +261,9 @@ class TokichiroEstateSystem {
         'slot-garden-1': 'furn-flower'
       },
       activeCompanionId: 'hidenaga',
-      lastNeneClaimDate: ''
+      lastNeneClaimDate: '',
+      unlockedRelics: [],
+      wishesFulfilled: {}
     };
     if (!loaded) return defaultState;
     return {
@@ -207,7 +272,9 @@ class TokichiroEstateSystem {
       unlockedFurnitureIds: loaded.unlockedFurnitureIds || defaultState.unlockedFurnitureIds,
       placedSlots: loaded.placedSlots || defaultState.placedSlots,
       activeCompanionId: loaded.activeCompanionId || 'hidenaga',
-      lastNeneClaimDate: loaded.lastNeneClaimDate || ''
+      lastNeneClaimDate: loaded.lastNeneClaimDate || '',
+      unlockedRelics: loaded.unlockedRelics || [],
+      wishesFulfilled: loaded.wishesFulfilled || {}
     };
   }
 
@@ -377,6 +444,82 @@ class TokichiroEstateSystem {
       companion: comp,
       dialogue: comp.greeting,
       extraMsg
+    };
+  }
+
+  // =========================================================================
+  // 家臣日常英文心愿与羁绊信物系统 (Retainer Wish & Relic Bonds)
+  // =========================================================================
+
+  getCompanionWish(companionId) {
+    const wish = COMPANION_WISHES[companionId];
+    if (!wish) return null;
+    const fulfilledCount = (this.state.wishesFulfilled && this.state.wishesFulfilled[companionId]) || 0;
+    const isRelicUnlocked = this.hasRelic(wish.relicId);
+    const haveCount = window.heroManager ? window.heroManager.getItemCount(wish.itemId) : 0;
+    return {
+      ...wish,
+      fulfilledCount,
+      isRelicUnlocked,
+      haveCount
+    };
+  }
+
+  hasRelic(relicId) {
+    return (this.state.unlockedRelics || []).includes(relicId);
+  }
+
+  fulfillWish(companionId) {
+    const wish = COMPANION_WISHES[companionId];
+    if (!wish) return { success: false, msg: '心愿不存在' };
+
+    const hero = window.heroManager;
+    const haveCount = hero ? hero.getItemCount(wish.itemId) : 0;
+    if (haveCount < wish.count) {
+      return {
+        success: false,
+        msg: `行囊中【${wish.itemName}】不足！持有 ${haveCount}/${wish.count}，快前往城下町南蛮商馆采买吧！`
+      };
+    }
+
+    // 扣除所需物资
+    for (let i = 0; i < wish.count; i++) {
+      hero.useItem(wish.itemId);
+    }
+
+    // 奖励武勋与金钱
+    hero.addMerit(wish.rewardMerit);
+    hero.addGold(wish.rewardGold);
+
+    // 记录羁绊心愿达成
+    if (!this.state.wishesFulfilled) this.state.wishesFulfilled = {};
+    this.state.wishesFulfilled[companionId] = (this.state.wishesFulfilled[companionId] || 0) + 1;
+
+    // 解锁传世信物
+    let relicUnlockedMsg = '';
+    if (!this.hasRelic(wish.relicId)) {
+      if (!this.state.unlockedRelics) this.state.unlockedRelics = [];
+      this.state.unlockedRelics.push(wish.relicId);
+      relicUnlockedMsg = `\n🎁 获得家臣专属信物【${wish.relicName}】！${wish.relicDesc}`;
+    }
+    this.saveState();
+
+    // 播放封赏音乐与地道英文致谢
+    if (window.audioEngine) {
+      window.audioEngine.playPromotionFanfare();
+      setTimeout(() => {
+        window.audioEngine.speak("Thank you, Tohkichiro! You are so kind!");
+      }, 350);
+    }
+
+    const comp = this.getCompanions().find(c => c.id === companionId);
+    const compName = comp ? comp.name : '家臣';
+
+    return {
+      success: true,
+      wish,
+      compName,
+      msg: `【${compName}】接过【${wish.itemName} ×${wish.count}】，感动万分！\n武勋 +${wish.rewardMerit} ⭐，金判 +${wish.rewardGold} 贯 🪙！${relicUnlockedMsg}`
     };
   }
 }

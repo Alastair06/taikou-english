@@ -489,6 +489,15 @@ class CardBattleEngine {
     this.heroMaxHp = maxHearts * 10;
     this.heroHp = Math.max(10, curHearts * 10);
 
+    // 家臣羁绊信物加成
+    if (window.estateSystem?.hasRelic('relic-nene-sachet')) {
+      this.heroMaxHp += 5;
+      this.heroHp += 5;
+    }
+    if (window.estateSystem?.hasRelic('relic-toshiie-spear-tassel')) {
+      this.heroStrength += 2;
+    }
+
     // 配置敌将属性
     this.setupEnemy(this.stageNum, config.enemyConfig);
 
@@ -631,8 +640,12 @@ class CardBattleEngine {
     this.heroBlock = 0; // 回合初护甲重置
     this.enemy.block = 0; // 敌方护甲重置
 
-    // 抽 4 张卡牌
-    this.drawCards(4);
+    // 抽卡 (半兵卫军扇信物首回合多摸 1 张牌)
+    let drawCount = 4;
+    if (this.turn === 1 && window.estateSystem?.hasRelic('relic-hanbei-fan')) {
+      drawCount += 1;
+    }
+    this.drawCards(drawCount);
 
     // 决定敌方本回合意图
     this.rollEnemyIntent();
@@ -896,7 +909,11 @@ class CardBattleEngine {
     }
 
     // 获得金小判与武勋
-    const earnedGold = 25 + this.stageNum * 8;
+    let earnedGold = 25 + this.stageNum * 8;
+    // 秀长黄金算盘信物增益：金币 +20%
+    if (window.estateSystem?.hasRelic('relic-hidenaga-abacus')) {
+      earnedGold = Math.round(earnedGold * 1.2);
+    }
     const earnedMerit = 40 + this.stageNum * 10;
     if (window.heroManager) {
       window.heroManager.addGold(earnedGold);
