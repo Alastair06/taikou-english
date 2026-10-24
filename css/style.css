@@ -8867,3 +8867,102 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
   padding: 4px 8px;
 }
 
+/* ==========================================================================
+   多端与跨屏精细化适配：iPhone SE、iPhone 13/14/15、iPad 平板与横竖屏
+   ========================================================================== */
+
+/* 1. iPad 平板优化 (Tablet / iPad: min-width: 768px) */
+@media (min-width: 768px) {
+  .modal-trade-container {
+    max-width: 700px !important;
+  }
+  .market-goods-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+  }
+  .card-hand-deck {
+    gap: 12px !important;
+  }
+  .tactical-card {
+    width: 90px !important;
+    height: 132px !important;
+  }
+  .tactical-card .card-title-en {
+    font-size: 14px !important;
+  }
+  .tactical-card .card-crest-icon {
+    font-size: 28px !important;
+  }
+  .estate-companions-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 2. 手机横屏极致优化 (Mobile Landscape: max-height: 520px) */
+@media (orientation: landscape) and (max-height: 520px) {
+  .market-goods-grid {
+    max-height: 44vh !important;
+  }
+  .market-merchant-card {
+    padding: 6px 10px !important;
+    margin-bottom: 6px !important;
+  }
+  .merchant-avatar {
+    font-size: 28px !important;
+  }
+  .tactical-card {
+    width: 70px !important;
+    height: 100px !important;
+    padding: 4px 2px !important;
+  }
+  .tactical-card .card-crest-icon {
+    font-size: 20px !important;
+    margin-top: 2px !important;
+  }
+  .tactical-card .card-title-en {
+    font-size: 11px !important;
+  }
+  .tactical-card .card-title-cn {
+    font-size: 9px !important;
+  }
+  .tactical-card .card-badge-val {
+    font-size: 9px !important;
+    padding: 1px 4px !important;
+  }
+  .card-control-header {
+    margin-bottom: 2px !important;
+  }
+  .energy-orb-container {
+    padding: 2px 8px !important;
+  }
+  .btn-end-turn {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* 3. 小屏手机极致优化 (Small Mobile: max-width: 380px, 如 iPhone SE) */
+@media (max-width: 380px) {
+  .card-hand-deck {
+    gap: 4px !important;
+  }
+  .tactical-card {
+    width: 70px !important;
+    height: 112px !important;
+    padding: 4px 2px !important;
+  }
+  .tactical-card .card-title-en {
+    font-size: 11.5px !important;
+  }
+  .tactical-card .card-title-cn {
+    font-size: 9px !important;
+  }
+  .tactical-card .card-crest-icon {
+    font-size: 22px !important;
+  }
+  .market-goods-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
