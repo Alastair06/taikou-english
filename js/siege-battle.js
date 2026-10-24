@@ -63,7 +63,7 @@ class SiegeBattleEngine {
       { id: 7, name: '尾张 · 岩仓城', chapter: '尾张风云', lord: '岩仓城主 · 织田信安', desc: '尾张上四郡要冲，城墙以巨石垒砌！' },
       { id: 8, name: '尾张 · 小口城', chapter: '尾张风云', lord: '小口砦主', desc: '横亘于浓尾平原之间的小型要塞！' },
       { id: 9, name: '尾张 · 犬山城', chapter: '尾张风云', lord: '犬山城主 · 织田信清', desc: '木曾川崖顶耸立之白帝天守，水陆险关！' },
-      { id: 10, name: '尾张 · 小牧山城', chapter: '尾张风云', lord: '浓尾游击军统领', desc: '信长亲手筑造的平山城，石垣坚固绝伦！' },
+      { id: 10, name: '美浓 · 墨俣一夜城', chapter: '奇策筑拔', lord: '斋藤防线大将 · 稻叶山先锋', desc: '木下藤吉郎名震天下的神速筑城大决战！' },
       { id: 11, name: '尾张 · 守山城', chapter: '尾张风云', lord: '守山宿将', desc: '庄内川南岸的高地卫城，控扼尾东走廊！' },
       { id: 12, name: '尾张 · 末森城', chapter: '尾张风云', lord: '末森城主', desc: '三河与尾张交界的险隘重镇！' },
       { id: 13, name: '尾张 · 乐田城', chapter: '尾张风云', lord: '乐田砦主', desc: '前沿斥候密集结阵的平野木堡！' },
@@ -184,6 +184,14 @@ class SiegeBattleEngine {
     const battleScene = document.getElementById('scene-siege-battle');
     if (battleScene) {
       battleScene.classList.remove('hidden');
+      battleScene.classList.remove('stage-special-okehazama', 'stage-special-sunomata');
+      if (this.isOkehazamaStage()) {
+        battleScene.classList.add('stage-special-okehazama');
+        if (window.audioEngine?.playThunder) window.audioEngine.playThunder();
+      } else if (this.isSunomataStage()) {
+        battleScene.classList.add('stage-special-sunomata');
+        if (window.audioEngine?.playWoodHammer) window.audioEngine.playWoodHammer();
+      }
     }
 
     // 播放震天动地的出征阵太鼓
@@ -202,6 +210,51 @@ class SiegeBattleEngine {
       const castle = this.getCastleInfo(this.stageNum);
       window.ui.showToast(`⚔️ 攻城开拔！进军 ${castle.name}！`, '🚩');
     }
+  }
+
+  /**
+   * 判断是否为第 5 关桶狭间本阵大决战
+   */
+  isOkehazamaStage() {
+    return this.stageNum === 5 || (this.getCastleInfo(this.stageNum).name || '').includes('桶狭间');
+  }
+
+  /**
+   * 判断是否为第 10 关墨俣一夜城神速筑拔大决战
+   */
+  isSunomataStage() {
+    return this.stageNum === 10 || this.stageNum === 19 || (this.getCastleInfo(this.stageNum).name || '').includes('墨俣');
+  }
+
+  /**
+   * 触发桶狭间白昼电光撕裂苍穹特效
+   */
+  triggerLightningEffect() {
+    const scene = document.getElementById('scene-siege-battle');
+    if (!scene) return;
+    const flash = document.createElement('div');
+    flash.className = 'lightning-flash-overlay';
+    scene.appendChild(flash);
+    if (window.audioEngine?.playThunder) {
+      window.audioEngine.playThunder();
+    }
+    setTimeout(() => flash.remove(), 400);
+  }
+
+  /**
+   * 触发墨俣一夜城木料马防栅拔地耸立特效
+   */
+  triggerPalisadeRiseEffect() {
+    const scene = document.getElementById('scene-siege-battle');
+    if (!scene) return;
+    const banner = document.createElement('div');
+    banner.className = 'palisade-rise-banner';
+    banner.innerHTML = '🪵 墨俣马防栅拔地筑起！坚壁固防，轰碎敌阵！';
+    scene.appendChild(banner);
+    if (window.audioEngine?.playWoodHammer) {
+      window.audioEngine.playWoodHammer();
+    }
+    setTimeout(() => banner.remove(), 1800);
   }
 
   /**
@@ -266,6 +319,25 @@ class SiegeBattleEngine {
     this.phase1Intel = (window.PhonicsHelper && window.PhonicsHelper.getSpyIntelClue)
       ? window.PhonicsHelper.getSpyIntelClue(target)
       : { en: `The spy is holding ${target.en}!`, highlightEn: target.en, cn: `密报：细作持有【${target.cn || target.en}】暗号！`, suspectTitle: `🥷 疑犯 · 持有【${target.en}】`, suspectDesc: '神色匆匆' };
+
+    // 桶狭间与墨俣一夜城专属历史情报线索
+    if (this.isOkehazamaStage()) {
+      this.phase1Intel = {
+        en: `Heavy rain is falling! The spy will meet near the tent. Arrest him!`,
+        highlightEn: target.en,
+        cn: `密报：暴雨雷霆突降！敌营避雨混乱，细作冒雨赶往中军帐【相见接头 ${target.en}】，速擒之！`,
+        suspectTitle: `🌧️ 避雨亲卫 · [${target.en}]`,
+        suspectDesc: '披蓑衣冒雨疾行'
+      };
+    } else if (this.isSunomataStage()) {
+      this.phase1Intel = {
+        en: `Timber rafts are floating down the river. Catch the spy!`,
+        highlightEn: target.en,
+        cn: `密报：长良川预制浮木顺流而下！美浓奸细正企图在河滩【接头探查 ${target.en}】，速速擒拿！`,
+        suspectTitle: `🛶 潜伏筏夫 · [${target.en}]`,
+        suspectDesc: '腰藏火石窥探木排'
+      };
+    }
 
     const allWords = (window.wordManager && window.wordManager.getAllTextbookWordsFlat)
       ? window.wordManager.getAllTextbookWordsFlat()
@@ -415,11 +487,52 @@ class SiegeBattleEngine {
       hpFill.style.width = '100%';
     }
 
+    // 渲染特殊历史战役专属机关横幅标牌
+    let bannerSlot = document.getElementById('siege-special-banner-slot');
+    if (!bannerSlot) {
+      const arena = document.getElementById('siege-arena');
+      if (arena) {
+        bannerSlot = document.createElement('div');
+        bannerSlot.id = 'siege-special-banner-slot';
+        bannerSlot.style.position = 'absolute';
+        bannerSlot.style.top = '6px';
+        bannerSlot.style.left = '50%';
+        bannerSlot.style.transform = 'translateX(-50%)';
+        bannerSlot.style.zIndex = '20';
+        bannerSlot.style.width = 'calc(100% - 24px)';
+        bannerSlot.style.maxWidth = '520px';
+        arena.appendChild(bannerSlot);
+      }
+    }
+    if (bannerSlot) {
+      if (this.isOkehazamaStage()) {
+        bannerSlot.innerHTML = `
+          <div class="siege-special-banner okehazama-banner">
+            <span class="special-banner-tag">⛈️ 战役专属机关</span>
+            <span class="special-banner-title">【桶狭间骤雨雷霆】敌四万避雨散乱！雷暴掩护奇袭今川本阵！</span>
+          </div>
+        `;
+      } else if (this.isSunomataStage()) {
+        bannerSlot.innerHTML = `
+          <div class="siege-special-banner sunomata-banner">
+            <span class="special-banner-tag">🪵 战役专属机关</span>
+            <span class="special-banner-title">【墨俣神速筑城】长良川浮木顺流而下！边战边筑一昼夜拔地耸立！</span>
+          </div>
+        `;
+      } else {
+        bannerSlot.innerHTML = '';
+      }
+    }
+
     if (this.currentPhase === 1) {
       if (phaseBadge) phaseBadge.textContent = '阶段一 · 外丸攻坚';
       if (phaseTitle) phaseTitle.textContent = '听音识意破除鹿砦斥候';
       if (enemyTitle) enemyTitle.textContent = '外丸游击防线';
-      if (enemyName) enemyName.textContent = '🥷 鹿砦守备斥候';
+      if (enemyName) {
+        enemyName.textContent = this.isOkehazamaStage()
+          ? '🌧️ 桶狭间避雨斥候'
+          : (this.isSunomataStage() ? '🛶 阻木斋藤野伏' : '🥷 鹿砦守备斥候');
+      }
       if (enemyImg) {
         enemyImg.src = 'assets/characters/goblin.png';
         enemyImg.alt = '鹿砦守备斥候';
@@ -428,7 +541,11 @@ class SiegeBattleEngine {
       if (phaseBadge) phaseBadge.textContent = '阶段二 · 强攻大手门';
       if (phaseTitle) phaseTitle.textContent = '拼读积木大筒轰破城门';
       if (enemyTitle) enemyTitle.textContent = '城堡核心关防';
-      if (enemyName) enemyName.textContent = '🏯 大手厚木城门';
+      if (enemyName) {
+        enemyName.textContent = this.isOkehazamaStage()
+          ? '🏯 今川大营中军辕门'
+          : (this.isSunomataStage() ? '🏯 墨俣前沿拒马铁闸' : '🏯 大手厚木城门');
+      }
       if (enemyImg) {
         enemyImg.src = 'assets/environment/castle_gate.png';
         enemyImg.alt = '大手厚木城门';
@@ -436,8 +553,16 @@ class SiegeBattleEngine {
     } else if (this.currentPhase === 3) {
       if (phaseBadge) phaseBadge.textContent = '阶段三 · 本丸决战';
       if (phaseTitle) phaseTitle.textContent = '课本语境天守一骑讨斩将！';
-      if (enemyTitle) enemyTitle.textContent = '守城总大将';
-      if (enemyName) enemyName.textContent = `👹 ${castle.lord || '城督主将'}`;
+      if (enemyTitle) {
+        enemyTitle.textContent = this.isOkehazamaStage()
+          ? '东海道第一弓取'
+          : (this.isSunomataStage() ? '斋藤防线总大将' : '守城总大将');
+      }
+      if (enemyName) {
+        enemyName.textContent = this.isOkehazamaStage()
+          ? '👹 敌军总大将 · 今川义元'
+          : (this.isSunomataStage() ? '👹 斋藤防线大将 · 稻叶山先锋' : `👹 ${castle.lord || '城督主将'}`);
+      }
       if (enemyImg) {
         enemyImg.src = 'assets/characters/general.png';
         enemyImg.alt = castle.lord;
@@ -544,8 +669,13 @@ class SiegeBattleEngine {
         <!-- 大手门战阵传令号角 -->
         <div class="siege-tactical-banner">
           <div class="tactical-banner-text">
-            <span>📢 阵前号令：</span>
-            <span>装填大筒药包 <strong>[ ${blockOrderStr} ]</strong> 轰破城门！</span>
+            ${this.isOkehazamaStage()
+              ? `<span>⛈️ 战役号令：</span><span>借雷声掩护！装填雷火药包 <strong>[ ${blockOrderStr} ]</strong> 轰碎中军辕门！</span>`
+              : (this.isSunomataStage()
+                ? `<span>🪵 战役号令：</span><span>长良川运木！装填大筒药包 <strong>[ ${blockOrderStr} ]</strong> 拔地筑立马防栅！</span>`
+                : `<span>📢 阵前号令：</span><span>装填大筒药包 <strong>[ ${blockOrderStr} ]</strong> 轰破城门！</span>`
+              )
+            }
           </div>
           <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakTacticalOrder()" title="听战阵号令">🔊 听号令</button>
         </div>
@@ -733,8 +863,20 @@ class SiegeBattleEngine {
         this.currentSpelling = this.cleanTarget;
         this.enemyHp = 0;
         if (hpFill) hpFill.style.width = '0%';
-        if (window.ui) {
-          window.ui.showToast('💥 神威大筒破空轰鸣！大手城门轰然粉碎！', 1600);
+        if (this.isOkehazamaStage()) {
+          this.triggerLightningEffect();
+          if (window.ui) {
+            window.ui.showToast('⛈️ 雷暴贯空！神威雷火炮轰碎今川大营辕门！', 1600);
+          }
+        } else if (this.isSunomataStage()) {
+          this.triggerPalisadeRiseEffect();
+          if (window.ui) {
+            window.ui.showToast('🪵 墨俣马防栅拔地耸立！神威木炮轰碎敌军夜袭！', 1600);
+          }
+        } else {
+          if (window.ui) {
+            window.ui.showToast('💥 神威大筒破空轰鸣！大手城门轰然粉碎！', 1600);
+          }
         }
         this.handlePhaseSuccess();
       }
@@ -1062,8 +1204,30 @@ class SiegeBattleEngine {
     const castle = this.getCastleInfo(this.stageNum);
 
     // 战胜大捷犒赏：金币与武勋
-    const baseMerit = 120;
-    const baseGold = 100;
+    let baseMerit = 120;
+    let baseGold = 100;
+    let victoryEval = `🏯 落城大捷 · 攻拔${castle.name}！织田军旗插上天守！`;
+
+    if (this.isOkehazamaStage()) {
+      baseMerit += 180;
+      baseGold += 200;
+      victoryEval = `⛈️ 暴雨雷霆奇袭大捷！今川义元授首！信长亲赐名物名刀【宗三左文字】！`;
+      if (window.heroManager) {
+        window.heroManager.addMerit(100);
+      }
+    } else if (this.isSunomataStage()) {
+      baseMerit += 220;
+      baseGold += 250;
+      victoryEval = `🪵 墨俣神速筑城大捷！长良川拔地耸立一夜城，名动天下！居所解锁【墨俣小天守】！`;
+      if (window.estateSystem) {
+        window.estateSystem.state.unlockedFurnitureIds = window.estateSystem.state.unlockedFurnitureIds || [];
+        if (!window.estateSystem.state.unlockedFurnitureIds.includes('furn-screen-gold')) {
+          window.estateSystem.state.unlockedFurnitureIds.push('furn-screen-gold');
+        }
+        window.estateSystem.saveState();
+      }
+    }
+
     this.earnedMerit += baseMerit;
     this.earnedGold += baseGold;
 
@@ -1091,7 +1255,7 @@ class SiegeBattleEngine {
         totalGold: this.earnedGold,
         totalMerit: this.earnedMerit,
         streakDays: (window.progressManager ? window.progressManager.getStreakDays() : 1) + (this.isReplay ? 0 : 1),
-        evaluation: `🏯 落城大捷 · 攻拔${castle.name}！织田军旗插上天守！`
+        evaluation: victoryEval
       });
     }
   }

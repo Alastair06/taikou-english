@@ -1256,10 +1256,12 @@ class UIManager {
             <div class="nobunaga-crest">${isReplay ? '⚡ 织田信长温故感状 ⚡' : '⚡ 织田信长军功感状 ⚡'}</div>
             <h2 class="victory-title">${isReplay ? '合战演武 · 温故大捷！' : '今日主命 · 大捷告成！'}</h2>
             <div class="victory-stage-tag">🚩 第 ${stageNum} 关 ${isReplay ? '· 温故演武' : `/ 共 ${totalStages} 关 · 【${curWord.unit || 'Unit 1'}】`}</div>
-            <p class="victory-sub">
-              ${isReplay 
-                ? '信长公赞道：<strong>“温故而知新，赏格分毫不差！”</strong>'
-                : '信长公大喜：<strong>“真乃奇才！今日之词尽皆参透，封赏必重！”</strong>'}
+            <p class="victory-sub" id="victory-evaluation">
+              ${data.evaluation 
+                ? `<strong>${data.evaluation}</strong>` 
+                : (isReplay 
+                  ? '信长公赞道：<strong>“温故而知新，赏格分毫不差！”</strong>'
+                  : '信长公大喜：<strong>“真乃奇才！今日之词尽皆参透，封赏必重！”</strong>')}
             </p>
             <div class="victory-rewards-box" id="victory-rewards-box">
               <div class="v-reward-col">
@@ -3112,6 +3114,9 @@ class UIManager {
                 <button class="btn btn-sm btn-primary" onclick="window.ui.openEstateModal('shop')" style="width:100%; font-size:11.5px; font-weight:800; padding:6px 12px; margin-top:4px;">
                   🛒 前往南蛮工坊购置家具 (${unlockedCount}/${catalog.length}) ➡️
                 </button>
+                <button class="btn btn-sm btn-success" onclick="window.ui.closeEstateModal(); window.teaMinigame.open();" style="width:100%; font-size:11.5px; font-weight:800; padding:6px 12px; margin-top:4px; background:linear-gradient(135deg, #059669 0%, #047857 100%); border-color:#10b981;">
+                  🍵 携家臣前往宗休茶室会友品茗 ➡️
+                </button>
               </div>
             </div>
           </div>
@@ -3152,6 +3157,12 @@ class UIManager {
         ` : `
           <!-- 视图 3：战国名将家臣团总览与随行调遣 -->
           <div class="estate-companions-container" style="padding: 4px;">
+            <div style="background:rgba(16,185,129,0.12); border:1.5px solid #10b981; border-radius:10px; padding:6px 10px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <span style="font-size:12px; font-weight:800; color:#065f46;">🍵 带上宁宁饭团与领地进贡，与随行家臣入席茶道！</span>
+              <button class="btn btn-sm btn-primary" onclick="window.ui.closeEstateModal(); window.teaMinigame.open();" style="font-size:11px; padding:3px 8px; white-space:nowrap;">
+                前往茶室品茗 ➡️
+              </button>
+            </div>
             <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
               <span>任命随行名将护卫出征，获专属合战加成；在宅邸可随时互动问候！</span>
               <span style="font-weight: 800; color: #b91c1c;">当前随行先锋：【${activeCompanion.name}】</span>

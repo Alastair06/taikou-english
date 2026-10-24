@@ -534,6 +534,46 @@ class AudioEngine {
     setTimeout(() => this.playTone(1046.50, 'sine', 0.35, 0.25), 360);
   }
 
+  // 7. 暴雨雷霆奇袭轰鸣 (Thunderclap FX for Okehazama)
+  playThunder() {
+    const ctx = this.ensureAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(80, now);
+      osc.frequency.exponentialRampToValueAtTime(25, now + 0.55);
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.6);
+    } catch (e) {}
+  }
+
+  // 8. 神速筑城立木敲击 (Wood Hammer FX for Sunomata)
+  playWoodHammer() {
+    const ctx = this.ensureAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.15);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } catch (e) {}
+  }
+
   playSlashSuccess() {
     this.playKatanaSlash();
   }

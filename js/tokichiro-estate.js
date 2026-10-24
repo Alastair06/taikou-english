@@ -348,7 +348,7 @@ class TokichiroEstateSystem {
     }
     return {
       success: true,
-      msg: '宁宁微笑着递来一枚热腾腾的【🍙 听音兵粮丸】！（背包已收入）'
+      msg: '宁宁微笑着递来一枚热腾腾的【🍙 听音兵粮丸】！可带往【宗休茶室】共品温热饭团触发专属茶会小剧情！'
     };
   }
 

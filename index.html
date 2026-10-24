@@ -900,10 +900,13 @@
   <div class="modal-overlay hidden" id="modal-tea-ceremony">
     <div class="modal-container" style="max-width: 580px;">
       <div class="modal-header">
-        <h3>🍵 宗休茶室 · 茶道翻牌</h3>
+        <h3>🍵 宗休茶室 · 茶道翻牌与家臣茶会</h3>
         <button class="modal-close" onclick="window.teaMinigame.close()">✕</button>
       </div>
       <div class="modal-body" style="padding: 16px;">
+        <!-- 家臣茶会与领地进贡席位条 -->
+        <div id="tea-companion-banquet-bar"></div>
+
         <div class="tea-info-bar">
           <span id="tea-status-msg">🍵 翻开茶盏，匹配中英词义。</span>
           <span class="tea-count-badge">已参透: <strong id="tea-pairs-count">0 / 3</strong></span>
