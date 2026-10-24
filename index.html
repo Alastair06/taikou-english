@@ -532,6 +532,12 @@
           <span class="start-main-text" id="home-start-btn-title">⚔️ 攻城出征 · 第 1 关</span>
         </button>
 
+        <button class="btn-home-card-battle" onclick="window.cardBattle.startCardBattleFromHome()" title="纯正卡牌策略决斗，零做题压力">
+          <span class="start-icon">🎴</span>
+          <span class="start-main-text">🎴 战术卡牌决斗 (Tactics Duel)</span>
+          <span class="start-sub-badge">纯策略 · 零做题</span>
+        </button>
+
         <!-- 次级功能卡片网格 (战国雕花木牌札) -->
         <div class="home-nav-grid" id="home-nav-grid">
           <button class="home-nav-btn" id="btn-nav-estate" data-feature="estate" onclick="window.ui.handleNavFeatureClick('estate', () => window.ui.openEstateModal())">
@@ -554,9 +560,9 @@
             <span class="home-nav-icon">🏯</span>
             <span class="home-nav-label">大名评定</span>
           </button>
-          <button class="home-nav-btn" id="btn-nav-cards" data-feature="cards" onclick="window.ui.handleNavFeatureClick('cards', () => window.cardsManager.openCardsBookModal())">
+          <button class="home-nav-btn" id="btn-nav-cards" data-feature="cards" onclick="window.cardBattle.openDeckViewerModal()" title="查看并倾听我的战术卡组">
             <span class="home-nav-icon">🎴</span>
-            <span class="home-nav-label">卡片录</span>
+            <span class="home-nav-label">战术卡组</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-overworld" data-feature="overworld" onclick="window.ui.handleNavFeatureClick('overworld', () => window.overworld.show())">
             <span class="home-nav-icon">🗺️</span>
@@ -1079,6 +1085,7 @@
   <script src="js/game-engine.js?v=26"></script>
   <script src="js/scenic-world.js?v=26"></script>
   <script src="js/siege-battle.js?v=30"></script>
+  <script src="js/card-battle.js?v=30"></script>
   <script src="js/honor-scroll.js?v=26"></script>
   <script src="js/ui.js?v=26"></script>
   <script src="js/app.js?v=26"></script>

@@ -463,6 +463,56 @@ class SiegeBattleEngine {
 
     const comboVal = document.getElementById('siege-combo-val');
     if (comboVal) comboVal.textContent = this.combo;
+
+    // 渲染卡牌决斗模式切换按钮
+    let modeBtn = document.getElementById('btn-toggle-card-mode');
+    if (!modeBtn) {
+      const hudRight = document.querySelector('.siege-hud-right');
+      if (hudRight) {
+        modeBtn = document.createElement('button');
+        modeBtn.className = 'btn btn-secondary btn-sm';
+        modeBtn.id = 'btn-toggle-card-mode';
+        modeBtn.onclick = () => this.toggleBattleMode();
+        hudRight.insertBefore(modeBtn, hudRight.firstChild);
+      }
+    }
+    if (modeBtn) {
+      const isCard = window.cardBattle && window.cardBattle.isActive;
+      modeBtn.innerHTML = isCard ? '📜 切演武' : '🎴 卡牌决斗';
+      modeBtn.style.background = isCard ? 'linear-gradient(135deg, #1e40af, #1e3a8a)' : 'linear-gradient(135deg, #991b1b, #7f1d1d)';
+      modeBtn.style.color = '#ffffff';
+      modeBtn.style.borderColor = isCard ? '#60a5fa' : '#f87171';
+    }
+  }
+
+  /**
+   * 启动纯战术卡牌决斗模式 (Slay-the-Spire 风格)
+   */
+  startCardBattle(stageNum = this.stageNum) {
+    if (window.cardBattle) {
+      window.cardBattle.startBattle({
+        stageNum: stageNum,
+        isOkehazama: this.isOkehazamaStage(),
+        isSunomata: this.isSunomataStage(),
+        onVictory: () => {
+          this.triggerCastleConquered();
+        }
+      });
+    }
+  }
+
+  /**
+   * 在战术卡牌决斗与密报演武之间切换
+   */
+  toggleBattleMode() {
+    if (window.cardBattle && window.cardBattle.isActive) {
+      window.cardBattle.isActive = false;
+      this.setupPhase(this.currentPhase);
+      if (window.ui) window.ui.showToast('📜 已切换为【密报演武】模式', 'ℹ️');
+    } else {
+      this.startCardBattle(this.stageNum);
+      if (window.ui) window.ui.showToast('🎴 已切换为【战术卡牌决斗】模式！出牌杀敌！', '⚔️');
+    }
   }
 
   /**

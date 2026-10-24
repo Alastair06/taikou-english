@@ -578,6 +578,63 @@ class AudioEngine {
     this.playKatanaSlash();
   }
 
+  // 9. 坚固护盾格挡金属撞击音 (Shield Block Clang)
+  playShieldBlock() {
+    if (window.haptics) window.haptics.tap();
+    const ctx = this.ensureAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(480, now);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } catch (e) {}
+  }
+
+  // 10. 神弓破空放箭音 (Bow Release & Arrow Flight)
+  playBowShoot() {
+    if (window.haptics) window.haptics.tap();
+    const ctx = this.ensureAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(260, now + 0.18);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } catch (e) {}
+  }
+
+  // 11. 治愈灵光甘霖音 (Heal Chime)
+  playHealChime() {
+    if (window.haptics) window.haptics.success();
+    this.playTone(523.25, 'sine', 0.18, 0.25); // C5
+    setTimeout(() => this.playTone(659.25, 'sine', 0.2, 0.25), 90); // E5
+    setTimeout(() => this.playTone(783.99, 'sine', 0.22, 0.3), 180); // G5
+    setTimeout(() => this.playTone(1046.50, 'sine', 0.25, 0.35), 270); // C6
+  }
+
+  // 12. 气力充盈蓄能音 (Energy Charge)
+  playEnergyCharge() {
+    this.playTone(330, 'triangle', 0.12, 0.15);
+    setTimeout(() => this.playTone(440, 'triangle', 0.15, 0.2), 80);
+  }
+
   playSlashMiss() {
     this.playMistake();
   }
