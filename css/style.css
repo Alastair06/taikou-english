@@ -8464,3 +8464,55 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
   border-radius: 999px;
 }
 
+/* 家臣战斗助战标牌 */
+.companion-battle-tag-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(180, 83, 9, 0.25);
+  border: 1px solid #d97706;
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-top: 3px;
+  font-size: 10px;
+  color: #fef3c7;
+}
+
+.companion-battle-tag-strip .comp-tag-avatar {
+  font-size: 12px;
+}
+
+.companion-battle-tag-strip .comp-tag-name {
+  font-weight: 800;
+  color: #fef08a;
+}
+
+.companion-battle-tag-strip .comp-tag-role {
+  background: #b45309;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 0 3px;
+  font-size: 8.5px;
+}
+
+/* 卡牌来源标识 (课本词 / 家臣专属) */
+.card-origin-pill {
+  position: absolute;
+  top: 14px;
+  right: -4px;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border: 1px solid #7dd3fc;
+  color: #ffffff;
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 0 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.card-origin-pill.is-comp {
+  background: linear-gradient(135deg, #b45309, #78350f);
+  border-color: #fde047;
+  color: #fef08a;
+}
+

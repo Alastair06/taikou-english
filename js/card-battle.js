@@ -254,6 +254,172 @@ class CardBattleEngine {
         block: 12,
         vfx: 'wood',
         desc: '【墨俣秘宝】一昼夜拔地耸立马防栅！获得 12 点坚固护甲'
+      },
+
+      // 随行家臣专属战术支援神卡 (Companion Signature Cards)
+      eat: {
+        id: 'eat',
+        en: 'Eat',
+        cn: '进食 (饭团)',
+        type: 'skill',
+        cost: 0,
+        icon: '🍙',
+        heal: 8,
+        draw: 1,
+        vfx: 'heal',
+        isCompanion: true,
+        desc: '【宁宁手作饭团】大快朵颐！恢复 8 点生命并抽 1 张牌'
+      },
+      read: {
+        id: 'read',
+        en: 'Read',
+        cn: '察阅 (军机)',
+        type: 'defense',
+        cost: 0,
+        icon: '📖',
+        block: 8,
+        draw: 1,
+        vfx: 'shield',
+        isCompanion: true,
+        desc: '【秀长军机账本】熟读虚实！获得 8 点护盾并抽 1 张牌'
+      },
+      brave: {
+        id: 'brave',
+        en: 'Brave',
+        cn: '勇武 (突锋)',
+        type: 'attack',
+        cost: 0,
+        icon: '🦁',
+        strength: 4,
+        vfx: 'charge',
+        isCompanion: true,
+        desc: '【利家枪之又左】并肩勇武！本回合所有攻击伤害 +4'
+      },
+      plan: {
+        id: 'plan',
+        en: 'Plan',
+        cn: '奇谋 (妙策)',
+        type: 'skill',
+        cost: 0,
+        icon: '🪭',
+        draw: 2,
+        vfx: 'charge',
+        isCompanion: true,
+        desc: '【半兵卫今孔明】运筹帷幄！立即从抽牌堆摸 2 张牌'
+      },
+
+      // 人教版新课标核心词汇战术卡 (Curriculum Core Vocabulary Cards)
+      meet: {
+        id: 'meet',
+        en: 'Meet',
+        cn: '相会 (结识)',
+        type: 'skill',
+        cost: 0,
+        icon: '🤝',
+        draw: 2,
+        vfx: 'charge',
+        isTextbook: true,
+        desc: '【Unit 1 核心词】结识新战友！立即抽 2 张战术手牌'
+      },
+      friend: {
+        id: 'friend',
+        en: 'Friend',
+        cn: '知己 (连携)',
+        type: 'attack',
+        cost: 1,
+        icon: '🧑‍🤝‍🧑',
+        dmg: 11,
+        vfx: 'strike',
+        isTextbook: true,
+        desc: '【Unit 1 核心词】知己同心！呼唤随行战友合力突刺 11 伤'
+      },
+      nice: {
+        id: 'nice',
+        en: 'Nice',
+        cn: '惬意 (怡神)',
+        type: 'skill',
+        cost: 1,
+        icon: '😊',
+        heal: 6,
+        block: 6,
+        vfx: 'heal',
+        isTextbook: true,
+        desc: '【Unit 1 核心词】心情愉悦！恢复 6 生命并获得 6 护盾'
+      },
+      book: {
+        id: 'book',
+        en: 'Book',
+        cn: '兵书 (典籍)',
+        type: 'skill',
+        cost: 1,
+        icon: '📕',
+        energy: 1,
+        draw: 1,
+        vfx: 'charge',
+        isTextbook: true,
+        desc: '【Unit 2 核心词】研习兵书！恢复 1 气力并摸 1 张牌'
+      },
+      ruler: {
+        id: 'ruler',
+        en: 'Ruler',
+        cn: '铁尺 (量衡)',
+        type: 'attack',
+        cost: 1,
+        icon: '📏',
+        dmg: 9,
+        block: 3,
+        vfx: 'strike',
+        isTextbook: true,
+        desc: '【Unit 2 核心词】矩不正不可为方！造成 9 伤害并获 3 护盾'
+      },
+      pencil: {
+        id: 'pencil',
+        en: 'Pencil',
+        cn: '铅笔 (画策)',
+        type: 'attack',
+        cost: 1,
+        icon: '✏️',
+        dmg: 7,
+        pierce: true,
+        vfx: 'arrow',
+        isTextbook: true,
+        desc: '【Unit 2 核心词】笔锋如剑！造成 7 点真实穿甲伤害'
+      },
+      water: {
+        id: 'water',
+        en: 'Water',
+        cn: '甘泉 (解渴)',
+        type: 'skill',
+        cost: 1,
+        icon: '💧',
+        heal: 10,
+        vfx: 'heal',
+        isTextbook: true,
+        desc: '【高频生活词】清冽清泉！恢复 10 点生命值'
+      },
+      apple: {
+        id: 'apple',
+        en: 'Apple',
+        cn: '红苹果 (粮草)',
+        type: 'skill',
+        cost: 0,
+        icon: '🍎',
+        heal: 5,
+        vfx: 'heal',
+        isTextbook: true,
+        desc: '【高频生活词】清脆多汁的苹果！恢复 5 点生命'
+      },
+      look: {
+        id: 'look',
+        en: 'Look',
+        cn: '观察 (洞悉)',
+        type: 'defense',
+        cost: 0,
+        icon: '👀',
+        block: 5,
+        vfx: 'shield',
+        isTextbook: true,
+        desc: '【高频动作词】洞察敌将破绽！获得 5 护盾'
       }
     };
   }
@@ -326,16 +492,33 @@ class CardBattleEngine {
     // 配置敌将属性
     this.setupEnemy(this.stageNum, config.enemyConfig);
 
+    // 获取当前随行家臣并注入首轮专属支援卡
+    const comp = (window.estateSystem && window.estateSystem.getActiveCompanion)
+      ? window.estateSystem.getActiveCompanion()
+      : { id: 'hidenaga', name: '木下秀长', role: '错题军师', icon: '📜' };
+    this.activeCompanion = comp;
+
+    const companionCardMap = {
+      nene: 'eat',
+      hidenaga: 'read',
+      toshiie: 'brave',
+      hanbei: 'plan'
+    };
+    const compCardId = companionCardMap[comp.id] || 'read';
+
     // 构建战斗抽牌堆 (洗牌)
     this.drawPile = [...this.persistentDeck].sort(() => 0.5 - Math.random());
     this.hand = [];
     this.discardPile = [];
 
+    // 首轮必出：随行家臣专属战术支援卡置于堆顶！
+    this.drawPile.push(compCardId);
+
     // 针对桶狭间与墨俣一夜城注入专属临时限定神卡
     if (this.stageNum === 5 || config.isOkehazama) {
-      this.drawPile.unshift('thunderstorm');
+      this.drawPile.push('thunderstorm');
     } else if (this.stageNum === 10 || config.isSunomata) {
-      this.drawPile.unshift('palisade');
+      this.drawPile.push('palisade');
     }
 
     // 渲染战场视口
@@ -753,18 +936,27 @@ class CardBattleEngine {
    * 弹出战利品【战术新卡三选一】选卡弹窗 (Card Draft Modal)
    */
   showCardDraftModal(onFinish) {
-    const candidateIds = [
+    // 课本学龄核心词汇卡池 (覆盖日常与新课标高频词)
+    const textbookCards = ['meet', 'friend', 'nice', 'book', 'ruler', 'pencil', 'water', 'apple', 'look'];
+    // 进阶战术卡池
+    const tacticalCards = [
       'double_slash', 'iron_wall', 'war_cry', 'piercing_arrow',
       'heavy_strike', 'dodge', 'first_aid', 'focus', 'poison_blade', 'strike'
     ];
 
     // 特殊关卡加入名物限定神卡
-    if (this.stageNum === 5) candidateIds.unshift('thunderstorm');
-    if (this.stageNum === 10) candidateIds.unshift('palisade');
+    if (this.stageNum === 5) tacticalCards.unshift('thunderstorm');
+    if (this.stageNum === 10) tacticalCards.unshift('palisade');
 
-    // 随机抽取 3 张不重复卡牌
-    const shuffled = [...candidateIds].sort(() => 0.5 - Math.random());
-    const selected3 = shuffled.slice(0, 3);
+    // 智能配比：优先抽取 1 张课本核心词汇卡 + 2 张战术策略卡，让孩子将课本词汇收入囊中！
+    const shuffledTextbook = [...textbookCards].sort(() => 0.5 - Math.random());
+    const shuffledTactical = [...tacticalCards].sort(() => 0.5 - Math.random());
+
+    const selected3 = [
+      shuffledTextbook[0],
+      shuffledTactical[0],
+      shuffledTactical[1]
+    ];
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop card-draft-modal-backdrop';
@@ -865,6 +1057,7 @@ class CardBattleEngine {
               <div class="tactical-card viewer-card-item is-${c.type}" onclick="window.audioEngine?.speak('${c.en}')">
                 <div class="card-cost-badge">${c.cost} ⚡</div>
                 <div class="card-stack-badge">x${count}</div>
+                ${c.isTextbook ? '<div class="card-origin-pill">课本词</div>' : (c.isCompanion ? '<div class="card-origin-pill is-comp">家臣</div>' : '')}
                 <div class="card-crest-icon">${c.icon}</div>
                 <div class="card-title-en">${c.en}</div>
                 <div class="card-title-cn">${c.cn}</div>
@@ -937,6 +1130,12 @@ class CardBattleEngine {
                 <div class="card-hp-fill is-hero" style="width: ${heroHpPct}%;"></div>
                 <span class="card-hp-label">❤️ ${this.heroHp}/${this.heroMaxHp}</span>
               </div>
+            </div>
+            <!-- 随行家臣助战标牌 -->
+            <div class="companion-battle-tag-strip" title="随行家臣助战">
+              <span class="comp-tag-avatar">${this.activeCompanion ? (this.activeCompanion.icon || '🧑‍🤝‍🧑') : '📜'}</span>
+              <span class="comp-tag-name">${this.activeCompanion ? this.activeCompanion.name : '木下秀长'}</span>
+              <span class="comp-tag-role">助战</span>
             </div>
           </div>
         </div>
