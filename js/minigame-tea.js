@@ -367,7 +367,7 @@ class TeaCeremonyMinigame {
       ];
     }
 
-    const shuffledPool = [...wordPool].sort(() => Math.random() - 0.5);
+    const shuffledPool = window.shuffleArray ? window.shuffleArray(wordPool) : [...wordPool];
     const chosenWords = shuffledPool.slice(0, this.totalPairs);
 
     const generated = [];
@@ -394,7 +394,7 @@ class TeaCeremonyMinigame {
       });
     });
 
-    this.cards = generated.sort(() => Math.random() - 0.5);
+    this.cards = window.shuffleArray ? window.shuffleArray(generated) : generated;
   }
 
   render() {

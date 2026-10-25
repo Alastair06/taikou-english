@@ -105,7 +105,7 @@ class MedicineMinigame {
       { en: 'apple', cn: '朱果', emoji: '🍎' }
     ];
 
-    const shuffled = [...candidateHerbs].sort(() => Math.random() - 0.5);
+    const shuffled = window.shuffleArray ? window.shuffleArray(candidateHerbs) : [...candidateHerbs];
     this.recipe = shuffled.slice(0, 3);
     this.currentStep = 0;
   }

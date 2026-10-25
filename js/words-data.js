@@ -4,6 +4,22 @@
  * 全书共 4 大单元，总计 178 个单词/短语
  */
 
+/**
+ * 全局 Fisher-Yates (Knuth) 严谨真随机洗牌算法
+ * 彻底消除 JavaScript Array.sort(() => Math.random() - 0.5) 偏差与选项固定在前排的漏洞
+ */
+window.shuffleArray = function(array) {
+  if (!array || !Array.isArray(array)) return [];
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+  return arr;
+};
+
 const SENGOKU_UNITS = [
   {
     id: 'pep2024-3a-u1',

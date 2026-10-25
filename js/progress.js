@@ -190,7 +190,8 @@ class ProgressManager {
     }
 
     // 组合今日冒险队列（新词与旧词穿插混合）
-    const combined = [...newWords, ...reviewWords].sort(() => Math.random() - 0.5);
+    const rawCombined = [...newWords, ...reviewWords];
+    const combined = window.shuffleArray ? window.shuffleArray(rawCombined) : rawCombined;
 
     return {
       date: this.getTodayDateStr(),

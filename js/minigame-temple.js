@@ -113,7 +113,7 @@ class TempleSentenceMinigame {
     this.container.classList.remove('hidden');
 
     // 随机抽取 3 句
-    const pool = [...TEMPLE_SENTENCES].sort(() => Math.random() - 0.5);
+    const pool = window.shuffleArray ? window.shuffleArray(TEMPLE_SENTENCES) : [...TEMPLE_SENTENCES];
     this.selectedSentences = pool.slice(0, this.totalRounds);
     this.currentRound = 0;
 
@@ -132,7 +132,7 @@ class TempleSentenceMinigame {
 
     // 打乱词块
     const tokens = this.activeSentence.tokens.map((t, idx) => ({ id: 'token-' + idx, text: t, correctIdx: idx }));
-    this.availableTokens = [...tokens].sort(() => Math.random() - 0.5);
+    this.availableTokens = window.shuffleArray ? window.shuffleArray(tokens) : [...tokens];
 
     this.render();
 

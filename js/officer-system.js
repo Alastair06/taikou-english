@@ -183,12 +183,14 @@ class OfficerSystem {
     const targetObj = allWords.find(w => w.en.toLowerCase() === wordKey.toLowerCase()) || { en: wordKey, cn: '释义' };
     
     // 生成选项
-    const others = allWords.filter(w => w.en.toLowerCase() !== wordKey.toLowerCase()).sort(() => Math.random() - 0.5).slice(0, 2);
-    const options = [
+    const candidateOthers = allWords.filter(w => w.en.toLowerCase() !== wordKey.toLowerCase());
+    const others = (window.shuffleArray ? window.shuffleArray(candidateOthers) : candidateOthers.sort(() => Math.random() - 0.5)).slice(0, 2);
+    const rawOptions = [
       { text: targetObj.cn, isCorrect: true },
       { text: others[0] ? others[0].cn : '其他', isCorrect: false },
       { text: others[1] ? others[1].cn : '选项', isCorrect: false }
-    ].sort(() => Math.random() - 0.5);
+    ];
+    const options = window.shuffleArray ? window.shuffleArray(rawOptions) : rawOptions.sort(() => Math.random() - 0.5);
 
     const body = document.getElementById('officer-residence-body');
     if (!body) return;

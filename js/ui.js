@@ -155,7 +155,10 @@ class UIManager {
     const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
     const curStage = Math.floor(curIdx / 3) + 1;
 
-    if (window.siegeBattle) {
+    // 优先开启战国英语战术卡牌决斗（英语语义破敌·连词成句，告别死板做题选单词！）
+    if (window.cardBattle) {
+      window.cardBattle.startBattle({ stageNum: curStage });
+    } else if (window.siegeBattle) {
       window.siegeBattle.startSiege(curStage);
     } else if (window.scenicWorld) {
       window.scenicWorld.show(curStage);
@@ -223,8 +226,8 @@ class UIManager {
         if (startBtn) startBtn.classList.add('finished');
       } else {
         startBtnTitle.textContent = (isTodayDone && window.progressManager && window.progressManager.state.dailyLimitUnlocked)
-          ? `⚔️ 进军第 ${curStage} 关 (家长特许)`
-          : `⚔️ 攻城出征 · 第 ${curStage} 关`;
+          ? `🎴 战术出征 · 第 ${curStage} 关 (家长特许)`
+          : `🎴 战术卡牌出征 · 第 ${curStage} 关`;
         if (startBtn) startBtn.classList.remove('finished');
       }
     }
@@ -2073,11 +2076,12 @@ class UIManager {
     // 挑选 2 个干扰词
     const allWords = window.wordManager ? window.wordManager.getAllTextbookWordsFlat() : [];
     const candidates = allWords.filter(w => w.en.toLowerCase() !== targetWord.en.toLowerCase());
-    const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+    const shuffled = window.shuffleArray ? window.shuffleArray(candidates) : candidates.sort(() => Math.random() - 0.5);
     const distractor1 = shuffled[0] || { en: 'book', cn: '书' };
     const distractor2 = shuffled[1] || { en: 'pen', cn: '钢笔' };
 
-    const choices = [targetWord, distractor1, distractor2].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, distractor1, distractor2];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     container.innerHTML = choices.map((c, i) => `
       <button class="chest-option-btn" onclick="window.ui.verifyChestChoice('${c.en.replace(/'/g, "\\'")}')">
@@ -2199,7 +2203,8 @@ class UIManager {
 
     const targetWord = this.getChallengeWord();
     const distractors = this.getDistractors(targetWord, 2);
-    const choices = [targetWord, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     const discountedPrice = Math.max(1, Math.round(item.cost * 0.5));
     const savedGold = item.cost - discountedPrice;
@@ -2372,7 +2377,8 @@ class UIManager {
 
     const targetWord = this.getChallengeWord();
     const distractors = this.getDistractors(targetWord, 2);
-    const choices = [targetWord, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     this.activeGateChallenge = {
       gate,
@@ -2611,7 +2617,8 @@ class UIManager {
     this.activeSteleNode = node;
     const targetWord = this.getChallengeWord();
     const distractors = this.getDistractors(targetWord, 2);
-    const choices = [targetWord, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     this.activeSteleChallenge = {
       wordObj: targetWord,
@@ -2729,7 +2736,8 @@ class UIManager {
     this.activeNanbanNode = node;
     const targetWord = this.getChallengeWord();
     const distractors = this.getDistractors(targetWord, 2);
-    const choices = [targetWord, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     this.activeNanbanChallenge = {
       wordObj: targetWord,
@@ -2844,7 +2852,8 @@ class UIManager {
     this.activeChestNode = node;
     const targetWord = (node && node.wordObj) || this.getChallengeWord();
     const distractors = this.getDistractors(targetWord, 2);
-    const choices = [targetWord, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     this.activeChestChallenge = { wordObj: targetWord, node };
 
@@ -2947,7 +2956,8 @@ class UIManager {
     this.activeSpiritNode = node;
     const targetWord = (node && node.wordObj) || this.getChallengeWord();
     const distractors = this.getDistractors(targetWord, 2);
-    const choices = [targetWord, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [targetWord, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     this.activeSpiritChallenge = { wordObj: targetWord, node };
 
@@ -3097,7 +3107,8 @@ class UIManager {
     this.activeTreasureSpot = spot;
     const target = spot.wordObj;
     const distractors = this.getDistractors(target, 2);
-    const choices = [target, ...distractors].sort(() => Math.random() - 0.5);
+    const rawChoices = [target, ...distractors];
+    const choices = window.shuffleArray ? window.shuffleArray(rawChoices) : rawChoices;
 
     const choicesHtml = choices.map((c, i) => `
       <button class="chest-choice-btn" onclick="window.ui.verifyTreasureHuntChoice('${c.en.replace(/'/g, "\\'")}')">
@@ -3831,7 +3842,8 @@ class UIManager {
 
     let interactiveHtml = '';
     if (step.action === 'quiz') {
-      const optsHtml = step.options.map(opt => `
+      const shuffledOptions = window.shuffleArray ? window.shuffleArray(step.options) : [...step.options];
+      const optsHtml = shuffledOptions.map(opt => `
         <button class="theater-opt-btn" onclick="window.ui.verifyTheaterChoice(${opt.correct}, '${opt.en.replace(/'/g, "\\'")}')">
           <span style="font-size:18px;">${opt.emoji}</span>
           <span style="color:#0f172a;">${opt.cn}</span>

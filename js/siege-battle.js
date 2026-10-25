@@ -349,7 +349,7 @@ class SiegeBattleEngine {
     const candidatePool = nearbyPool.length >= 5 ? nearbyPool : allWords;
 
     const others = candidatePool.filter(w => w.en.toLowerCase() !== target.en.toLowerCase());
-    const shuffledOthers = others.sort(() => 0.5 - Math.random());
+    const shuffledOthers = window.shuffleArray ? window.shuffleArray(others) : others;
     const distractors = shuffledOthers.slice(0, 2);
 
     while (distractors.length < 2) {
@@ -386,7 +386,8 @@ class SiegeBattleEngine {
       };
     });
 
-    this.phase1Options = [targetOpt, ...distractorOpts].sort(() => 0.5 - Math.random());
+    const rawPhase1Opts = [targetOpt, ...distractorOpts];
+    this.phase1Options = window.shuffleArray ? window.shuffleArray(rawPhase1Opts) : rawPhase1Opts;
   }
 
   /**
@@ -399,7 +400,8 @@ class SiegeBattleEngine {
 
     this.phase2Blocks = blocksData.targetBlocks || [this.cleanTarget];
     const distractors = blocksData.distractors || ['ing'];
-    this.phase2Bank = [...this.phase2Blocks, ...distractors].sort(() => 0.5 - Math.random());
+    const rawBank = [...this.phase2Blocks, ...distractors];
+    this.phase2Bank = window.shuffleArray ? window.shuffleArray(rawBank) : rawBank;
     this.phase2Filled = [];
   }
 
@@ -418,7 +420,7 @@ class SiegeBattleEngine {
       ? window.wordManager.getAllTextbookWordsFlat()
       : [];
     const others = allWords.filter(w => w.en.toLowerCase() !== this.currentWordObj.en.toLowerCase());
-    const shuffledOthers = others.sort(() => 0.5 - Math.random());
+    const shuffledOthers = window.shuffleArray ? window.shuffleArray(others) : others;
     const distractors = shuffledOthers.slice(0, 2);
 
     while (distractors.length < 2) {
@@ -430,10 +432,11 @@ class SiegeBattleEngine {
       distractors.push(fallbackPool[distractors.length]);
     }
 
-    this.phase3Options = [
+    const rawPhase3Opts = [
       { en: this.currentWordObj.en, cn: this.currentWordObj.cn, emoji: this.currentWordObj.emoji },
       ...distractors
-    ].sort(() => 0.5 - Math.random());
+    ];
+    this.phase3Options = window.shuffleArray ? window.shuffleArray(rawPhase3Opts) : rawPhase3Opts;
   }
 
   /**

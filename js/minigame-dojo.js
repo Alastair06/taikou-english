@@ -109,16 +109,16 @@ class DojoArcheryMinigame {
     let correctSyllable = wordLower.length > 3 ? wordLower.slice(0, 2) : wordLower.slice(0, 1);
     
     // 生成两个干扰音节靶标
-    const distractors = ['bl', 'ch', 'st', 'sh', 'tr', 'gr', 'sm', 'fl', 'dr', 'pl']
-      .filter(s => s !== correctSyllable)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 2);
+    const candidateDistractors = ['bl', 'ch', 'st', 'sh', 'tr', 'gr', 'sm', 'fl', 'dr', 'pl']
+      .filter(s => s !== correctSyllable);
+    const distractors = (window.shuffleArray ? window.shuffleArray(candidateDistractors) : candidateDistractors).slice(0, 2);
 
-    const options = [
+    const rawOptions = [
       { text: correctSyllable.toUpperCase(), isCorrect: true },
       { text: distractors[0].toUpperCase(), isCorrect: false },
       { text: distractors[1].toUpperCase(), isCorrect: false }
-    ].sort(() => Math.random() - 0.5);
+    ];
+    const options = window.shuffleArray ? window.shuffleArray(rawOptions) : rawOptions;
 
     const hintEl = document.getElementById('dojo-word-hint');
     if (hintEl) {

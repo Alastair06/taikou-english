@@ -695,15 +695,18 @@ class JapanOverworldManager {
         </div>
 
         <div class="scenario-options-list">
-          ${cp.options.map((opt, idx) => `
-            <button class="scenario-option-btn" onclick="window.overworld.chooseScenarioOption('${cp.id}', ${idx})">
-              <span class="opt-verb-tag">🔤 ${opt.verb}</span>
-              <div class="opt-text-group">
-                <span class="opt-en">"${opt.en}"</span>
-                <span class="opt-cn">${opt.cn}</span>
-              </div>
-            </button>
-          `).join('')}
+          ${(() => {
+            cp._currentOptions = window.shuffleArray ? window.shuffleArray(cp.options) : [...cp.options];
+            return cp._currentOptions.map((opt, idx) => `
+              <button class="scenario-option-btn" onclick="window.overworld.chooseScenarioOption('${cp.id}', ${idx})">
+                <span class="opt-verb-tag">🔤 ${opt.verb}</span>
+                <div class="opt-text-group">
+                  <span class="opt-en">"${opt.en}"</span>
+                  <span class="opt-cn">${opt.cn}</span>
+                </div>
+              </button>
+            `).join('');
+          })()}
         </div>
       </div>
     `;
@@ -716,9 +719,11 @@ class JapanOverworldManager {
    */
   chooseScenarioOption(cpId, optIdx) {
     const cp = this.checkpoints.find(c => c.id === cpId);
-    if (!cp || !cp.options || !cp.options[optIdx]) return;
+    if (!cp || !cp.options) return;
+    const optList = cp._currentOptions || cp.options;
+    if (!optList[optIdx]) return;
 
-    const opt = cp.options[optIdx];
+    const opt = optList[optIdx];
 
     if (opt.isCorrect) {
       cp.isSolved = true;

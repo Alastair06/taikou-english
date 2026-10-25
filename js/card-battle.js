@@ -777,8 +777,8 @@ class CardBattleEngine {
     };
     const compCardId = companionCardMap[comp.id] || 'read';
 
-    // 构建战斗抽牌堆 (洗牌)
-    this.drawPile = [...this.persistentDeck].sort(() => 0.5 - Math.random());
+    // 构建战斗抽牌堆 (真随机洗牌)
+    this.drawPile = window.shuffleArray ? window.shuffleArray(this.persistentDeck) : [...this.persistentDeck];
     this.hand = [];
     this.discardPile = [];
 
@@ -1145,8 +1145,8 @@ class CardBattleEngine {
     for (let i = 0; i < num; i++) {
       if (this.drawPile.length === 0) {
         if (this.discardPile.length === 0) break;
-        // 弃牌堆洗入抽牌堆
-        this.drawPile = [...this.discardPile].sort(() => 0.5 - Math.random());
+        // 弃牌堆洗入抽牌堆 (真随机洗牌)
+        this.drawPile = window.shuffleArray ? window.shuffleArray(this.discardPile) : [...this.discardPile];
         this.discardPile = [];
       }
       if (this.drawPile.length > 0) {
@@ -1607,8 +1607,8 @@ class CardBattleEngine {
     if (this.stageNum === 35) tacticalCards.unshift('dragon');
 
     // 智能配比：优先抽取 1 张课本核心词汇卡 + 2 张战术策略卡，让孩子将课本词汇收入囊中！
-    const shuffledTextbook = [...textbookCards].sort(() => 0.5 - Math.random());
-    const shuffledTactical = [...tacticalCards].sort(() => 0.5 - Math.random());
+    const shuffledTextbook = window.shuffleArray ? window.shuffleArray(textbookCards) : [...textbookCards];
+    const shuffledTactical = window.shuffleArray ? window.shuffleArray(tacticalCards) : [...tacticalCards];
 
     const selected3 = [
       shuffledTextbook[0],
@@ -1763,12 +1763,9 @@ class CardBattleEngine {
    * 从主界面直接开启战术卡牌决斗
    */
   startCardBattleFromHome() {
-    const curStage = (window.heroManager && window.heroManager.hero.stage) || 1;
-    if (window.siegeBattle) {
-      window.siegeBattle.startSiege(curStage);
-    } else {
-      this.startBattle({ stageNum: curStage });
-    }
+    const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
+    const curStage = Math.floor(curIdx / 3) + 1;
+    this.startBattle({ stageNum: curStage });
   }
 
   // ==========================================================================
