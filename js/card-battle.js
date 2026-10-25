@@ -307,6 +307,32 @@ class CardBattleEngine {
         isCompanion: true,
         desc: '【半兵卫今孔明】运筹帷幄！立即从抽牌堆摸 2 张牌'
       },
+      wind: {
+        id: 'wind',
+        en: 'Wind',
+        cn: '疾风 (如风)',
+        type: 'attack',
+        cost: 0,
+        icon: '🐎💨',
+        dmg: 10,
+        block: 4,
+        vfx: 'charge',
+        isCompanion: true,
+        desc: '【武田赤备如风】其疾如风！造成 10 点爆发伤害并获得 4 点冲锋护甲'
+      },
+      dragon: {
+        id: 'dragon',
+        en: 'Dragon',
+        cn: '龙啸 (双刃)',
+        type: 'attack',
+        cost: 0,
+        icon: '🐉⚡',
+        dmg: 12,
+        pierce: true,
+        vfx: 'slash',
+        isCompanion: true,
+        desc: '【独眼龙狂澜秘剑】龙啸雷霆！造成 12 点真实穿甲伤害'
+      },
 
       // 人教版新课标核心词汇战术卡 (Curriculum Core Vocabulary Cards)
       meet: {
@@ -511,7 +537,9 @@ class CardBattleEngine {
       nene: 'eat',
       hidenaga: 'read',
       toshiie: 'brave',
-      hanbei: 'plan'
+      hanbei: 'plan',
+      shingen: 'wind',
+      masamune: 'dragon'
     };
     const compCardId = companionCardMap[comp.id] || 'read';
 
@@ -566,6 +594,18 @@ class CardBattleEngine {
       hp = 70;
       baseAtk = 12;
       avatar = 'assets/portraits/shibata.jpg';
+    } else if (stageNum === 25) {
+      name = '武田信玄';
+      title = '甲斐之虎 · 风林火山';
+      hp = 105;
+      baseAtk = 14;
+      avatar = 'assets/portraits/shingen.jpg';
+    } else if (stageNum === 35) {
+      name = '伊达政宗';
+      title = '独眼龙 · 奥州霸主';
+      hp = 130;
+      baseAtk = 16;
+      avatar = 'assets/portraits/masamune.jpg';
     } else if (customEnemy) {
       name = customEnemy.name || name;
       title = customEnemy.title || title;
@@ -620,6 +660,30 @@ class CardBattleEngine {
       return;
     }
 
+    if (this.stageNum === 25) {
+      // 甲斐之虎 武田信玄 (风林火山)
+      if (t % 3 === 1) {
+        this.enemy.intent = { type: 'attack', value: base, icon: '🐎💨', text: `赤备如风突袭 (${base} 伤)` };
+      } else if (t % 3 === 2) {
+        this.enemy.intent = { type: 'defend', value: 15, icon: '⛰️🛡️', text: `不动如山军阵 (+15 护甲)` };
+      } else {
+        this.enemy.intent = { type: 'attack', value: base + 8, icon: '🔥💥', text: `侵掠如火猛攻 (${base + 8} 伤！)` };
+      }
+      return;
+    }
+
+    if (this.stageNum === 35) {
+      // 奥州霸者 伊达政宗 (独眼龙)
+      if (t % 3 === 1) {
+        this.enemy.intent = { type: 'attack', value: base, icon: '🐉⚔️', text: `双刀龙牙狂岚 (${base} 伤)` };
+      } else if (t % 3 === 2) {
+        this.enemy.intent = { type: 'defend', value: 16, icon: '🌙🛡️', text: `黑漆金月守御 (+16 护甲)` };
+      } else {
+        this.enemy.intent = { type: 'attack', value: base + 10, icon: '💥⚡', text: `龙骑铁炮轰击 (${base + 10} 穿甲！)` };
+      }
+      return;
+    }
+
     // 常规敌人意图 (攻击 ➔ 防守 ➔ 重攻)
     if (t % 3 === 1) {
       this.enemy.intent = { type: 'attack', value: base, icon: '⚔️', text: `蓄力突击 (${base} 伤)` };
@@ -639,6 +703,11 @@ class CardBattleEngine {
     this.heroEnergy = this.heroMaxEnergy;
     this.heroBlock = 0; // 回合初护甲重置
     this.enemy.block = 0; // 敌方护甲重置
+
+    // 羁绊信物：武田信玄军配 (每回合初获得 3 点风林火山坚固护甲)
+    if (window.estateSystem?.hasRelic('relic-shingen-war-fan')) {
+      this.heroBlock += 3;
+    }
 
     // 抽卡 (半兵卫军扇信物首回合多摸 1 张牌)
     let drawCount = 4;
@@ -730,6 +799,10 @@ class CardBattleEngine {
       const hits = card.hits || 1;
       for (let h = 0; h < hits; h++) {
         let actualDmg = card.dmg + this.heroStrength;
+        // 羁绊信物：伊达政宗金弦月兜盔 (穿甲与爆发伤害额外 +4)
+        if (card.pierce && window.estateSystem?.hasRelic('relic-masamune-crescent')) {
+          actualDmg += 4;
+        }
         if (card.pierce) {
           // 破甲直接扣生命
           this.enemy.hp = Math.max(0, this.enemy.hp - actualDmg);
@@ -964,6 +1037,8 @@ class CardBattleEngine {
     // 特殊关卡加入名物限定神卡
     if (this.stageNum === 5) tacticalCards.unshift('thunderstorm');
     if (this.stageNum === 10) tacticalCards.unshift('palisade');
+    if (this.stageNum === 25) tacticalCards.unshift('wind');
+    if (this.stageNum === 35) tacticalCards.unshift('dragon');
 
     // 智能配比：优先抽取 1 张课本核心词汇卡 + 2 张战术策略卡，让孩子将课本词汇收入囊中！
     const shuffledTextbook = [...textbookCards].sort(() => 0.5 - Math.random());

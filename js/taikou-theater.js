@@ -12,6 +12,13 @@ const TAIKOU_THEATER_CHAPTERS = [
     timeSpan: '1554 至 1560',
     subtitle: '草鞋侍从展露锋芒，尾张立足',
     badge: '尾张风云 🌸'
+  },
+  {
+    id: 'ch2',
+    title: '第二卷 · 群雄风云',
+    timeSpan: '1570 至 1585',
+    subtitle: '风林火山甲斐虎，独眼狂澜奥州龙',
+    badge: '列岛争鸣 🐯🐉'
   }
 ];
 
@@ -618,6 +625,104 @@ const TAIKOU_THEATER_STORIES = [
         portrait: 'assets/portraits/nobunaga.jpg',
         role: '尾张大名',
         text: '“哈哈哈哈！桶狭间一战定天下！木下藤吉郎，探天象、传号令，屡立不世奇功！我亲赐你正式官位【足轻头】！尾张微末篇圆满大成，随我继续开拓天下布武大业！”',
+        action: 'finish'
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 第七回：甲斐之虎风林火山
+  // =========================================================================
+  {
+    id: 'story-ch2-shingen-wind',
+    chapterId: 'ch2',
+    episodeNum: 7,
+    title: '第七回 · 甲斐之虎风林火山',
+    subtitle: '三方原前线远眺，领会赤备骑兵【Wind 疾风】与【Mountain 巨山】的军争至理！',
+    bannerIcon: '🐯🚩',
+    rewardMerit: 160,
+    rewardGold: 120,
+    rewardTitle: '风林火山 · 军师参谋',
+    coreWords: ['wind', 'mountain', 'fast', 'strong'],
+    steps: [
+      {
+        speaker: '木下藤吉郎',
+        portrait: 'assets/portraits/tokichiro.jpg',
+        role: '织田军先遣使',
+        text: '“前方便是甲斐赤备军团！大旗猎猎，写着孙子兵法：其疾如风，其徐如林，侵掠如火，不动如山！信玄公治军威严，天下第一！”',
+        action: 'continue'
+      },
+      {
+        speaker: '武田信玄',
+        portrait: 'assets/portraits/shingen.jpg',
+        role: '甲斐之虎',
+        text: '“织田家的小猴子，你既来到甲斐，可懂得赤备铁骑的军争之要？骑兵冲锋当如哪一种不可阻挡的天地之力？”',
+        action: 'quiz',
+        prompt: '信玄公问：“其疾如风”中的【风 / 疾风】，英文读作：',
+        targetWord: 'wind',
+        wordObj: { en: 'wind', cn: '风 / 疾风', phonetic: '/wɪnd/', emoji: '💨' },
+        options: [
+          { en: 'wind', cn: '风 / 疾风', emoji: '💨', correct: true },
+          { en: 'rain', cn: '雨', emoji: '🌧️', correct: false },
+          { en: 'snow', cn: '雪', emoji: '❄️', correct: false }
+        ],
+        successVoice: 'Move like the wind, stay firm as a mountain!',
+        successText: '信玄公大笑：“善！【Move like the wind！】赤备铁骑如疾风掠阵，名震列岛！”'
+      },
+      {
+        speaker: '武田信玄',
+        portrait: 'assets/portraits/shingen.jpg',
+        role: '甲斐之虎',
+        text: '“藤吉郎，你很有见地！从今日起，甲斐赤备大将任你驱驰，吾之军扇信物亦交付于你！”',
+        action: 'finish'
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 第八回：独眼巨龙啸鸣九天
+  // =========================================================================
+  {
+    id: 'story-ch2-masamune-dragon',
+    chapterId: 'ch2',
+    episodeNum: 8,
+    title: '第八回 · 独眼巨龙啸鸣九天',
+    subtitle: '奥羽名将伊达政宗率黑漆龙骑威风列阵，与藤吉郎以流利英语豪快对答！',
+    bannerIcon: '🐉🌙',
+    rewardMerit: 180,
+    rewardGold: 150,
+    rewardTitle: '奥羽龙骑 · 金兰至交',
+    coreWords: ['dragon', 'sword', 'brave', 'party'],
+    steps: [
+      {
+        speaker: '木下藤吉郎',
+        portrait: 'assets/portraits/tokichiro.jpg',
+        role: '羽柴总大将',
+        text: '“好威风的黑漆五枚胴具足！头盔上一弯巨大的金弦月直刺长空！这便是奥羽的独眼龙伊达政宗殿下吧！”',
+        action: 'continue'
+      },
+      {
+        speaker: '伊达政宗',
+        portrait: 'assets/portraits/masamune.jpg',
+        role: '奥州霸主 · 独眼龙',
+        text: '“Haha! Tohkichiro! 奥羽风雪阻挡不了我的龙骑军团！你看我手中紧握的佩刀，在南蛮语里唤作什么？！”',
+        action: 'quiz',
+        prompt: '政宗手中百炼出鞘的名刃利剑【剑 / 刀】，英文读作：',
+        targetWord: 'sword',
+        wordObj: { en: 'sword', cn: '宝剑 / 利刃', phonetic: '/sɔːrd/', emoji: '⚔️' },
+        options: [
+          { en: 'sword', cn: '宝剑 / 名刀', emoji: '⚔️', correct: true },
+          { en: 'shield', cn: '盾牌', emoji: '🛡️', correct: false },
+          { en: 'bow', cn: '长弓', emoji: '🏹', correct: false }
+        ],
+        successVoice: "Wake up, warriors! Let's party in English!",
+        successText: '政宗拔刀长啸：“【Sharp sword, fearless dragon!】英语战国天下，让我们大闹一场！”'
+      },
+      {
+        speaker: '伊达政宗',
+        portrait: 'assets/portraits/masamune.jpg',
+        role: '奥州霸主 · 独眼龙',
+        text: '“痛快！藤吉郎，往后征讨四方，我的奥州双龙秘剑随时为你出鞘！【Let\'s go!】”',
         action: 'finish'
       }
     ]

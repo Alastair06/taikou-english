@@ -1515,6 +1515,42 @@ class UIManager {
   }
 
   /**
+   * PWA 离线运行与添加到手机/iPad主屏幕交互
+   */
+  triggerPWAInstall() {
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    if (isStandalone) {
+      this.showToast('📱 您已在全屏 App 模式下游玩！', '🏯');
+      return;
+    }
+
+    if (window.deferredPWAInstallPrompt) {
+      // Chrome / Edge / Android 支持原生一键安装调用
+      window.deferredPWAInstallPrompt.prompt();
+      window.deferredPWAInstallPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          this.showToast('🎉 正在将《太阁英语》添加到桌面...', '📱');
+        }
+        window.deferredPWAInstallPrompt = null;
+      });
+      return;
+    }
+
+    // iOS Safari / iPad：弹出专属图文指引
+    this.openPWAGuideModal();
+  }
+
+  openPWAGuideModal() {
+    const modal = document.getElementById('modal-pwa-guide');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  closePWAGuideModal() {
+    const modal = document.getElementById('modal-pwa-guide');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  /**
    * 进军下一关：加载下一批新单词，重置城堡阵地并即刻开战！
    */
   proceedToNextStage() {

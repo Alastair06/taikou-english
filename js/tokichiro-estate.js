@@ -171,6 +171,32 @@ const SENGOKU_COMPANIONS = [
     voiceEn: 'Knowledge is power. The castle will fall!',
     desc: '战国绝顶奇策军师，十六人巧夺稻叶山城。洞察自然拼读神机！',
     bonusText: '随行效果：合战中长难词自动点拨首音节，破招洞察卷轴效果提升'
+  },
+  {
+    id: 'shingen',
+    name: '武田信玄',
+    nickname: '甲斐之虎 · 风林火山',
+    role: '赤备统帅',
+    portrait: 'assets/portraits/shingen.jpg',
+    reqMerit: 1200,
+    reqStage: 20,
+    greeting: '其疾如风，其徐如林，侵掠如火，不动如山！主公，英语军阵亦需无坚不摧！',
+    voiceEn: 'Move like the wind, stay firm as a mountain!',
+    desc: '战国第一兵家甲斐之虎，风林火山大纛名震列岛！精通大军团冲阵与全盘英语战略。',
+    bonusText: '随行效果：合战首轮手牌获得【其疾如风】，开局护甲 +4，全军突击伤害提升'
+  },
+  {
+    id: 'masamune',
+    name: '伊达政宗',
+    nickname: '独眼龙 · 奥州霸主',
+    role: '龙骑统领',
+    portrait: 'assets/portraits/masamune.jpg',
+    reqMerit: 1800,
+    reqStage: 30,
+    greeting: '愿早生二十年与信长公逐鹿！如今便在英语列岛上大闹一场吧，Are you ready?!',
+    voiceEn: "Wake up, warriors! Let's party in English!",
+    desc: '奥羽伊达家十九代当主，身披黑漆金弦月具足。通晓南蛮航海与西洋文化，气魄盖世！',
+    bonusText: '随行效果：合战首轮手牌获得【奥州双龙】，穿甲破盾伤害永久 +4'
   }
 ];
 
@@ -234,6 +260,36 @@ const COMPANION_WISHES = {
     relicId: 'relic-hanbei-fan',
     relicName: '半兵卫的白羽军扇',
     relicDesc: '【奇策军师信物】合战开局手牌额外多摸 1 张'
+  },
+  shingen: {
+    companionId: 'shingen',
+    itemId: 'horse',
+    itemIcon: '🐎',
+    itemName: '尾张骏马',
+    itemEn: 'Horse',
+    count: 1,
+    textEn: "Tohkichiro! Provide 1 fine Horse for the Kai cavalry, and our wind shall sweep the realm!",
+    textCn: "藤吉郎！为甲斐赤备军团准备 1 匹神骏战马 Horse，吾等之疾风定将席卷天下！",
+    rewardMerit: 120,
+    rewardGold: 80,
+    relicId: 'relic-shingen-war-fan',
+    relicName: '信玄的风林火山军配',
+    relicDesc: '【甲斐军神信物】每回合开始时额外获得 3 点坚韧护甲'
+  },
+  masamune: {
+    companionId: 'masamune',
+    itemId: 'sword',
+    itemIcon: '⚔️',
+    itemName: '备前名刀',
+    itemEn: 'Sword',
+    count: 1,
+    textEn: "Tohkichiro! Lend me 1 sharp Sword, and I will show you the dragon's true fangs!",
+    textCn: "藤吉郎！呈递 1 把锋锐名刀 Sword，本殿下便让你见识奥州独眼龙的獠牙！",
+    rewardMerit: 150,
+    rewardGold: 100,
+    relicId: 'relic-masamune-crescent',
+    relicName: '政宗的金弦月立物兜盔',
+    relicDesc: '【奥州龙骑信物】所有穿甲伤害与爆发伤害额外 +4'
   }
 };
 
@@ -380,7 +436,9 @@ class TokichiroEstateSystem {
     const curStage = Math.floor(curIdx / 3) + 1;
 
     return this.companions.map(comp => {
-      const isUnlocked = (merit >= comp.reqMerit) || (curStage >= comp.reqStage);
+      const wish = COMPANION_WISHES[comp.id];
+      const hasBondRelic = wish ? this.hasRelic(wish.relicId) : false;
+      const isUnlocked = (merit >= comp.reqMerit) || (curStage >= comp.reqStage) || hasBondRelic;
       const isActive = (this.state.activeCompanionId === comp.id);
       return {
         ...comp,

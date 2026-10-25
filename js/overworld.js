@@ -112,6 +112,28 @@ class JapanOverworldManager {
         color: '#06b6d4',
         icon: '🛡️',
         facilities: ['三河道场']
+      },
+      {
+        id: 'kofu',
+        name: '甲斐 · 踯躅崎馆',
+        title: '武田信玄本据 · 风林火山',
+        x: 620,
+        y: 220,
+        radius: 38,
+        color: '#dc2626',
+        icon: '🐯',
+        facilities: ['赤备马场', '信玄本阵']
+      },
+      {
+        id: 'aoba',
+        name: '奥州 · 青叶城',
+        title: '伊达政宗本城 · 独眼龙啸',
+        x: 820,
+        y: 150,
+        radius: 38,
+        color: '#2563eb',
+        icon: '🐉',
+        facilities: ['独眼龙天守', '南蛮造船港']
       }
     ];
 
@@ -122,7 +144,10 @@ class JapanOverworldManager {
       { from: 'inabayama', to: 'azuchi', name: '中山道 (美浓-近江)' },
       { from: 'azuchi', to: 'kyoto', name: '东山道 (近江-京都)' },
       { from: 'kyoto', to: 'sakai', name: '京街道 / 淀川商道' },
-      { from: 'kiyosu', to: 'azuchi', name: '伊势湾北路' }
+      { from: 'kiyosu', to: 'azuchi', name: '伊势湾北路' },
+      { from: 'inabayama', to: 'kofu', name: '甲州街道 (美浓-甲斐)' },
+      { from: 'kofu', to: 'odawara', name: '甲相越古道' },
+      { from: 'odawara', to: 'aoba', name: '奥州街道 (相模-奥羽)' }
     ];
 
     // 沿途英语路标与关所奇遇点

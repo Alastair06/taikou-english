@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>太阁英语立志传</title>
 
-  <!-- iPad / iOS 全屏体验 -->
+  <!-- PWA Web App 清单与跨端离线配置 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2b1810">
+
+  <!-- iPad / iOS 全屏体验与主屏幕图标 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="太阁英语">
   <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512.png">
 
   <!-- 儿童自然拼读与圆润无障碍字体 (Fredoka & Quicksand) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -468,6 +475,7 @@
         <div class="home-badge">🏯 尾张织田家 · 军略大本营</div>
         <h1 class="home-title">太阁英语立志传 <img src="assets/ui/seal_taikou.png" class="title-seal" alt="印"></h1>
         <div class="home-header-tools">
+          <button class="btn-home-fullscreen btn-home-pwa" id="btn-home-pwa" onclick="window.ui.triggerPWAInstall()" title="添加到手机/iPad主屏幕，像App一样全屏离线游玩">📱 安装App</button>
           <button class="btn-home-fullscreen" onclick="window.audioEngine.testAudio()" title="测试并激活音频发音">🔊 试音</button>
           <button class="btn-home-fullscreen" onclick="window.ui.toggleFullscreen()" title="切换全屏">⛶ 全屏</button>
         </div>
@@ -1049,15 +1057,74 @@
     </div>
   </div>
 
-  <!-- 注销旧 Service Worker，杜绝旧缓存 -->
+  <!-- 弹窗：PWA 离线运行与添加到手机/iPad主屏幕指引 -->
+  <div class="modal-overlay hidden" id="modal-pwa-guide">
+    <div class="modal-container pwa-guide-modal" style="max-width: 480px;">
+      <button class="modal-close" onclick="window.ui.closePWAGuideModal()">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">📱 添加到手机 / iPad 桌面</h3>
+      </div>
+      <div class="modal-body pwa-guide-body">
+        <div class="pwa-guide-badge">
+          <img src="assets/icons/icon-192.png" class="pwa-app-icon" alt="太阁英语">
+          <div class="pwa-app-info">
+            <div class="pwa-app-name">太阁立志传 · 英语战国志</div>
+            <div class="pwa-app-desc">支持离线单机运行 · 纯净全屏无地址栏遮挡</div>
+          </div>
+        </div>
+
+        <div class="pwa-steps-list" id="pwa-steps-ios">
+          <div class="pwa-step-item">
+            <span class="pwa-step-num">1</span>
+            <div class="pwa-step-content">
+              <strong>点击 Safari 分享按钮</strong>
+              <p>在手机或 iPad 屏幕底部（或顶部）点击 <span class="share-icon-pill">⎙ / ⬆️ 分享</span> 图标</p>
+            </div>
+          </div>
+          <div class="pwa-step-item">
+            <span class="pwa-step-num">2</span>
+            <div class="pwa-step-content">
+              <strong>选择【添加到主屏幕】</strong>
+              <p>在弹出的菜单中向下轻滑，点击 <span class="share-icon-pill">➕ 添加到主屏幕 (Add to Home Screen)</span></p>
+            </div>
+          </div>
+          <div class="pwa-step-item">
+            <span class="pwa-step-num">3</span>
+            <div class="pwa-step-content">
+              <strong>点击右上角【添加】</strong>
+              <p>之后即可在桌面直接点开图标，体验像原生 App 一样的全屏沉浸游戏体验！</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pwa-modal-footer">
+          <button class="btn btn-primary" style="width: 100%;" onclick="window.ui.closePWAGuideModal()">我知道了，开始游戏！</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA Service Worker 注册与安装捕获 -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for (let registration of registrations) {
-          registration.unregister();
-        }
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then((reg) => {
+            console.log('[PWA] Service Worker 注册成功:', reg.scope);
+          })
+          .catch((err) => {
+            console.warn('[PWA] Service Worker 注册跳过:', err);
+          });
       });
     }
+
+    // PWA Chrome/Android 原生安装事件捕获
+    window.deferredPWAInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      window.deferredPWAInstallPrompt = e;
+      console.log('[PWA] 捕获到桌面安装事件 beforeinstallprompt');
+    });
   </script>
 
     <!-- 脚本模块按依赖加载 -->
