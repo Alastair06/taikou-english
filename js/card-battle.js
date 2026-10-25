@@ -10,6 +10,103 @@
  * ============================================================================
  */
 
+// 常见高频连词成句配置表 (English Phrase Collocations)
+// 培养小学学龄自然词汇组合习惯 (动词+副词、动词+名词、连词并列)
+const ENGLISH_PHRASE_COMBOS = [
+  {
+    pair: ['run', 'jump'],
+    phraseEn: "Run and jump!",
+    phraseCn: "奔跑飞跃！",
+    desc: "动作连贯！获得 +6 护甲并抽 1 张牌",
+    effect: (battle) => { battle.heroBlock += 6; battle.drawCards(1); }
+  },
+  {
+    pair: ['run', 'dodge'],
+    phraseEn: "Run fast!",
+    phraseCn: "神速奔袭！",
+    desc: "身法如风！摸 1 张牌并恢复 1 气力",
+    effect: (battle) => { battle.drawCards(1); battle.heroEnergy = Math.min(battle.heroMaxEnergy + 2, battle.heroEnergy + 1); }
+  },
+  {
+    pair: ['jump', 'dodge'],
+    phraseEn: "Jump high!",
+    phraseCn: "凌空高跃！",
+    desc: "身轻如燕！获得 8 护甲与空中闪避",
+    effect: (battle) => { battle.heroBlock += 8; }
+  },
+  {
+    pair: ['look', 'book'],
+    phraseEn: "Read the book!",
+    phraseCn: "研读兵书！",
+    desc: "博览群书！摸 2 张牌并回馈 1 气力",
+    effect: (battle) => { battle.drawCards(2); battle.heroEnergy = Math.min(battle.heroMaxEnergy + 2, battle.heroEnergy + 1); }
+  },
+  {
+    pair: ['apple', 'water'],
+    phraseEn: "Apple and water!",
+    phraseCn: "粮草甘霖！",
+    desc: "饱食甘泉！额外恢复 8 点生命值",
+    effect: (battle) => { battle.heroHp = Math.min(battle.heroMaxHp, battle.heroHp + 8); }
+  },
+  {
+    pair: ['swim', 'water'],
+    phraseEn: "Swim in water!",
+    phraseCn: "如鱼得水！",
+    desc: "涉水无阻！获得 8 护甲并恢复 6 生命",
+    effect: (battle) => { battle.heroBlock += 8; battle.heroHp = Math.min(battle.heroMaxHp, battle.heroHp + 6); }
+  },
+  {
+    pair: ['nice', 'friend'],
+    phraseEn: "Nice friend!",
+    phraseCn: "莫逆之交！",
+    desc: "战友同心！全场攻击力 +2 并获 6 护甲",
+    effect: (battle) => { battle.heroStrength += 2; battle.heroBlock += 6; }
+  },
+  {
+    pair: ['fly', 'shoot'],
+    phraseEn: "Fly and shoot!",
+    phraseCn: "天鹰飞射！",
+    desc: "居高临下！追加 8 点真实穿甲伤害",
+    effect: (battle) => { 
+      battle.enemy.hp = Math.max(0, battle.enemy.hp - 8); 
+      battle.showFloatingNumber(battle.getEnemyElem(), '-8 🦅💥', 'fct-pierce');
+    }
+  },
+  {
+    pair: ['strike', 'slash'],
+    phraseEn: "Slash and strike!",
+    phraseCn: "刀光枪影！",
+    desc: "迅猛连招！追加 6 点物理伤害",
+    effect: (battle) => {
+      let dmg = 6;
+      if (battle.enemy.block > 0) {
+        if (battle.enemy.block >= dmg) { battle.enemy.block -= dmg; }
+        else { dmg -= battle.enemy.block; battle.enemy.block = 0; battle.enemy.hp = Math.max(0, battle.enemy.hp - dmg); }
+      } else {
+        battle.enemy.hp = Math.max(0, battle.enemy.hp - dmg);
+      }
+      battle.showFloatingNumber(battle.getEnemyElem(), '-6 ⚔️', 'fct-damage');
+    }
+  },
+  {
+    pair: ['guard', 'iron_wall'],
+    phraseEn: "Iron shield and wall!",
+    phraseCn: "铜墙铁壁！",
+    desc: "坚如磐石！获得 10 点坚固护甲",
+    effect: (battle) => { battle.heroBlock += 10; }
+  },
+  {
+    pair: ['ruler', 'pencil'],
+    phraseEn: "Ruler and pencil!",
+    phraseCn: "规矩画策！",
+    desc: "智谋超群！造成 6 穿甲伤害并摸 1 张牌",
+    effect: (battle) => { 
+      battle.enemy.hp = Math.max(0, battle.enemy.hp - 6); 
+      battle.drawCards(1); 
+    }
+  }
+];
+
 class CardBattleEngine {
   constructor() {
     this.isActive = false;
@@ -32,7 +129,17 @@ class CardBattleEngine {
       hp: 36,
       maxHp: 36,
       block: 0,
-      intent: { type: 'attack', value: 7, icon: '⚔️', text: '准备挥砍斩击' }
+      intent: { 
+        type: 'attack', 
+        value: 7, 
+        icon: '⚔️', 
+        text: '蓄力突击 (7 伤)',
+        speechEn: 'I will strike you with my blade!',
+        speechCn: '看我挥刀斩击！',
+        keyword: 'strike',
+        counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
+        counterHint: '听到了【strike】！出【Guard/Dodge】格挡招架！'
+      }
     };
 
     // 牌库系统 (Draw Pile / Hand / Discard Pile)
@@ -40,6 +147,8 @@ class CardBattleEngine {
     this.drawPile = [];
     this.hand = [];
     this.discardPile = [];
+    this.turnCardsPlayed = []; // 本回合出牌记录，用于连词成句
+    this.countersTriggeredThisBattle = 0; // 本局英语识策克制计数
 
     // 核心卡牌数据库
     this.cardDatabase = this.initCardDatabase();
@@ -59,6 +168,8 @@ class CardBattleEngine {
         id: 'slash',
         en: 'Slash',
         cn: '斩击',
+        phonetic: '/slæʃ/',
+        phonics: 's-l-a-sh',
         type: 'attack',
         cost: 1,
         icon: '⚔️',
@@ -72,6 +183,8 @@ class CardBattleEngine {
         id: 'guard',
         en: 'Guard',
         cn: '格挡',
+        phonetic: '/ɡɑːrd/',
+        phonics: 'g-u-ar-d',
         type: 'defense',
         cost: 1,
         icon: '🛡️',
@@ -85,6 +198,8 @@ class CardBattleEngine {
         id: 'shoot',
         en: 'Shoot',
         cn: '射击',
+        phonetic: '/ʃuːt/',
+        phonics: 'sh-oo-t',
         type: 'attack',
         cost: 1,
         icon: '🏹',
@@ -98,6 +213,8 @@ class CardBattleEngine {
         id: 'heal',
         en: 'Heal',
         cn: '治愈',
+        phonetic: '/hiːl/',
+        phonics: 'h-ea-l',
         type: 'skill',
         cost: 2,
         icon: '💚',
@@ -111,6 +228,8 @@ class CardBattleEngine {
         id: 'strike',
         en: 'Strike',
         cn: '突刺',
+        phonetic: '/straɪk/',
+        phonics: 's-t-r-i-k-e',
         type: 'attack',
         cost: 1,
         icon: '⚡',
@@ -123,6 +242,8 @@ class CardBattleEngine {
         id: 'dodge',
         en: 'Dodge',
         cn: '闪避',
+        phonetic: '/dɒdʒ/',
+        phonics: 'd-o-dge',
         type: 'defense',
         cost: 1,
         icon: '🌀',
@@ -138,6 +259,8 @@ class CardBattleEngine {
         id: 'double_slash',
         en: 'Double Slash',
         cn: '双重连斩',
+        phonetic: '/ˈdʌbl slæʃ/',
+        phonics: 'd-ou-ble-s-l-a-sh',
         type: 'attack',
         cost: 2,
         icon: '⚔️⚔️',
@@ -150,6 +273,8 @@ class CardBattleEngine {
         id: 'iron_wall',
         en: 'Iron Wall',
         cn: '铁壁',
+        phonetic: '/ˈaɪərn wɔːl/',
+        phonics: 'i-ron-w-a-ll',
         type: 'defense',
         cost: 2,
         icon: '🛡️🛡️',
@@ -162,6 +287,8 @@ class CardBattleEngine {
         id: 'war_cry',
         en: 'War Cry',
         cn: '战吼',
+        phonetic: '/wɔːr kraɪ/',
+        phonics: 'w-ar-c-r-y',
         type: 'skill',
         cost: 1,
         icon: '📢',
@@ -174,6 +301,8 @@ class CardBattleEngine {
         id: 'piercing_arrow',
         en: 'Piercing Arrow',
         cn: '破甲长矢',
+        phonetic: '/ˈpɪərsɪŋ ˈærəʊ/',
+        phonics: 'p-ier-ce-a-rr-ow',
         type: 'attack',
         cost: 1,
         icon: '🏹💥',
@@ -186,6 +315,8 @@ class CardBattleEngine {
         id: 'heavy_strike',
         en: 'Heavy Strike',
         cn: '霸道重击',
+        phonetic: '/ˈhevi straɪk/',
+        phonics: 'h-ea-vy-s-t-r-i-k-e',
         type: 'attack',
         cost: 2,
         icon: '🔨',
@@ -197,6 +328,8 @@ class CardBattleEngine {
         id: 'first_aid',
         en: 'First Aid',
         cn: '急救包扎',
+        phonetic: '/fɜːrst eɪd/',
+        phonics: 'f-ir-st-a-i-d',
         type: 'skill',
         cost: 1,
         icon: '🩹',
@@ -209,6 +342,8 @@ class CardBattleEngine {
         id: 'focus',
         en: 'Focus',
         cn: '明镜止水',
+        phonetic: '/ˈfəʊkəs/',
+        phonics: 'f-o-c-u-s',
         type: 'skill',
         cost: 0,
         icon: '🧘',
@@ -222,6 +357,8 @@ class CardBattleEngine {
         id: 'poison_blade',
         en: 'Poison Blade',
         cn: '淬毒刃',
+        phonetic: '/ˈpɔɪzn bleɪd/',
+        phonics: 'p-oi-son-b-l-a-de',
         type: 'attack',
         cost: 1,
         icon: '🧪',
@@ -236,6 +373,8 @@ class CardBattleEngine {
         id: 'thunderstorm',
         en: 'Thunderstorm',
         cn: '雷暴神威',
+        phonetic: '/ˈθʌndərstɔːrm/',
+        phonics: 'th-un-der-s-t-or-m',
         type: 'special',
         cost: 2,
         icon: '⛈️⚡',
@@ -247,6 +386,8 @@ class CardBattleEngine {
         id: 'palisade',
         en: 'Palisade',
         cn: '神速防栅',
+        phonetic: '/ˌpælɪˈseɪd/',
+        phonics: 'p-a-l-i-s-a-de',
         type: 'special',
         cost: 1,
         icon: '🪵🛡️',
@@ -261,6 +402,8 @@ class CardBattleEngine {
         id: 'eat',
         en: 'Eat',
         cn: '进食 (饭团)',
+        phonetic: '/iːt/',
+        phonics: 'ea-t',
         type: 'skill',
         cost: 0,
         icon: '🍙',
@@ -274,6 +417,8 @@ class CardBattleEngine {
         id: 'read',
         en: 'Read',
         cn: '察阅 (军机)',
+        phonetic: '/riːd/',
+        phonics: 'r-ea-d',
         type: 'defense',
         cost: 0,
         icon: '📖',
@@ -287,6 +432,8 @@ class CardBattleEngine {
         id: 'brave',
         en: 'Brave',
         cn: '勇武 (突锋)',
+        phonetic: '/breɪv/',
+        phonics: 'b-r-a-ve',
         type: 'attack',
         cost: 0,
         icon: '🦁',
@@ -299,6 +446,8 @@ class CardBattleEngine {
         id: 'plan',
         en: 'Plan',
         cn: '奇谋 (妙策)',
+        phonetic: '/plæn/',
+        phonics: 'p-l-a-n',
         type: 'skill',
         cost: 0,
         icon: '🪭',
@@ -311,6 +460,8 @@ class CardBattleEngine {
         id: 'wind',
         en: 'Wind',
         cn: '疾风 (如风)',
+        phonetic: '/wɪnd/',
+        phonics: 'w-i-n-d',
         type: 'attack',
         cost: 0,
         icon: '🐎💨',
@@ -324,6 +475,8 @@ class CardBattleEngine {
         id: 'dragon',
         en: 'Dragon',
         cn: '龙啸 (双刃)',
+        phonetic: '/ˈdræɡən/',
+        phonics: 'd-r-a-g-o-n',
         type: 'attack',
         cost: 0,
         icon: '🐉⚡',
@@ -339,6 +492,8 @@ class CardBattleEngine {
         id: 'meet',
         en: 'Meet',
         cn: '相会 (结识)',
+        phonetic: '/miːt/',
+        phonics: 'm-ee-t',
         type: 'skill',
         cost: 0,
         icon: '🤝',
@@ -351,6 +506,8 @@ class CardBattleEngine {
         id: 'friend',
         en: 'Friend',
         cn: '知己 (连携)',
+        phonetic: '/frend/',
+        phonics: 'f-r-ie-n-d',
         type: 'attack',
         cost: 1,
         icon: '🧑‍🤝‍🧑',
@@ -363,6 +520,8 @@ class CardBattleEngine {
         id: 'nice',
         en: 'Nice',
         cn: '惬意 (怡神)',
+        phonetic: '/naɪs/',
+        phonics: 'n-i-ce',
         type: 'skill',
         cost: 1,
         icon: '😊',
@@ -376,6 +535,8 @@ class CardBattleEngine {
         id: 'book',
         en: 'Book',
         cn: '兵书 (典籍)',
+        phonetic: '/bʊk/',
+        phonics: 'b-oo-k',
         type: 'skill',
         cost: 1,
         icon: '📕',
@@ -389,6 +550,8 @@ class CardBattleEngine {
         id: 'ruler',
         en: 'Ruler',
         cn: '铁尺 (量衡)',
+        phonetic: '/ˈruːlər/',
+        phonics: 'r-u-l-er',
         type: 'attack',
         cost: 1,
         icon: '📏',
@@ -402,6 +565,8 @@ class CardBattleEngine {
         id: 'pencil',
         en: 'Pencil',
         cn: '铅笔 (画策)',
+        phonetic: '/ˈpensl/',
+        phonics: 'p-e-n-c-i-l',
         type: 'attack',
         cost: 1,
         icon: '✏️',
@@ -415,6 +580,8 @@ class CardBattleEngine {
         id: 'water',
         en: 'Water',
         cn: '甘泉 (解渴)',
+        phonetic: '/ˈwɔːtər/',
+        phonics: 'w-a-t-er',
         type: 'skill',
         cost: 1,
         icon: '💧',
@@ -427,6 +594,8 @@ class CardBattleEngine {
         id: 'apple',
         en: 'Apple',
         cn: '红苹果 (粮草)',
+        phonetic: '/ˈæpl/',
+        phonics: 'a-p-p-le',
         type: 'skill',
         cost: 0,
         icon: '🍎',
@@ -439,6 +608,8 @@ class CardBattleEngine {
         id: 'look',
         en: 'Look',
         cn: '观察 (洞悉)',
+        phonetic: '/lʊk/',
+        phonics: 'l-oo-k',
         type: 'defense',
         cost: 0,
         icon: '👀',
@@ -453,6 +624,8 @@ class CardBattleEngine {
         id: 'run',
         en: 'Run',
         cn: '疾跑 (奔袭)',
+        phonetic: '/rʌn/',
+        phonics: 'r-u-n',
         type: 'attack',
         cost: 1,
         icon: '🏃💨',
@@ -466,6 +639,8 @@ class CardBattleEngine {
         id: 'jump',
         en: 'Jump',
         cn: '飞跃 (腾跳)',
+        phonetic: '/dʒʌmp/',
+        phonics: 'j-u-m-p',
         type: 'defense',
         cost: 1,
         icon: '🦘⬆️',
@@ -480,6 +655,8 @@ class CardBattleEngine {
         id: 'fly',
         en: 'Fly',
         cn: '鹰击 (飞翔)',
+        phonetic: '/flaɪ/',
+        phonics: 'f-l-y',
         type: 'attack',
         cost: 1,
         icon: '🦅✨',
@@ -493,6 +670,8 @@ class CardBattleEngine {
         id: 'swim',
         en: 'Swim',
         cn: '游弋 (涉水)',
+        phonetic: '/swɪm/',
+        phonics: 's-w-i-m',
         type: 'skill',
         cost: 1,
         icon: '🏊‍♂️🌊',
@@ -678,12 +857,23 @@ class CardBattleEngine {
       block: 0,
       baseAtk,
       turnCount: 0,
-      intent: { type: 'attack', value: baseAtk, icon: '⚔️', text: `挥刀猛攻 (${baseAtk} 伤)` }
+      intent: { 
+        type: 'attack', 
+        value: baseAtk, 
+        icon: '⚔️', 
+        text: `蓄力突击 (${baseAtk} 伤)`,
+        speechEn: "I will strike you with my blade!",
+        speechCn: "看我挥刀斩击！",
+        keyword: "strike",
+        counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
+        counterHint: "听到了【strike】！出【Guard/Dodge】格挡招架！"
+      }
     };
   }
 
   /**
    * 轮换生成敌方的下回合意图 (Intent AI)
+   * 深度融合人教版英语听音辨意与语义克制 (Task-Based Learning)
    */
   rollEnemyIntent() {
     this.enemy.turnCount++;
@@ -694,11 +884,41 @@ class CardBattleEngine {
     if (this.stageNum === 5) {
       // 桶狭间 今川义元
       if (t % 3 === 1) {
-        this.enemy.intent = { type: 'attack', value: base, icon: '⚔️', text: `名弓连射 (${base} 伤)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base, 
+          icon: '🏹⚔️', 
+          text: `名弓连射 (${base} 伤)`,
+          speechEn: "I will shoot arrows from my great bow!",
+          speechCn: "我要用名弓射穿你的阵线！",
+          keyword: "arrows",
+          counterWords: ['guard', 'jump', 'dodge', 'iron_wall'],
+          counterHint: "敌将欲射【arrows】！出【Guard/Jump/Dodge】腾跃或盾牌避箭！"
+        };
       } else if (t % 3 === 2) {
-        this.enemy.intent = { type: 'defend', value: 10, icon: '🛡️', text: `本阵护卫 (+10 护甲)` };
+        this.enemy.intent = { 
+          type: 'defend', 
+          value: 12, 
+          icon: '🛡️', 
+          text: `本阵护卫 (+12 护甲)`,
+          speechEn: "My strong iron shield will protect me!",
+          speechCn: "本阵铁卫立起坚盾！",
+          keyword: "shield",
+          counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
+          counterHint: "敌将举【shield】！出【Shoot/Fly/Pencil】等穿透弱点！"
+        };
       } else {
-        this.enemy.intent = { type: 'attack', value: base + 6, icon: '⛈️💥', text: `突击重创 (${base + 6} 伤！)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base + 6, 
+          icon: '⛈️💥', 
+          text: `突击重创 (${base + 6} 伤！)`,
+          speechEn: "I will strike you with heavy thunder!",
+          speechCn: "雷霆万钧！准备承受这一击！",
+          keyword: "strike",
+          counterWords: ['guard', 'dodge', 'iron_wall', 'run'],
+          counterHint: "敌将欲发动【strike】！出【Guard/Iron Wall】固守招架！"
+        };
       }
       return;
     }
@@ -706,11 +926,41 @@ class CardBattleEngine {
     if (this.stageNum === 10) {
       // 墨俣一夜城 斋藤大将
       if (t % 3 === 1) {
-        this.enemy.intent = { type: 'attack', value: base, icon: '⚔️', text: `破阵重劈 (${base} 伤)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base, 
+          icon: '⚔️', 
+          text: `破阵重劈 (${base} 伤)`,
+          speechEn: "My big sword will strike you down!",
+          speechCn: "看我大刀破阵重劈！",
+          keyword: "strike",
+          counterWords: ['guard', 'dodge', 'strike', 'iron_wall'],
+          counterHint: "敌将欲出【strike】！出【Guard/Dodge】抵挡化解！"
+        };
       } else if (t % 3 === 2) {
-        this.enemy.intent = { type: 'defend', value: 12, icon: '🪵🛡️', text: `构筑拒马 (+12 护甲)` };
+        this.enemy.intent = { 
+          type: 'defend', 
+          value: 14, 
+          icon: '🪵🛡️', 
+          text: `构筑拒马 (+14 护甲)`,
+          speechEn: "I will guard the castle behind my wall!",
+          speechCn: "构筑坚固拒马木栅！",
+          keyword: "wall",
+          counterWords: ['jump', 'fly', 'shoot', 'piercing_arrow'],
+          counterHint: "敌将在筑【wall】！出【Jump/Fly】凌空飞跃无视拒马！"
+        };
       } else {
-        this.enemy.intent = { type: 'attack', value: base + 8, icon: '🔥', text: `放火焚城 (${base + 8} 伤！)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base + 8, 
+          icon: '🔥', 
+          text: `放火焚城 (${base + 8} 伤！)`,
+          speechEn: "Fire attack! Burn everything down!",
+          speechCn: "放火焚城！烈焰熊熊！",
+          keyword: "fire",
+          counterWords: ['water', 'swim', 'run'],
+          counterHint: "敌将引燃【fire】！出【Water】甘泉泼灭或【Run】迅速脱险！"
+        };
       }
       return;
     }
@@ -718,11 +968,41 @@ class CardBattleEngine {
     if (this.stageNum === 25) {
       // 甲斐之虎 武田信玄 (风林火山)
       if (t % 3 === 1) {
-        this.enemy.intent = { type: 'attack', value: base, icon: '🐎💨', text: `赤备如风突袭 (${base} 伤)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base, 
+          icon: '🐎💨', 
+          text: `赤备如风突袭 (${base} 伤)`,
+          speechEn: "My war horse is running fast like the wind!",
+          speechCn: "赤备神骑如风奔袭！",
+          keyword: "horse",
+          counterWords: ['jump', 'dodge', 'run', 'relic_wind', 'wind'],
+          counterHint: "敌将骑【horse】奔袭！出【Jump/Dodge】跃起避其锋芒！"
+        };
       } else if (t % 3 === 2) {
-        this.enemy.intent = { type: 'defend', value: 15, icon: '⛰️🛡️', text: `不动如山军阵 (+15 护甲)` };
+        this.enemy.intent = { 
+          type: 'defend', 
+          value: 16, 
+          icon: '⛰️🛡️', 
+          text: `不动如山军阵 (+16 护甲)`,
+          speechEn: "My shield stands firm like a mountain!",
+          speechCn: "不动如山！玄武重盾！",
+          keyword: "shield",
+          counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
+          counterHint: "敌将如山【shield】！出【Shoot/Fly/Pencil】破甲！"
+        };
       } else {
-        this.enemy.intent = { type: 'attack', value: base + 8, icon: '🔥💥', text: `侵掠如火猛攻 (${base + 8} 伤！)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base + 8, 
+          icon: '🔥💥', 
+          text: `侵掠如火猛攻 (${base + 8} 伤！)`,
+          speechEn: "Fire is raging! Total charge!",
+          speechCn: "侵掠如火！全军压上！",
+          keyword: "fire",
+          counterWords: ['water', 'swim', 'run', 'iron_wall'],
+          counterHint: "烈火【fire】席卷！出【Water/Run】清泉扑火或神速规避！"
+        };
       }
       return;
     }
@@ -730,24 +1010,94 @@ class CardBattleEngine {
     if (this.stageNum === 35) {
       // 奥州霸者 伊达政宗 (独眼龙)
       if (t % 3 === 1) {
-        this.enemy.intent = { type: 'attack', value: base, icon: '🐉⚔️', text: `双刀龙牙狂岚 (${base} 伤)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base, 
+          icon: '🐉⚔️', 
+          text: `双刀龙牙狂岚 (${base} 伤)`,
+          speechEn: "Look at the dragon in the sky! It is ready to fly!",
+          speechCn: "九天独眼黑龙腾飞！",
+          keyword: "dragon",
+          counterWords: ['jump', 'fly', 'relic_dragon', 'dragon', 'dodge'],
+          counterHint: "黑龙【dragon】啸空！出【Jump/Fly】凌空交锋迎击！"
+        };
       } else if (t % 3 === 2) {
-        this.enemy.intent = { type: 'defend', value: 16, icon: '🌙🛡️', text: `黑漆金月守御 (+16 护甲)` };
+        this.enemy.intent = { 
+          type: 'defend', 
+          value: 18, 
+          icon: '🌙🛡️', 
+          text: `黑漆金月守御 (+18 护甲)`,
+          speechEn: "Look at my crescent moon helmet! Unbreakable!",
+          speechCn: "金弦月兜盔刀枪不入！",
+          keyword: "look",
+          counterWords: ['look', 'book', 'piercing_arrow', 'pencil'],
+          counterHint: "敌将亮盔【look】！出【Look/Book】洞察破绽予以贯穿！"
+        };
       } else {
-        this.enemy.intent = { type: 'attack', value: base + 10, icon: '💥⚡', text: `龙骑铁炮轰击 (${base + 10} 穿甲！)` };
+        this.enemy.intent = { 
+          type: 'attack', 
+          value: base + 10, 
+          icon: '💥⚡', 
+          text: `龙骑铁炮轰击 (${base + 10} 穿甲！)`,
+          speechEn: "I will shoot heavy fire from my guns!",
+          speechCn: "南蛮重炮轰天鸣响！",
+          keyword: "shoot",
+          counterWords: ['guard', 'dodge', 'jump', 'water'],
+          counterHint: "敌将开枪【shoot】！出【Guard/Dodge/Jump】迅捷翻腾规避！"
+        };
       }
       return;
     }
 
-    // 常规敌人意图 (攻击 ➔ 防守 ➔ 重攻)
+    // 常规敌人意图 (攻击 ➔ 防守 ➔ 箭雨重攻)
     if (t % 3 === 1) {
-      this.enemy.intent = { type: 'attack', value: base, icon: '⚔️', text: `蓄力突击 (${base} 伤)` };
+      this.enemy.intent = { 
+        type: 'attack', 
+        value: base, 
+        icon: '⚔️', 
+        text: `蓄力突击 (${base} 伤)`,
+        speechEn: "I will strike you with my blade!",
+        speechCn: "喝！看我挥刀重击！",
+        keyword: "strike",
+        counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
+        counterHint: "敌将欲出【strike】！出【Guard/Dodge】格挡招架！"
+      };
     } else if (t % 3 === 2) {
       const defVal = Math.max(5, Math.floor(base * 0.9));
-      this.enemy.intent = { type: 'defend', value: defVal, icon: '🛡️', text: `举盾坚守 (+${defVal} 护甲)` };
+      this.enemy.intent = { 
+        type: 'defend', 
+        value: defVal, 
+        icon: '🛡️', 
+        text: `举盾坚守 (+${defVal} 护甲)`,
+        speechEn: "I hide behind my wooden shield!",
+        speechCn: "立盾固守！",
+        keyword: "shield",
+        counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
+        counterHint: "敌将举【shield】！出【Shoot/Fly/Pencil】无视护甲穿透！"
+      };
     } else {
       const heavyVal = base + 4;
-      this.enemy.intent = { type: 'attack', value: heavyVal, icon: '💥', text: `凶猛重斩 (${heavyVal} 伤！)` };
+      this.enemy.intent = { 
+        type: 'attack', 
+        value: heavyVal, 
+        icon: '🏹💥', 
+        text: `飞矢齐射 (${heavyVal} 伤！)`,
+        speechEn: "Watch out! Arrows are flying from above!",
+        speechCn: "箭矢如雨自天而降！",
+        keyword: "arrows",
+        counterWords: ['jump', 'guard', 'dodge', 'run'],
+        counterHint: "漫天【arrows】袭来！出【Jump/Guard/Run】腾跃盾挡或跑开！"
+      };
+    }
+  }
+
+  /**
+   * 大声朗读当前敌将的英语战术意图 (儿童有声英语输入)
+   */
+  speakEnemyIntent() {
+    if (!this.enemy || !this.enemy.intent || !this.enemy.intent.speechEn) return;
+    if (window.audioEngine) {
+      window.audioEngine.speak(this.enemy.intent.speechEn);
     }
   }
 
@@ -758,6 +1108,7 @@ class CardBattleEngine {
     this.heroEnergy = this.heroMaxEnergy;
     this.heroBlock = 0; // 回合初护甲重置
     this.enemy.block = 0; // 敌方护甲重置
+    this.turnCardsPlayed = []; // 重置本回合打出卡牌记录
 
     // 羁绊信物：武田信玄军配 (每回合初获得 3 点风林火山坚固护甲)
     if (window.estateSystem?.hasRelic('relic-shingen-war-fan')) {
@@ -780,6 +1131,11 @@ class CardBattleEngine {
     }
 
     this.renderBattleArena();
+
+    // 回合开始：敌将用英语呼喊战术意图！(儿童英语纯正美音输入)
+    setTimeout(() => {
+      this.speakEnemyIntent();
+    }, 450);
   }
 
   /**
@@ -800,7 +1156,97 @@ class CardBattleEngine {
   }
 
   /**
+   * 触发英语语义克制破敌反馈 (Tactical Semantic Counter Feedback)
+   */
+  triggerCounterFeedback(msg) {
+    if (window.audioEngine) {
+      if (window.audioEngine.playKatanaSlash) window.audioEngine.playKatanaSlash();
+      setTimeout(() => {
+        window.audioEngine.speak("Great counter!");
+      }, 300);
+    }
+
+    // 弹出战场中央识策破敌横幅
+    const arena = document.getElementById('siege-arena') || document.getElementById('scene-siege-battle');
+    if (arena) {
+      const banner = document.createElement('div');
+      banner.className = 'tactical-counter-banner animate-pop-in';
+      banner.innerHTML = `
+        <div class="counter-badge-icon">⚡ PERFECT COUNTER</div>
+        <div class="counter-badge-title">看破敌意 · 英语妙策破敌！</div>
+        <div class="counter-badge-desc">${msg}</div>
+      `;
+      arena.appendChild(banner);
+      setTimeout(() => banner.remove(), 1900);
+    }
+
+    if (window.ui) {
+      window.ui.showToast(msg, '⚡');
+    }
+  }
+
+  /**
+   * 触发连词成句双词连携反馈 (Phrase Collocation Feedback)
+   */
+  triggerComboFeedback(combo) {
+    // 朗读合成完整短语
+    if (window.audioEngine) {
+      window.audioEngine.speak(combo.phraseEn);
+    }
+
+    // 执行短语组合技能效果
+    combo.effect(this);
+
+    // 弹出连词成句金色学习弹条
+    const arena = document.getElementById('siege-arena') || document.getElementById('scene-siege-battle');
+    if (arena) {
+      const banner = document.createElement('div');
+      banner.className = 'phrase-combo-banner animate-pop-in';
+      banner.innerHTML = `
+        <div class="phrase-combo-tag">🎴 连词成句 · Collocation Combo!</div>
+        <div class="phrase-combo-en">"${combo.phraseEn}"</div>
+        <div class="phrase-combo-cn">${combo.phraseCn} · ${combo.desc}</div>
+      `;
+      arena.appendChild(banner);
+      setTimeout(() => banner.remove(), 2200);
+    }
+
+    if (window.ui) {
+      window.ui.showToast(`🌟 连词成句【${combo.phraseEn}】生效！${combo.desc}`, '🎴');
+    }
+  }
+
+  /**
+   * 自然拼读拆解朗读 (Phonics Synthetic Spelling)
+   */
+  playPhonicsSpelling(cardId) {
+    const card = this.cardDatabase[cardId];
+    if (!card || !card.phonics) return;
+
+    const parts = card.phonics.split('-');
+    if (window.ui) {
+      window.ui.showToast(`🔤 自然拼读：${parts.join(' - ')} ➔ ${card.en}!`, '🔈');
+    }
+
+    if (window.audioEngine) {
+      // 逐个发音音素，随后连读全词
+      let delay = 0;
+      parts.forEach((p) => {
+        setTimeout(() => {
+          window.audioEngine.speak(p);
+        }, delay);
+        delay += 550;
+      });
+      setTimeout(() => {
+        window.audioEngine.speak(card.en);
+      }, delay + 250);
+    }
+  }
+
+  /**
    * 玩家点击打出一张手牌
+   * 融入英语听力理解与语义克制：打出克制卡触发妙策破敌！
+   * 融入英语词汇连词成句：打出连携卡触发 Phrase Combo！
    */
   playCard(index) {
     if (!this.isActive) return;
@@ -821,17 +1267,79 @@ class CardBattleEngine {
     // 扣除气力
     this.heroEnergy -= card.cost;
 
-    // 从手牌移至弃牌堆
+    // 从手牌移至弃牌堆并记录本回合出牌
     this.hand.splice(index, 1);
     this.discardPile.push(cardId);
+    this.turnCardsPlayed.push(cardId);
 
     // 核心习得：真人发音大声朗读英文单词！
     if (window.audioEngine) {
       window.audioEngine.speak(card.en);
     }
 
-    // 结算卡牌效果与音画特效
+    // 1. 检查是否达成【语义克制破敌】(Tactical Semantic Counter)
+    let isCounter = false;
+    let counterMsg = '';
+    if (this.enemy.intent && Array.isArray(this.enemy.intent.counterWords)) {
+      if (this.enemy.intent.counterWords.includes(card.id)) {
+        isCounter = true;
+        this.countersTriggeredThisBattle = (this.countersTriggeredThisBattle || 0) + 1;
+
+        if (this.enemy.intent.keyword === 'arrows') {
+          this.heroBlock += 6;
+          counterMsg = '🎯 识破箭雨 (Arrows)！腾跃规避，额外获得 +6 护甲！';
+        } else if (this.enemy.intent.keyword === 'shield' || this.enemy.intent.keyword === 'wall') {
+          if (this.enemy.block > 0) {
+            this.enemy.block = 0;
+            counterMsg = '💥 识破坚盾 (Shield)！弱点贯穿，瞬间破除敌方全部护甲！';
+          } else {
+            counterMsg = '🏹 破甲突刺！直接造成弱点暴击！';
+          }
+        } else if (this.enemy.intent.keyword === 'fire') {
+          const prev = this.heroHp;
+          this.heroHp = Math.min(this.heroMaxHp, this.heroHp + 8);
+          counterMsg = `💧 清泉熄灭烈火 (Fire)！恢复 ${this.heroHp - prev} 点生命！`;
+        } else if (this.enemy.intent.keyword === 'horse') {
+          this.heroEnergy = Math.min(this.heroMaxEnergy + 2, this.heroEnergy + 1);
+          counterMsg = '🐎 飞跃神驹 (Horse)！避其锋芒，顺势恢复 1 点气力！';
+        } else if (this.enemy.intent.keyword === 'strike') {
+          this.heroBlock += 8;
+          counterMsg = '⚔️ 招架重击 (Strike)！稳如磐石，额外获得 +8 坚固护盾！';
+        } else if (this.enemy.intent.keyword === 'dragon') {
+          this.heroBlock += 8;
+          this.drawCards(1);
+          counterMsg = '🐉 黑龙破空 (Dragon)！借力翻腾，获 8 护甲并多摸 1 张牌！';
+        } else {
+          this.heroBlock += 5;
+          counterMsg = '✨ 完美看破敌意！获得 +5 军心护甲！';
+        }
+      }
+    }
+
+    // 2. 检查是否达成【连词成句 · 双词连携】(Collocation Combo)
+    let comboTriggered = null;
+    if (this.turnCardsPlayed.length >= 2) {
+      const prevId = this.turnCardsPlayed[this.turnCardsPlayed.length - 2];
+      const curId = card.id;
+      comboTriggered = ENGLISH_PHRASE_COMBOS.find(c => {
+        return (c.pair[0] === prevId && c.pair[1] === curId) || (c.pair[0] === curId && c.pair[1] === prevId);
+      });
+    }
+
+    // 结算卡牌基础效果
     this.applyCardEffects(card);
+
+    // 触发语义克制反馈
+    if (isCounter) {
+      this.triggerCounterFeedback(counterMsg);
+    }
+
+    // 触发连词成句反馈
+    if (comboTriggered) {
+      setTimeout(() => {
+        this.triggerComboFeedback(comboTriggered);
+      }, isCounter ? 650 : 150);
+    }
 
     // 检查敌方是否被斩杀
     if (this.enemy.hp <= 0) {
@@ -1128,8 +1636,19 @@ class CardBattleEngine {
                 <div class="card-cost-badge">${c.cost} ⚡</div>
                 <div class="card-crest-icon">${c.icon}</div>
                 <div class="card-title-en">${c.en}</div>
+                ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
                 <div class="card-title-cn">${c.cn}</div>
                 <div class="card-desc-pill">${c.desc}</div>
+                <div class="draft-card-actions">
+                  <button class="btn btn-xs btn-sound-read" onclick="event.stopPropagation(); window.audioEngine?.speak('${c.en}')">
+                    🔊 朗读
+                  </button>
+                  ${c.phonics ? `
+                    <button class="btn btn-xs btn-phonics-spell" onclick="event.stopPropagation(); window.cardBattle.playPhonicsSpelling('${cid}')">
+                      🔤 拼读
+                    </button>
+                  ` : ''}
+                </div>
                 <button class="btn btn-primary btn-draft-pick" onclick="event.stopPropagation(); window.cardBattle.pickDraftCard('${cid}', this)">
                   📥 收入卡组
                 </button>
@@ -1179,6 +1698,7 @@ class CardBattleEngine {
 
   /**
    * 打开【我的战术卡组】查看面板 (Deck Viewer)
+   * 融入自然拼读 (Phonics) 与纯正发音教学
    */
   openDeckViewerModal() {
     const counts = {};
@@ -1197,21 +1717,32 @@ class CardBattleEngine {
             <h3>🎴 木下藤吉郎 · 战国军略卡组 (共 ${this.persistentDeck.length} 张)</h3>
             <button class="btn-close-viewer" onclick="document.getElementById('modal-card-deck-viewer')?.remove()">✕</button>
           </div>
-          <p class="viewer-tip">点击卡牌可倾听英武战吼发音！合战中将以此卡组作为出征抽牌池。</p>
+          <p class="viewer-tip">点击卡牌可听纯正美音发音，点击【🔤 拼读】可倾听自然拼读拆解！</p>
         </div>
 
         <div class="deck-viewer-grid">
           ${Object.entries(counts).map(([cid, count]) => {
-            const c = this.cardDatabase[cid] || { en: cid, cn: cid, type: 'attack', cost: 1, icon: '⚔️', desc: '' };
+            const c = this.cardDatabase[cid] || { en: cid, cn: cid, type: 'attack', cost: 1, icon: '⚔️', desc: '', phonetic: '' };
             return `
-              <div class="tactical-card viewer-card-item is-${c.type}" onclick="window.audioEngine?.speak('${c.en}')">
+              <div class="tactical-card viewer-card-item is-${c.type}">
                 <div class="card-cost-badge">${c.cost} ⚡</div>
                 <div class="card-stack-badge">x${count}</div>
                 ${c.isTextbook ? '<div class="card-origin-pill">课本词</div>' : (c.isCompanion ? '<div class="card-origin-pill is-comp">家臣</div>' : '')}
                 <div class="card-crest-icon">${c.icon}</div>
                 <div class="card-title-en">${c.en}</div>
+                ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
                 <div class="card-title-cn">${c.cn}</div>
                 <div class="card-desc-pill">${c.desc}</div>
+                <div class="viewer-card-actions">
+                  <button class="btn btn-xs btn-sound-read" onclick="window.audioEngine?.speak('${c.en}')" title="朗读全词">
+                    🔊 朗读
+                  </button>
+                  ${c.phonics ? `
+                    <button class="btn btn-xs btn-phonics-spell" onclick="window.cardBattle.playPhonicsSpelling('${cid}')" title="自然拼读拆解">
+                      🔤 拼读
+                    </button>
+                  ` : ''}
+                </div>
               </div>
             `;
           }).join('')}
@@ -1245,6 +1776,8 @@ class CardBattleEngine {
   // ==========================================================================
 
   renderBattleArena() {
+    const home = document.getElementById('home-screen');
+    if (home) home.classList.add('hidden');
     const scene = document.getElementById('scene-siege-battle');
     if (!scene) return;
     scene.classList.remove('hidden');
@@ -1292,15 +1825,19 @@ class CardBattleEngine {
       `;
     }
 
-    // 中间区域：意图告示与特效
+    // 中间区域：意图告示与听音辨敌
     const vsCenter = document.querySelector('.siege-vs-center');
     if (vsCenter) {
       vsCenter.innerHTML = `
         <div class="card-battle-turn-indicator">
           <div class="turn-badge">第 ${this.turn} 回合</div>
-          <div class="enemy-intent-bubble">
-            <span class="intent-icon">${this.enemy.intent.icon}</span>
-            <span class="intent-text">${this.enemy.intent.text}</span>
+          <div class="enemy-tactical-bubble" onclick="window.cardBattle.speakEnemyIntent()" title="点击倾听敌将语音">
+            <div class="bubble-header-row">
+              <span class="bubble-audio-btn">🔊 听敌战术</span>
+              <span class="bubble-keyword-pill">Target: <strong>${this.enemy.intent.keyword}</strong></span>
+            </div>
+            <div class="bubble-speech-en">"${this.enemy.intent.speechEn}"</div>
+            <div class="bubble-speech-cn">${this.enemy.intent.speechCn}</div>
           </div>
         </div>
         <div class="siege-impact-vfx hidden" id="siege-impact-vfx"></div>
@@ -1336,6 +1873,12 @@ class CardBattleEngine {
     if (deckEl) {
       deckEl.innerHTML = `
         <div class="card-deck-container">
+          <!-- 听音识策提示条 (Pedagogy Hint Strip) -->
+          <div class="battle-pedagogy-tip-strip" onclick="window.cardBattle.speakEnemyIntent()" title="点击重听敌将英语">
+            <span class="tip-lead">💡 听音识计：</span>
+            <span class="tip-body">${this.enemy.intent.counterHint || '根据英语词义选择克制战术！'}</span>
+          </div>
+
           <!-- 气力槽与牌堆统计 -->
           <div class="card-control-header">
             <div class="energy-orb-container" id="card-energy-orb">
@@ -1360,11 +1903,13 @@ class CardBattleEngine {
               const c = this.cardDatabase[cid];
               if (!c) return '';
               const canPlay = this.heroEnergy >= c.cost;
+              const isCounter = this.enemy.intent && Array.isArray(this.enemy.intent.counterWords) && this.enemy.intent.counterWords.includes(cid);
               return `
-                <div class="tactical-card hand-card-item is-${c.type} ${canPlay ? 'can-play' : 'no-energy'}" 
+                <div class="tactical-card hand-card-item is-${c.type} ${canPlay ? 'can-play' : 'no-energy'} ${isCounter ? 'is-counter-ready' : ''}" 
                      onclick="window.cardBattle.playCard(${idx})"
                      title="${c.desc}">
                   <div class="card-cost-badge">${c.cost} ⚡</div>
+                  ${isCounter ? `<div class="card-counter-sparkle-badge">⚡ 克制破敌</div>` : ''}
                   <div class="card-crest-icon">${c.icon}</div>
                   <div class="card-title-en">${c.en}</div>
                   <div class="card-title-cn">${c.cn}</div>

@@ -236,6 +236,51 @@ class NanbanTradeManager {
   }
 
   /**
+   * 真实生活化商肆口语对话 (Authentic Conversational English)
+   */
+  speakShoppingDialogue(topic) {
+    let playerPhrase = '';
+    let merchantReply = '';
+    let toastCn = '';
+
+    if (topic === 'apple') {
+      playerPhrase = "I want an apple, please!";
+      merchantReply = "Here is a fresh red apple! Sweet and juicy!";
+      toastCn = "阿方索递上红苹果：“Fresh red apple! 只要 10 贯！”";
+    } else if (topic === 'sword') {
+      playerPhrase = "Can I look at the sword?";
+      merchantReply = "Look at this sharp Katana! Perfect for a brave samurai!";
+      toastCn = "阿方索拔刀出鞘：“Sharp Katana! 锋利无比的备前名刀！”";
+    } else if (topic === 'shoes') {
+      playerPhrase = "Can I run fast with these shoes?";
+      merchantReply = "Yes! Put them on, and you can run fast like the wind!";
+      toastCn = "阿方索展示草鞋：“Run fast like the wind! 行军健步如飞！”";
+    } else if (topic === 'discount') {
+      playerPhrase = "Can you give me a discount, please?";
+      merchantReply = "Because you asked so politely in English, take 20% off!";
+      toastCn = "阿方索眉开眼笑：“礼貌英语寒暄！全场立减 20% 8折优惠！”";
+      this.discountRate = 0.8;
+      this.hasGreeted = true;
+    }
+
+    // 1. 播放玩家口语句子
+    if (window.audioEngine) {
+      window.audioEngine.speak(playerPhrase);
+    }
+
+    // 2. 延迟播放商掌柜热情回应
+    setTimeout(() => {
+      if (window.audioEngine) {
+        window.audioEngine.speak(merchantReply);
+      }
+      if (window.ui) {
+        window.ui.showToast(`🗣️ 【英语真实对话】${toastCn}`, 2800);
+      }
+      this.renderTradeModal(this.currentTown);
+    }, 1100);
+  }
+
+  /**
    * 采购集市日用物资 (Apple, Fish, Rice, Tea, Horse, Sword)
    */
   buyMarketGood(itemId) {
@@ -384,6 +429,23 @@ class NanbanTradeManager {
             </button>
             <button class="polite-chip ${this.hasGreeted ? 'is-active' : ''}" onclick="window.nanbanTrade.greetMerchant('Thank you!', 'You are very welcome, my friend!')">
               ✨ "Thank you!"
+            </button>
+          </div>
+
+          <!-- 真实口语实践对话 (自然习得生活表达) -->
+          <div class="merchant-dialogue-bar">
+            <span class="dialogue-lead">🗣️ 用英语向掌柜问询交流：</span>
+            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('apple')">
+              🍎 "I want an apple, please!"
+            </button>
+            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('sword')">
+              ⚔️ "Can I look at the sword?"
+            </button>
+            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('shoes')">
+              🏃 "Can I run fast with these shoes?"
+            </button>
+            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('discount')">
+              🏷️ "Can you give me a discount, please?"
             </button>
           </div>
           ${this.discountRate < 1.0 ? `<div class="discount-active-banner">🏷️ 礼貌寒暄生效中！全场物资立享 8 折人情特惠！</div>` : ''}

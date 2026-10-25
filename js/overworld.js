@@ -150,26 +150,70 @@ class JapanOverworldManager {
       { from: 'odawara', to: 'aoba', name: '奥州街道 (相模-奥羽)' }
     ];
 
-    // 沿途英语路标与关所奇遇点
+    // 沿途英语路标与关所情境奇遇点 (融入人教版核心动词情境真实交互)
     this.checkpoints = [
       {
-        id: 'sign-sakai',
-        x: 380,
-        y: 400,
-        title: '🛣️ 摄津界港关所',
-        label: '⚓ 界港商道',
-        word: 'port',
-        prompt: '前往繁华海港？听音辨词指路！',
+        id: 'sign-river',
+        x: 440,
+        y: 350,
+        title: '🌊 大河险滩渡口',
+        label: '🌊 天龙川渡口',
+        word: 'swim',
+        promptEn: "A wide river blocks your road! How will you cross the deep water?",
+        promptCn: "奔腾的大河拦住去路！藤吉郎该如何跨越深水？",
+        options: [
+          { en: "Swim across the river", cn: "如鱼得水！奋力涉水游过去", verb: "Swim", isCorrect: true, feedback: "You swim across the river! Safe and sound!" },
+          { en: "Run around the mountains", cn: "绕行千里群山神速奔跑", verb: "Run", isCorrect: false, feedback: "The mountains are too far! It takes too long!" },
+          { en: "Jump from the tall tree", cn: "爬上大树纵身飞跃", verb: "Jump", isCorrect: false, feedback: "Splash! You fell into the water!" }
+        ],
         isSolved: false
       },
       {
-        id: 'sign-inaba',
-        x: 490,
+        id: 'sign-wall',
+        x: 620,
+        y: 320,
+        title: '🪵 箱根拒马险隘',
+        label: '🪵 箱根关隘',
+        word: 'jump',
+        promptEn: "A tall wooden barrier is in front of you! What should you do?",
+        promptCn: "前方是高耸的关隘木栅！藤吉郎该如何越过？",
+        options: [
+          { en: "Jump high over the wall", cn: "凌空腾跃！轻灵翻过木栅", verb: "Jump", isCorrect: true, feedback: "Awesome! You jumped high over the wooden wall!" },
+          { en: "Swim on the stone path", cn: "在石板路上游水", verb: "Swim", isCorrect: false, feedback: "There is no water here to swim!" },
+          { en: "Eat an apple", cn: "坐下吃一个红苹果", verb: "Apple", isCorrect: false, feedback: "The apple was yummy, but the wall is still in front of you!" }
+        ],
+        isSolved: false
+      },
+      {
+        id: 'sign-scout',
+        x: 520,
+        y: 260,
+        title: '🏃 美浓密林奇袭',
+        label: '🏃 关原隘口',
+        word: 'run',
+        promptEn: "Enemy scouts are chasing behind! We must move very fast! What should we do?",
+        promptCn: "敌方斥候在后方追赶！我们必须极速行军！该如何行动？",
+        options: [
+          { en: "Run fast like the wind", cn: "神速奔袭！如风疾跑脱离", verb: "Run", isCorrect: true, feedback: "Super fast! You ran like the wind and escaped!" },
+          { en: "Look at the sky", cn: "停下抬头看蓝天", verb: "Look", isCorrect: false, feedback: "The scouts caught up while you looked at the sky!" },
+          { en: "Drink cold water", cn: "坐下喝甘泉水", verb: "Water", isCorrect: false, feedback: "No time to drink! You must hurry!" }
+        ],
+        isSolved: false
+      },
+      {
+        id: 'sign-sky',
+        x: 700,
         y: 280,
-        title: '🛣️ 美浓居城关所',
-        label: '🏯 美浓关所',
-        word: 'castle',
-        prompt: '通往巍峨城堡？听音验证文牒！',
+        title: '🦅 富士灵鹰传信',
+        label: '🦅 富士灵山',
+        word: 'fly',
+        promptEn: "A golden eagle circles high in the sky! What can an eagle do?",
+        promptCn: "云巅金鹰在盘旋！雄鹰在天空中能做什么？",
+        options: [
+          { en: "Fly high in the sky", cn: "鹰击长空！在蓝天自由翱翔", verb: "Fly", isCorrect: true, feedback: "Splendid! The eagle flies high and carries the secret message!" },
+          { en: "Swim under the ship", cn: "在战船底下游泳", verb: "Swim", isCorrect: false, feedback: "Eagles don't swim under ships!" },
+          { en: "Read an English book", cn: "静坐翻阅英文书", verb: "Book", isCorrect: false, feedback: "Eagles cannot read books!" }
+        ],
         isSolved: false
       }
     ];
@@ -604,13 +648,117 @@ class JapanOverworldManager {
     const cp = this.checkpoints.find(c => c.id === cpId);
     if (!cp || cp.isSolved) return;
 
-    window.audioEngine.speak(cp.word);
-    cp.isSolved = true;
-    if (window.heroManager) {
-      window.heroManager.addGold(10);
+    if (cp.options) {
+      this.openScenarioModal(cp);
+    } else {
+      window.audioEngine.speak(cp.word);
+      cp.isSolved = true;
+      if (window.heroManager) {
+        window.heroManager.addGold(15);
+      }
+      this.updateHUD();
+      window.ui.showToast('辨识暗号【' + cp.word + '】成功！大名犒赏 +15 贯！', '🚩');
     }
-    this.updateHUD();
-    window.ui.showToast('辨识暗号【' + cp.word + '】成功！大名犒赏 +10 贯！', '🚩');
+  }
+
+  /**
+   * 弹出大地图英语情境奇遇弹窗 (Task-Based Learning Micro-Scenario)
+   */
+  openScenarioModal(cp) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-backdrop overworld-scenario-backdrop';
+    modal.id = 'modal-ow-scenario';
+
+    // 自动朗读英语情境
+    if (window.audioEngine && cp.promptEn) {
+      setTimeout(() => {
+        window.audioEngine.speak(cp.promptEn);
+      }, 300);
+    }
+
+    modal.innerHTML = `
+      <div class="modal-scenario-box">
+        <div class="scenario-header">
+          <div class="scenario-crest">${cp.label}</div>
+          <h3 class="scenario-title">${cp.title}</h3>
+          <button class="btn-close-scenario" onclick="document.getElementById('modal-ow-scenario')?.remove()">✕</button>
+        </div>
+
+        <div class="scenario-prompt-card">
+          <div class="prompt-speaker-row">
+            <span class="prompt-speaker-btn" onclick="window.audioEngine?.speak('${cp.promptEn.replace(/'/g, "\\'")}')">
+              🔊 倾听情境英文
+            </span>
+          </div>
+          <div class="prompt-text-en">"${cp.promptEn}"</div>
+          <div class="prompt-text-cn">${cp.promptCn}</div>
+        </div>
+
+        <div class="scenario-options-list">
+          ${cp.options.map((opt, idx) => `
+            <button class="scenario-option-btn" onclick="window.overworld.chooseScenarioOption('${cp.id}', ${idx})">
+              <span class="opt-verb-tag">🔤 ${opt.verb}</span>
+              <div class="opt-text-group">
+                <span class="opt-en">"${opt.en}"</span>
+                <span class="opt-cn">${opt.cn}</span>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * 处理玩家在情境奇遇中的选项点击
+   */
+  chooseScenarioOption(cpId, optIdx) {
+    const cp = this.checkpoints.find(c => c.id === cpId);
+    if (!cp || !cp.options || !cp.options[optIdx]) return;
+
+    const opt = cp.options[optIdx];
+
+    if (opt.isCorrect) {
+      cp.isSolved = true;
+      if (window.audioEngine) {
+        window.audioEngine.playKobanCollect();
+        setTimeout(() => {
+          window.audioEngine.speak(opt.feedback);
+        }, 200);
+      }
+
+      if (window.heroManager) {
+        window.heroManager.addGold(25);
+        window.heroManager.addMerit(25);
+      }
+      this.updateHUD();
+
+      const modal = document.getElementById('modal-ow-scenario');
+      if (modal) {
+        modal.innerHTML = `
+          <div class="modal-scenario-box is-success animate-pop-in">
+            <div class="scenario-success-badge">🎉 奇谋破局 · 英语实践大赏</div>
+            <h3 class="scenario-success-title">"${opt.feedback}"</h3>
+            <p class="scenario-success-desc">运用动词【${opt.verb}】成功解决行军危机！获得 25 贯军资金与 25 点武勋！</p>
+            <button class="btn btn-primary" onclick="document.getElementById('modal-ow-scenario')?.remove()">
+              继续行军 ➡️
+            </button>
+          </div>
+        `;
+      }
+    } else {
+      if (window.audioEngine?.playMistake) window.audioEngine.playMistake();
+      if (window.audioEngine) {
+        setTimeout(() => {
+          window.audioEngine.speak(opt.feedback);
+        }, 150);
+      }
+      if (window.ui) {
+        window.ui.showToast(`💡 提示：${opt.cn}不适用此处，再想想动词意思吧！`, '💭');
+      }
+    }
   }
 
   enterCity(cityId) {
@@ -660,7 +808,7 @@ class JapanOverworldManager {
   }
 
   checkAndTriggerDailyTribute() {
-    if (window.siegeBattle && window.siegeBattle.isActive) return;
+    if ((window.siegeBattle && window.siegeBattle.isActive) || (window.cardBattle && window.cardBattle.isActive)) return;
 
     const today = new Date().toISOString().slice(0, 10);
     const lastDate = localStorage.getItem('taikou_tribute_date');

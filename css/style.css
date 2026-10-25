@@ -8265,10 +8265,31 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
 }
 
 /* ==========================================================================
+   通配模态遮罩层 (Modal Backdrop)
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
    战利品新卡三选一弹窗 (Card Drafting Modal)
    ========================================================================== */
 
 .card-draft-modal-backdrop {
+  position: fixed;
+  inset: 0;
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -8357,6 +8378,8 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
    ========================================================================== */
 
 .card-deck-viewer-backdrop {
+  position: fixed;
+  inset: 0;
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -8407,15 +8430,32 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
 .deck-viewer-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-auto-rows: minmax(160px, auto);
+  gap: 14px 8px;
   overflow-y: auto;
-  padding: 4px;
+  padding: 6px 4px;
   margin-bottom: 12px;
 }
 
-.viewer-card-item {
-  width: 100%;
-  height: 128px;
+.deck-viewer-grid .tactical-card.viewer-card-item {
+  width: 100% !important;
+  min-height: 160px !important;
+  height: 100% !important;
+  padding: 8px 4px 6px !important;
+  justify-content: flex-start !important;
+  gap: 2px !important;
+  position: relative !important;
+}
+}
+
+.tactical-card.viewer-card-item .card-desc-pill {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 28px;
+  line-height: 1.2;
 }
 
 .card-stack-badge {
@@ -9448,3 +9488,508 @@ body.theme-light .btn-home-fullscreen {
 
 
 
+
+/* ==========================================================================
+   深度英语融入系统样式 (Deep English Immersion & Pedagogy UI)
+   - 敌方英语战术语音气泡 (Enemy Tactical Speech Bubble)
+   - 听音识计提示栏与语义克制光效 (Counter Ready Glow & Pedagogy Strip)
+   - 连词成句连携弹幅 (Phrase Collocation Combo Banner)
+   - 战术识策破敌弹幅 (Tactical Counter Banner)
+   - 自然拼读与音标卡标 (Phonics Spell & Phonetic Badges)
+   - 大地图情境奇遇弹窗 (Overworld Scenario Micro-Encounter)
+   - 南蛮商肆生活口语对话条 (Alfonso Dialogue Chips)
+   ========================================================================== */
+
+/* 1. 敌方英语战术语音气泡 */
+.enemy-tactical-bubble {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1.5px solid rgba(239, 68, 68, 0.6);
+  border-radius: 12px;
+  padding: 6px 10px;
+  max-width: 260px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(239, 68, 68, 0.25);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.enemy-tactical-bubble:hover {
+  transform: scale(1.03);
+  border-color: #f87171;
+}
+
+.enemy-tactical-bubble:active {
+  transform: scale(0.97);
+}
+
+.bubble-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.bubble-audio-btn {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 1px 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bubble-keyword-pill {
+  font-size: 10.5px;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.bubble-keyword-pill strong {
+  color: #fbbf24;
+  text-transform: uppercase;
+}
+
+.bubble-speech-en {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.25;
+  margin-bottom: 2px;
+  letter-spacing: 0.2px;
+}
+
+.bubble-speech-cn {
+  font-size: 10.5px;
+  color: #cbd5e1;
+  line-height: 1.2;
+}
+
+/* 2. 听音识策提示条 */
+.battle-pedagogy-tip-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-bottom: 6px;
+  font-size: 11.5px;
+  color: #f1f5f9;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s ease;
+}
+
+.battle-pedagogy-tip-strip:hover {
+  background: rgba(51, 65, 85, 0.95);
+}
+
+.battle-pedagogy-tip-strip .tip-lead {
+  font-weight: 800;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.battle-pedagogy-tip-strip .tip-body {
+  color: #e2e8f0;
+  line-height: 1.2;
+}
+
+/* 3. 语义克制手牌闪光徽标 */
+.card-counter-sparkle-badge {
+  position: absolute;
+  top: -8px;
+  right: -4px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+  animation: counterSparkle 1.2s infinite ease-in-out alternate;
+  z-index: 10;
+  letter-spacing: 0.2px;
+}
+
+@keyframes counterSparkle {
+  0% { transform: scale(0.92); box-shadow: 0 0 4px rgba(245, 158, 11, 0.6); }
+  100% { transform: scale(1.08); box-shadow: 0 0 14px rgba(239, 68, 68, 0.95); }
+}
+
+.hand-card-item.is-counter-ready {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.6), inset 0 0 8px rgba(245, 158, 11, 0.2) !important;
+  animation: counterReadyPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes counterReadyPulse {
+  0%, 100% { border-color: #f59e0b; }
+  50% { border-color: #ef4444; }
+}
+
+/* 4. 连词成句与破敌弹幅 (Tactical & Collocation Banners) */
+.tactical-counter-banner,
+.phrase-combo-banner {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 14px;
+  padding: 12px 20px;
+  text-align: center;
+  z-index: 999;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  min-width: 250px;
+}
+
+.tactical-counter-banner {
+  border: 2px solid #f59e0b;
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.6);
+}
+
+.tactical-counter-banner .counter-badge-icon {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 1px;
+}
+
+.tactical-counter-banner .counter-badge-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 3px 0;
+}
+
+.tactical-counter-banner .counter-badge-desc {
+  font-size: 12px;
+  color: #fef08a;
+}
+
+.phrase-combo-banner {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.6);
+}
+
+.phrase-combo-banner .phrase-combo-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.phrase-combo-banner .phrase-combo-en {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 3px 0;
+  text-shadow: 0 2px 8px rgba(56, 189, 248, 0.5);
+}
+
+.phrase-combo-banner .phrase-combo-cn {
+  font-size: 12px;
+  color: #bae6fd;
+}
+
+/* 5. 自然拼读与音标按键 */
+.card-phonetic-badge {
+  font-size: 10px;
+  color: #94a3b8;
+  font-family: monospace;
+  background: rgba(148, 163, 184, 0.15);
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-top: 1px;
+}
+
+.viewer-card-actions,
+.draft-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.btn-sound-read,
+.btn-phonics-spell {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.btn-sound-read {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.btn-phonics-spell {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.btn-sound-read:hover,
+.btn-phonics-spell:hover {
+  transform: scale(1.05);
+}
+
+/* 6. 大地图情境微探险弹窗 (Overworld Scenario Modal) */
+.overworld-scenario-backdrop {
+  z-index: 10001;
+}
+
+.modal-scenario-box {
+  background: #111827;
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border-radius: 16px;
+  padding: 18px 20px;
+  max-width: 440px;
+  width: 92%;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  color: #f8fafc;
+}
+
+.scenario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.scenario-crest {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.scenario-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0;
+  color: #f8fafc;
+}
+
+.btn-close-scenario {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.scenario-prompt-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.prompt-speaker-row {
+  margin-bottom: 6px;
+}
+
+.prompt-speaker-btn {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 2px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+.prompt-speaker-btn:hover {
+  transform: scale(1.04);
+}
+
+.prompt-text-en {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.prompt-text-cn {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.scenario-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.scenario-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.scenario-option-btn:hover {
+  border-color: #38bdf8;
+  background: rgba(51, 65, 85, 0.95);
+  transform: translateX(4px);
+}
+
+.scenario-option-btn:active {
+  transform: scale(0.98);
+}
+
+.opt-verb-tag {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.opt-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.opt-en {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.opt-cn {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.modal-scenario-box.is-success {
+  text-align: center;
+  padding: 24px 20px;
+}
+
+.scenario-success-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 3px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.scenario-success-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.scenario-success-desc {
+  font-size: 12.5px;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+/* 7. 南蛮商肆生活口语对话条 */
+.merchant-dialogue-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.dialogue-lead {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.dialogue-chip {
+  font-size: 10.5px;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.12);
+  color: #bae6fd;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 3px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.dialogue-chip:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.dialogue-chip:active {
+  transform: scale(0.96);
+}
+
+/* 确保卡组浏览面板与选卡面板在所有设备自适应展开高度，不被通用手牌高度强制截断 */
+.tactical-card.viewer-card-item,
+.tactical-card.draft-card-item {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 154px !important;
+  padding: 8px 4px !important;
+  justify-content: flex-start !important;
+  gap: 2px !important;
+}
+
+.tactical-card.viewer-card-item .card-desc-pill,
+.tactical-card.draft-card-item .card-desc-pill {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 28px;
+  line-height: 1.2;
+}
