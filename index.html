@@ -55,6 +55,8 @@
       </div>
 
       <div class="hud-right">
+        <button class="btn btn-secondary btn-sm" id="btn-hud-achievements" onclick="window.ui.openAchievementsModal()" style="font-weight:700;">🏆 殿堂</button>
+        <button class="btn btn-secondary btn-sm" id="btn-hud-theme" onclick="window.ui.toggleTheme()" style="font-weight:700;" title="切换素雅和纸 / 玄漆金箔主题">🌓</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-estate" onclick="window.ui.openEstateModal()" style="font-weight:700;">🏡 宅邸</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-clues" onclick="window.ui.openTreasureClueModal()" style="font-weight:700;">🗺️ 寻宝</button>
         <button class="btn btn-secondary btn-sm" id="btn-hud-lexicon" onclick="window.ui.openLexiconModal()" style="font-weight:700;">📜 绘卷</button>
@@ -475,6 +477,8 @@
         <div class="home-badge">🏯 尾张织田家 · 军略大本营</div>
         <h1 class="home-title">太阁英语立志传 <img src="assets/ui/seal_taikou.png" class="title-seal" alt="印"></h1>
         <div class="home-header-tools">
+          <button class="btn-home-fullscreen btn-home-hall" id="btn-home-hall" onclick="window.ui.openAchievementsModal()" title="天下布武大名殿堂与传世信物博览">🏆 殿堂</button>
+          <button class="btn-home-fullscreen btn-theme-toggle" id="btn-theme-toggle" onclick="window.ui.toggleTheme()" title="切换素雅和纸 / 玄漆金箔主题">🌓 主题</button>
           <button class="btn-home-fullscreen btn-home-pwa" id="btn-home-pwa" onclick="window.ui.triggerPWAInstall()" title="添加到手机/iPad主屏幕，像App一样全屏离线游玩">📱 安装App</button>
           <button class="btn-home-fullscreen" onclick="window.audioEngine.testAudio()" title="测试并激活音频发音">🔊 试音</button>
           <button class="btn-home-fullscreen" onclick="window.ui.toggleFullscreen()" title="切换全屏">⛶ 全屏</button>
@@ -1054,6 +1058,19 @@
     <div class="modal-container" style="max-width: 560px;">
       <button class="modal-close" onclick="window.ui.closeTodayFinishedModal()">✕</button>
       <div class="modal-body" id="today-finished-content" style="padding: 18px;"></div>
+    </div>
+  </div>
+
+  <!-- 弹窗：天下布武大名殿堂与传世信物博览 (Hall of Achievements & Relics) -->
+  <div class="modal-overlay hidden" id="modal-achievements">
+    <div class="modal-container achievements-modal" style="max-width: 720px;">
+      <button class="modal-close" onclick="window.ui.closeAchievementsModal()">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">🏆 战国大名殿堂 · 传世信物与成就徽章</h3>
+      </div>
+      <div class="modal-body achievements-modal-body" id="achievements-modal-content">
+        <!-- 动态渲染信物陈列、里程碑勋章与言灵总成 -->
+      </div>
     </div>
   </div>
 

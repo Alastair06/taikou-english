@@ -24,6 +24,7 @@ class UIManager {
     });
     this.initSakuraEffect();
     this.initOrientationHint();
+    this.initTheme();
   }
 
   /**
@@ -1548,6 +1549,331 @@ class UIManager {
   closePWAGuideModal() {
     const modal = document.getElementById('modal-pwa-guide');
     if (modal) modal.classList.add('hidden');
+  }
+
+  /**
+   * =========================================================================
+   * 自适应和风主题系统 (玄漆暗金 Dark vs 素雅和纸 Light)
+   * =========================================================================
+   */
+  initTheme() {
+    const saved = localStorage.getItem('taikou_theme');
+    if (saved === 'light') {
+      this.applyTheme('light');
+    } else if (saved === 'dark') {
+      this.applyTheme('dark');
+    } else {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        this.applyTheme('light');
+      } else {
+        this.applyTheme('dark');
+      }
+    }
+  }
+
+  toggleTheme() {
+    const isLight = document.body.classList.contains('theme-light');
+    const newTheme = isLight ? 'dark' : 'light';
+    this.applyTheme(newTheme);
+    this.showToast(newTheme === 'light' ? '📜 已切换为【素雅和纸 · 晨光】浅色主题' : '🏯 已切换为【玄漆金箔 · 墨夜】深色主题', '🌓');
+  }
+
+  applyTheme(theme) {
+    const btn = document.getElementById('btn-theme-toggle');
+    const hudBtn = document.getElementById('btn-hud-theme');
+    if (theme === 'light') {
+      document.body.classList.add('theme-light');
+      localStorage.setItem('taikou_theme', 'light');
+      if (btn) btn.innerHTML = '☀️ 和纸';
+      if (hudBtn) hudBtn.innerHTML = '☀️';
+    } else {
+      document.body.classList.remove('theme-light');
+      localStorage.setItem('taikou_theme', 'dark');
+      if (btn) btn.innerHTML = '🌙 玄漆';
+      if (hudBtn) hudBtn.innerHTML = '🌙';
+    }
+  }
+
+  /**
+   * =========================================================================
+   * 天下布武大名殿堂与传世信物博览 (Hall of Achievements & Relics)
+   * =========================================================================
+   */
+  openAchievementsModal(tab = 'relics') {
+    const modal = document.getElementById('modal-achievements');
+    const content = document.getElementById('achievements-modal-content');
+    if (!modal || !content) return;
+
+    this._achievementsTab = tab;
+    this.renderAchievementsContent();
+    modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+
+    if (window.audioEngine) {
+      window.audioEngine.unlockAudio();
+      window.audioEngine.playKobanCollect();
+    }
+  }
+
+  closeAchievementsModal() {
+    const modal = document.getElementById('modal-achievements');
+    if (modal) modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+  }
+
+  speakRelicVoice(relicId) {
+    const relics = {
+      'relic-hidenaga-abacus': 'Read more books every day! Practice makes perfect!',
+      'relic-toshiie-spear-tassel': 'Charge forward! Good food makes a strong body!',
+      'relic-nene-sachet': 'Have a rice ball, Tokichiro! Smile and be happy!',
+      'relic-hanbei-fan': 'Knowledge is power. The castle will fall!',
+      'relic-shingen-war-fan': 'Move like the wind, stay firm as a mountain!',
+      'relic-masamune-crescent': "Wake up, warriors! Let's party in English!"
+    };
+    const speech = relics[relicId];
+    if (speech && window.audioEngine) {
+      window.audioEngine.speak(speech);
+      if (window.audioEngine.playFluteFanfare) window.audioEngine.playFluteFanfare();
+    }
+  }
+
+  renderAchievementsContent() {
+    const content = document.getElementById('achievements-modal-content');
+    if (!content) return;
+
+    const currentTab = this._achievementsTab || 'relics';
+    const hero = window.heroManager ? window.heroManager.hero : { name: '木下藤吉郎', gold: 100, merit: 0, rank: '足轻组头' };
+    const curIdx = window.progressManager ? window.progressManager.getCurrentIndex() : 0;
+    const curStage = Math.floor(curIdx / 3) + 1;
+    const conqueredCount = Math.min(60, Math.max(0, curStage - 1));
+    const totalWords = (window.wordManager && typeof window.wordManager.getAllTextbookWordsFlat === 'function')
+      ? window.wordManager.getAllTextbookWordsFlat().length
+      : 178;
+    const masteredWords = Math.min(totalWords, (curIdx + 1) * 3);
+
+    // 六大名将传世信物数据库
+    const relicsData = [
+      {
+        id: 'relic-hidenaga-abacus',
+        name: '秀长的黄金算盘',
+        companion: '木下秀长',
+        role: '错题军师 · 胞弟',
+        avatar: 'assets/portraits/hidenaga.jpg',
+        icon: '🧮',
+        title: '【胞弟理财信物】',
+        effect: '每日平定领地名城进贡金币额外 +20%',
+        enQuote: 'Welcome back, brother! Read more books every day!',
+        hint: '在南蛮集市采买 2 袋大米（Rice）赠予秀长即可解锁'
+      },
+      {
+        id: 'relic-toshiie-spear-tassel',
+        name: '枪之又左的大枪红缨',
+        companion: '前田利家',
+        role: '先锋护卫 · 枪之名将',
+        avatar: 'assets/portraits/toshiie.jpg',
+        icon: '🚩',
+        title: '【至交猛将信物】',
+        effect: '合战全卡牌伤害永久 +2',
+        enQuote: 'Charge forward! Good food makes a strong body!',
+        hint: '在南蛮集市采买 1 条肥鱼（Fish）赠予利家即可解锁'
+      },
+      {
+        id: 'relic-nene-sachet',
+        name: '宁宁的樱花香囊',
+        companion: '宁宁',
+        role: '内助贤妻 · 北政所',
+        avatar: '👘',
+        icon: '🌸',
+        title: '【内助贤妻信物】',
+        effect: '随身佩戴，合战主角生命上限 +5',
+        enQuote: 'Have a rice ball, Tokichiro! Smile and be happy!',
+        hint: '在南蛮集市采买 2 个鲜红苹果（Apple）赠予宁宁即可解锁'
+      },
+      {
+        id: 'relic-hanbei-fan',
+        name: '半兵卫的白羽军扇',
+        companion: '竹中半兵卫',
+        role: '奇策军师 · 今孔明',
+        avatar: 'assets/portraits/hanbei.jpg',
+        icon: '🪭',
+        title: '【奇策军师信物】',
+        effect: '合战首轮手牌额外多摸 1 张（5 张手牌起手）',
+        enQuote: 'Knowledge is power. The castle will fall!',
+        hint: '在南蛮集市采买 1 罐宇治名茶（Tea）赠予半兵卫即可解锁'
+      },
+      {
+        id: 'relic-shingen-war-fan',
+        name: '信玄的风林火山军配',
+        companion: '武田信玄',
+        role: '赤备统帅 · 甲斐之虎',
+        avatar: 'assets/portraits/shingen.jpg',
+        icon: '🐯',
+        title: '【甲斐军神信物】',
+        effect: '每回合开始时自动获得 3 点风林火山坚固护甲',
+        enQuote: 'Move like the wind, stay firm as a mountain!',
+        hint: '在南蛮集市采买 1 匹尾张骏马（Horse）赠予信玄即可解锁'
+      },
+      {
+        id: 'relic-masamune-crescent',
+        name: '政宗的金弦月立物兜盔',
+        companion: '伊达政宗',
+        role: '龙骑统领 · 独眼龙',
+        avatar: 'assets/portraits/masamune.jpg',
+        icon: '🌙',
+        title: '【奥州龙骑信物】',
+        effect: '所有穿甲爆发伤害额外永久 +4',
+        enQuote: "Wake up, warriors! Let's party in English!",
+        hint: '在南蛮集市采买 1 把备前名刀（Sword）赠予政宗即可解锁'
+      }
+    ];
+
+    const hasRelic = (id) => (window.estateSystem && window.estateSystem.hasRelic) ? window.estateSystem.hasRelic(id) : false;
+    const unlockedRelicsCount = relicsData.filter(r => hasRelic(r.id)).length;
+
+    // 里程碑勋章数据库
+    const badgesData = [
+      {
+        id: 'badge-first-blood',
+        icon: '🌸',
+        title: '初试锋芒',
+        desc: '平定尾张第一要塞，迈出天下立志第一步',
+        isUnlocked: curStage >= 1
+      },
+      {
+        id: 'badge-okehazama',
+        icon: '⛈️',
+        title: '雷暴奇袭',
+        desc: '第 5 关桶狭间大雨奇袭，斩落总大将今川义元',
+        isUnlocked: curStage >= 5
+      },
+      {
+        id: 'badge-sunomata',
+        icon: '🪵',
+        title: '神速筑拔',
+        desc: '第 10 关美浓墨俣一昼夜拔地耸立一夜城，名动诸侯',
+        isUnlocked: curStage >= 10
+      },
+      {
+        id: 'badge-shingen',
+        icon: '🐯',
+        title: '风林火山',
+        desc: '第 25 关对决甲斐之虎武田信玄，领会赤备如风之阵',
+        isUnlocked: curStage >= 25 || hasRelic('relic-shingen-war-fan')
+      },
+      {
+        id: 'badge-masamune',
+        icon: '🐉',
+        title: '独眼龙啸',
+        desc: '第 35 关迎战奥州霸者伊达政宗，破除龙骑铁炮狂澜',
+        isUnlocked: curStage >= 35 || hasRelic('relic-masamune-crescent')
+      },
+      {
+        id: 'badge-tea-master',
+        icon: '🍵',
+        title: '茶圣真传',
+        desc: '在宗休茶室与名将对坐品茗，达成 100% 默契配对',
+        isUnlocked: (window.cardsManager && window.cardsManager.hasCard && window.cardsManager.hasCard('title-teasaint')) || true
+      },
+      {
+        id: 'badge-merchant',
+        icon: '🚢',
+        title: '南蛮巨贾',
+        desc: '在城下町南蛮商馆向阿方索采买生鲜物资与特产',
+        isUnlocked: (hero.gold >= 100) || true
+      },
+      {
+        id: 'badge-estate',
+        icon: '🏡',
+        title: '立志雅居',
+        desc: '在藤吉郎居所布置南蛮黑漆与金箔屏风和风家具',
+        isUnlocked: (window.estateSystem && window.estateSystem.state.unlockedFurnitureIds.length >= 3)
+      }
+    ];
+
+    const unlockedBadgesCount = badgesData.filter(b => b.isUnlocked).length;
+
+    // 渲染总览面板
+    content.innerHTML = `
+      <div class="achievements-container">
+        <!-- 顶部军机大名档案条 -->
+        <div class="achievements-header-card">
+          <div class="achievements-profile">
+            <img src="assets/portraits/tokichiro.jpg" class="achieve-avatar" alt="藤吉郎">
+            <div class="achieve-profile-meta">
+              <div class="achieve-name-row">
+                <span class="achieve-hero-name">${hero.name || '木下藤吉郎'}</span>
+                <span class="achieve-rank-badge">🔰 ${hero.rank || '足轻组头'}</span>
+              </div>
+              <div class="achieve-stats-row">
+                <span class="achieve-stat-chip">⭐ 武勋 <strong>${hero.merit || 0}</strong></span>
+                <span class="achieve-stat-chip">🪙 金判 <strong>${hero.gold || 0}</strong> 贯</span>
+                <span class="achieve-stat-chip">🏯 平定 <strong>${conqueredCount}</strong>/60 城</span>
+                <span class="achieve-stat-chip">📖 掌握言灵 <strong>${masteredWords}</strong>/${totalWords}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 选项卡导航 -->
+        <div class="achievements-nav-tabs">
+          <button class="achieve-tab-btn ${currentTab === 'relics' ? 'active' : ''}" onclick="window.ui.openAchievementsModal('relics')">
+            💎 传世信物 (${unlockedRelicsCount}/${relicsData.length})
+          </button>
+          <button class="achieve-tab-btn ${currentTab === 'badges' ? 'active' : ''}" onclick="window.ui.openAchievementsModal('badges')">
+            🎖️ 里程碑勋章 (${unlockedBadgesCount}/${badgesData.length})
+          </button>
+        </div>
+
+        <!-- 标签页 1：传世信物 -->
+        ${currentTab === 'relics' ? `
+          <div class="achieve-relics-grid">
+            ${relicsData.map(r => {
+              const unlocked = hasRelic(r.id);
+              return `
+                <div class="relic-pedestal-card ${unlocked ? 'is-unlocked' : 'is-locked'}">
+                  <div class="pedestal-top">
+                    <div class="pedestal-icon-box">
+                      <span class="pedestal-relic-icon">${r.icon}</span>
+                      ${unlocked ? `<span class="pedestal-mon-crest">🌸</span>` : `<span class="pedestal-lock">🔒</span>`}
+                    </div>
+                    <div class="pedestal-relic-meta">
+                      <div class="relic-item-title">${r.name}</div>
+                      <div class="relic-source-tag">${r.companion} · ${r.role}</div>
+                    </div>
+                  </div>
+                  <div class="pedestal-effect">${r.title} ${r.effect}</div>
+                  <div class="pedestal-bottom">
+                    ${unlocked ? `
+                      <button class="btn btn-sm btn-relic-voice" onclick="window.ui.speakRelicVoice('${r.id}')">
+                        🔊 聆听真传箴言
+                      </button>
+                    ` : `
+                      <div class="relic-lock-hint">💡 ${r.hint}</div>
+                    `}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : `
+          <!-- 标签页 2：里程碑勋章 -->
+          <div class="achieve-badges-grid">
+            ${badgesData.map(b => `
+              <div class="milestone-badge-card ${b.isUnlocked ? 'is-unlocked' : 'is-locked'}">
+                <div class="badge-icon-wrap">${b.icon}</div>
+                <div class="badge-info">
+                  <div class="badge-title-row">
+                    <span class="badge-title">${b.title}</span>
+                    <span class="badge-status-pill">${b.isUnlocked ? '✨ 已斩获' : '🔒 待拔除'}</span>
+                  </div>
+                  <div class="badge-desc">${b.desc}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
   }
 
   /**

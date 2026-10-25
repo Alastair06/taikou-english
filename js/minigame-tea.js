@@ -81,6 +81,10 @@ class TeaCeremonyMinigame {
       quote = `“好茶！宗休大师的浓茶爽口！猴子，喝罢此盏，随我去阵前大显身手！”`;
     } else if (comp.id === 'hanbei') {
       quote = `“主公，心静则神明。茶道如兵法，融通音律意境，名城自破也。”`;
+    } else if (comp.id === 'shingen') {
+      quote = `“【武田信玄颔首】：“茶汤清澄如镜！A cup of hot green tea calms the soul. 饮罢此盏，随吾策马疾风！”`;
+    } else if (comp.id === 'masamune') {
+      quote = `“【伊达政宗豪快大笑】：“Haha! Let's enjoy tea and talk strategy! 尝尝这碗浓茶，奥州男儿豪气倍增！”`;
     }
 
     if (this._customCompanionQuote) {
@@ -98,6 +102,20 @@ class TeaCeremonyMinigame {
         </div>
 
         <div class="tea-banquet-actions">
+          <!-- 烹茶闲聊小剧场 -->
+          <div class="banquet-item-pod">
+            <div class="pod-info">
+              <span class="pod-icon">💬</span>
+              <div class="pod-texts">
+                <span class="pod-title">烹茶对谈</span>
+                <span class="pod-sub">名将英语闲聊</span>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-companion-chat" onclick="window.teaMinigame.chatWithCompanion()">
+              💬 畅叙闲聊
+            </button>
+          </div>
+
           <!-- 宁宁爱心饭团盘 -->
           <div class="banquet-item-pod">
             <div class="pod-info">
@@ -199,6 +217,125 @@ class TeaCeremonyMinigame {
 
     if (window.ui) {
       window.ui.showToast(`🪙 清点领地进贡完成！获得茶会赏金 +20 贯！`, 2000);
+    }
+  }
+
+  /**
+   * 互动：与随行家臣在茶室展开英文闲聊小剧场 (English Banter)
+   */
+  chatWithCompanion() {
+    const comp = (window.estateSystem && window.estateSystem.getActiveCompanion)
+      ? window.estateSystem.getActiveCompanion()
+      : { id: 'hidenaga', name: '木下秀长' };
+
+    const companionChats = {
+      shingen: [
+        {
+          en: "A fast horse needs a wise rider.",
+          cn: "骏马需配良将，英语与兵法皆是经世安邦之学！",
+          speech: "A fast horse needs a wise rider."
+        },
+        {
+          en: "Stay as firm as a mountain!",
+          cn: "不动如山！无论遇上何等长难词，心定自然音准！",
+          speech: "Stay as firm as a mountain!"
+        },
+        {
+          en: "Nature is our best teacher.",
+          cn: "风林火山，道法自然！细听松涛水声，便晓音韵玄机！",
+          speech: "Nature is our best teacher."
+        }
+      ],
+      masamune: [
+        {
+          en: "Hot tea brings courage!",
+          cn: "热茶予人胆气！且看奥州龙骑在英语战国大闹一场！",
+          speech: "Hot tea brings courage!"
+        },
+        {
+          en: "Look at the bright moon!",
+          cn: "仰望夜空金弦月！胸怀大志者，眼中自有一片浩瀚青天！",
+          speech: "Look at the bright moon!"
+        },
+        {
+          en: "Be brave and keep smiling!",
+          cn: "勇武无畏，常保笑容！胜利永远眷顾自信之人！",
+          speech: "Be brave and keep smiling!"
+        }
+      ],
+      hidenaga: [
+        {
+          en: "Read more books every day!",
+          cn: "每日勤勉翻阅绘卷，积跬步以至千里，兄长必成大器！",
+          speech: "Read more books every day!"
+        },
+        {
+          en: "Good friends share everything.",
+          cn: "知己同心，后勤辎重弟已料理周全，兄长放心出征！",
+          speech: "Good friends share everything."
+        }
+      ],
+      toshiie: [
+        {
+          en: "Good food makes a strong body!",
+          cn: "大口吃肉喝茶，体魄壮硕如牛，枪尖方能无坚不摧！",
+          speech: "Good food makes a strong body!"
+        },
+        {
+          en: "Practice makes a champion!",
+          cn: "多加挥枪与诵读，假以时日，你便是一骑当千的英语大将！",
+          speech: "Practice makes a champion!"
+        }
+      ],
+      nene: [
+        {
+          en: "Smile and be happy!",
+          cn: "常带微笑，家和万事兴！看着藤吉郎每天进步，我最开心了~",
+          speech: "Smile and be happy!"
+        },
+        {
+          en: "Sweet fruits bring sweet dreams.",
+          cn: "多吃鲜果甜点，合战辛苦了，早些歇息莫累着身体哦~",
+          speech: "Sweet fruits bring sweet dreams."
+        }
+      ],
+      hanbei: [
+        {
+          en: "Knowledge is real power.",
+          cn: "智谋胜过万夫之勇，谙熟自然拼读神机，天下名城如探囊取物！",
+          speech: "Knowledge is real power."
+        },
+        {
+          en: "Calm mind brings great ideas.",
+          cn: "每临大事有静气，饮一盏清茶，奇策妙计自然涌上心头！",
+          speech: "Calm mind brings great ideas."
+        }
+      ]
+    };
+
+    const chats = companionChats[comp.id] || companionChats.hidenaga;
+    if (!this._chatIndices) this._chatIndices = {};
+    if (this._chatIndices[comp.id] === undefined) this._chatIndices[comp.id] = 0;
+    
+    const chat = chats[this._chatIndices[comp.id] % chats.length];
+    this._chatIndices[comp.id]++;
+
+    // 播放地道英文语音
+    if (window.audioEngine) {
+      window.audioEngine.speak(chat.speech);
+    }
+
+    // 随机增加 15 贯军资与 20 武勋
+    if (window.heroManager) {
+      window.heroManager.addGold(15);
+      window.heroManager.addMerit(20);
+    }
+
+    this._customCompanionQuote = `“【${comp.name}微笑着说道】：“<strong>${chat.en}</strong>”<br><span style='color:#059669;'>（${chat.cn}）</span><br><span style='font-size:11px; color:#d97706;'>✨ 羁绊加深！金判 +15 贯，武勋 +20！</span>”`;
+    this.renderCompanionBanquet();
+
+    if (window.ui) {
+      window.ui.showToast(`🍵 与【${comp.name}】烹茶闲聊，习得日常言灵！金判+15，武勋+20！`, 2500);
     }
   }
 
@@ -401,6 +538,10 @@ class TeaCeremonyMinigame {
         cheerText = `哈哈痛快！利休大师好茶！猴子，随我去阵前大显身手！`;
       } else if (comp.id === 'hanbei') {
         cheerText = `主公茶道已通达化境，今日所悟自然拼读神机，胜过万千甲兵！`;
+      } else if (comp.id === 'shingen') {
+        cheerText = `妙极！心如止水，动若风雷！【Victory belongs to the brave!】随吾出征拔城！`;
+      } else if (comp.id === 'masamune') {
+        cheerText = `Haha! Excellent! 英语茶道无双！【Let's party!】全军随本殿下一同冲阵！`;
       }
 
       let extraBonusHtml = '';
