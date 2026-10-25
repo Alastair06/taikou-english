@@ -446,6 +446,61 @@ class CardBattleEngine {
         vfx: 'shield',
         isTextbook: true,
         desc: '【高频动作词】洞察敌将破绽！获得 5 护盾'
+      },
+
+      // 人教新课标三年级下册核心日常动词 (Action Verbs)
+      run: {
+        id: 'run',
+        en: 'Run',
+        cn: '疾跑 (奔袭)',
+        type: 'attack',
+        cost: 1,
+        icon: '🏃💨',
+        dmg: 7,
+        block: 5,
+        vfx: 'charge',
+        isTextbook: true,
+        desc: '【三年级动词】神速奔袭！造成 7 点伤害并获得 5 点护甲'
+      },
+      jump: {
+        id: 'jump',
+        en: 'Jump',
+        cn: '飞跃 (腾跳)',
+        type: 'defense',
+        cost: 1,
+        icon: '🦘⬆️',
+        dmg: 0,
+        block: 8,
+        draw: 1,
+        vfx: 'shield',
+        isTextbook: true,
+        desc: '【三年级动词】凌空腾跃！获得 8 点护甲并抽 1 张手牌'
+      },
+      fly: {
+        id: 'fly',
+        en: 'Fly',
+        cn: '鹰击 (飞翔)',
+        type: 'attack',
+        cost: 1,
+        icon: '🦅✨',
+        dmg: 10,
+        pierce: true,
+        vfx: 'arrow',
+        isTextbook: true,
+        desc: '【三年级动词】天鹰破空！射出 10 点真实穿透伤害'
+      },
+      swim: {
+        id: 'swim',
+        en: 'Swim',
+        cn: '游弋 (涉水)',
+        type: 'skill',
+        cost: 1,
+        icon: '🏊‍♂️🌊',
+        heal: 6,
+        block: 4,
+        vfx: 'heal',
+        isTextbook: true,
+        desc: '【三年级动词】如鱼得水！恢复 6 点生命并获得 4 点护甲'
       }
     };
   }
@@ -1027,7 +1082,10 @@ class CardBattleEngine {
    */
   showCardDraftModal(onFinish) {
     // 课本学龄核心词汇卡池 (覆盖日常与新课标高频词)
-    const textbookCards = ['meet', 'friend', 'nice', 'book', 'ruler', 'pencil', 'water', 'apple', 'look'];
+    const textbookCards = [
+      'meet', 'friend', 'nice', 'book', 'ruler', 'pencil', 'water', 'apple', 'look',
+      'run', 'jump', 'fly', 'swim'
+    ];
     // 进阶战术卡池
     const tacticalCards = [
       'double_slash', 'iron_wall', 'war_cry', 'piercing_arrow',
@@ -1310,7 +1368,7 @@ class CardBattleEngine {
                   <div class="card-crest-icon">${c.icon}</div>
                   <div class="card-title-en">${c.en}</div>
                   <div class="card-title-cn">${c.cn}</div>
-                  <div class="card-badge-val">${c.dmg ? `⚔️ ${c.dmg + this.heroStrength}` : (c.block ? `🛡️ +${c.block}` : (c.heal ? `💚 +${c.heal}` : '✨ 战术'))}</div>
+                  <div class="card-badge-val">${this.getCardBadgeVal(c)}</div>
                 </div>
               `;
             }).join('')}
@@ -1318,6 +1376,18 @@ class CardBattleEngine {
         </div>
       `;
     }
+  }
+
+  getCardBadgeVal(c) {
+    if (!c) return '✨ 战术';
+    if (c.dmg && c.block) return `⚔️${c.dmg + this.heroStrength} 🛡️${c.block}`;
+    if (c.heal && c.block) return `💚${c.heal} 🛡️${c.block}`;
+    if (c.dmg) return `⚔️ ${c.dmg + this.heroStrength}${c.pierce ? ' 破甲' : ''}`;
+    if (c.block) return `🛡️ +${c.block}`;
+    if (c.heal) return `💚 +${c.heal}`;
+    if (c.draw) return `🎴 +${c.draw}`;
+    if (c.strength) return `💪 +${c.strength}`;
+    return '✨ 战术';
   }
 
   getHeroElem() {

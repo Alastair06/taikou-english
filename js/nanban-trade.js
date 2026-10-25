@@ -77,6 +77,50 @@ const MARKET_DAILY_GOODS = [
     price: 50,
     desc: '千锤百炼的锋锐名刃，寒光闪闪。',
     voicePhrase: 'Sharp Katana Sword! Fifty gold.'
+  },
+  {
+    id: 'scroll-run',
+    name: '神速行军草鞋',
+    en: 'Run',
+    phonetic: '/rʌn/',
+    icon: '🏃',
+    price: 30,
+    desc: '【三年级动词】神行太保草鞋！购入后永久解锁战术指令【Run · 疾跑奔袭】入卡组！',
+    voicePhrase: 'Run fast like the wind! Thirty gold.',
+    cardReward: 'run'
+  },
+  {
+    id: 'scroll-jump',
+    name: '轻灵腾跃绑腿',
+    en: 'Jump',
+    phonetic: '/dʒʌmp/',
+    icon: '🦘',
+    price: 30,
+    desc: '【三年级动词】飞跃城堑绑腿！购入后永久解锁战术指令【Jump · 凌空飞跃】入卡组！',
+    voicePhrase: 'Jump high over the wall! Thirty gold.',
+    cardReward: 'jump'
+  },
+  {
+    id: 'scroll-fly',
+    name: '天鹰破空羽箭',
+    en: 'Fly',
+    phonetic: '/flaɪ/',
+    icon: '🦅',
+    price: 40,
+    desc: '【三年级动词】九天展翅金羽！购入后永久解锁战术指令【Fly · 鹰击长空】入卡组！',
+    voicePhrase: 'Fly like an eagle in the sky! Forty gold.',
+    cardReward: 'fly'
+  },
+  {
+    id: 'scroll-swim',
+    name: '水遁避水灵符',
+    en: 'Swim',
+    phonetic: '/swɪm/',
+    icon: '🏊',
+    price: 35,
+    desc: '【三年级动词】如鱼得水灵符！购入后永久解锁战术指令【Swim · 激流游弋】入卡组！',
+    voicePhrase: 'Swim across the wide river! Thirty-five gold.',
+    cardReward: 'swim'
   }
 ];
 
@@ -139,6 +183,12 @@ class NanbanTradeManager {
     setTimeout(() => {
       this.speakMerchantGreeting();
     }, 350);
+  }
+
+  closeTradeModal() {
+    const modal = document.getElementById('modal-trade-market');
+    if (modal) modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
   }
 
   createModal() {
@@ -215,9 +265,19 @@ class NanbanTradeManager {
       }, 200);
     }
 
+    // 若货物附带核心动词战术卡奖励，直接将新神卡永久收入卡组！
+    let cardUnlockedMsg = '';
+    if (item.cardReward && window.cardBattle) {
+      if (!window.cardBattle.persistentDeck.includes(item.cardReward)) {
+        window.cardBattle.persistentDeck.push(item.cardReward);
+        window.cardBattle.savePersistentDeck();
+        cardUnlockedMsg = ` 🎴 战术突破：动词指令【${item.en}】永久加入出征卡组！`;
+      }
+    }
+
     if (window.ui) {
       const discountMsg = this.discountRate < 1 ? `（礼貌 8 折立省 ${item.price - actualPrice} 贯！）` : '';
-      window.ui.showToast(`🛒 成功购得【${item.name} · ${item.en}】！已存入行囊！${discountMsg}`, 2200);
+      window.ui.showToast(`🛒 成功购得【${item.name} · ${item.en}】！已存入行囊！${cardUnlockedMsg}${discountMsg}`, 2800);
     }
 
     this.renderTradeModal(this.currentTown);
@@ -355,7 +415,7 @@ class NanbanTradeManager {
               <div class="good-card-top">
                 <span class="good-icon">${g.icon}</span>
                 <div class="good-title-col">
-                  <span class="good-en">${g.en}</span>
+                  <span class="good-en">${g.en} ${g.cardReward ? `<span class="market-card-badge" style="font-size:10px; background:rgba(217,119,6,0.25); color:#f59e0b; padding:1px 5px; border-radius:4px; border:1px solid rgba(245,158,11,0.4); margin-left:4px;">🎴战术卡</span>` : ''}</span>
                   <span class="good-cn">${g.name}</span>
                 </div>
                 <button class="btn btn-sm btn-sound-circle" onclick="window.audioEngine?.speak('${g.voicePhrase.replace(/'/g, "\\'")}')" title="朗读物名与价格">

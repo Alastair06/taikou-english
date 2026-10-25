@@ -222,6 +222,24 @@ const SENGOKU_UNITS = [
       { en: 'nurse', cn: '护士', emoji: '👩‍⚕️' },
       { en: 'big', cn: '大的', emoji: '🐘' }
     ]
+  },
+  {
+    id: 'pep2024-3b-u1',
+    chapter: '第五章',
+    name: 'Unit 5: 灵动身手 (人教三年级下)',
+    historicalBattle: '川中岛激战 · 鹰击长空',
+    historicalDesc: '战国名将展现如风身法！信长命主角练就神速行军、腾跃攀城与涉川破浪之技，全军灵动突击！',
+    boss: { name: '影忍风魔小太郎 · 幻影身法', icon: '🥷', title: '相模风魔众首领', hp: 260 },
+    words: [
+      { en: 'run', cn: '跑；奔跑', emoji: '🏃' },
+      { en: 'jump', cn: '跳；跳跃', emoji: '🦘' },
+      { en: 'fly', cn: '飞；飞翔', emoji: '🦅' },
+      { en: 'swim', cn: '游泳；游弋', emoji: '🏊' },
+      { en: 'climb', cn: '攀爬；攀登', emoji: '🧗' },
+      { en: 'dance', cn: '跳舞；战舞', emoji: '💃' },
+      { en: 'sing', cn: '唱；歌唱', emoji: '🎤' },
+      { en: 'sleep', cn: '睡觉；酣眠', emoji: '😴' }
+    ]
   }
 ];
 
