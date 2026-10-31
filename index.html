@@ -474,7 +474,7 @@
     <div class="home-content">
       <!-- 游戏主标题 -->
       <div class="home-header">
-        <div class="home-badge">🏯 尾张织田家 · 军略大本营 <span style="opacity:0.8; font-size:11px; margin-left:6px; background:rgba(255,255,255,0.18); padding:1px 6px; border-radius:10px;">v37</span></div>
+        <div class="home-badge">🏯 战国大本营 <span style="opacity:0.8; font-size:11px; margin-left:6px; background:rgba(255,255,255,0.18); padding:1px 6px; border-radius:10px;">v38</span></div>
         <h1 class="home-title">太阁英语立志传 <img src="assets/ui/seal_taikou.png" class="title-seal" alt="印"></h1>
         <div class="home-header-tools">
           <button class="btn-home-fullscreen btn-home-hall" id="btn-home-hall" onclick="window.ui.openAchievementsModal()" title="天下布武大名殿堂与传世信物博览">🏆 殿堂</button>
@@ -512,26 +512,19 @@
         </div>
       </div>
 
-      <!-- 每日立志军令与学识勋绩看板 (充实左侧空间，展示战国主命目标与积累) -->
+      <!-- 战役勋绩看板 (极简无冗余设计) -->
       <div class="home-mission-card" id="home-mission-card">
-        <div class="mission-card-title">
-          <span>📜 今日军略主命</span>
-          <span class="mission-tag">进军中</span>
-        </div>
-        <div class="mission-desc" id="home-mission-desc">
-          率军攻拔敌城：拔外丸鹿砦，轰大手城门，本丸斩将落城！
-        </div>
         <div class="mission-stat-grid">
           <div class="mission-stat-cell">
             <span class="stat-lbl">武勋</span>
-            <span class="stat-val" style="color:#b91c1c;" id="home-sub-merit">⭐ 45 点</span>
+            <span class="stat-val" style="color:#b91c1c;" id="home-sub-merit">⭐ 45</span>
           </div>
           <div class="mission-stat-cell">
-            <span class="stat-lbl">掌握词汇</span>
-            <span class="stat-val" style="color:#0284c7;" id="home-sub-vocab">📖 12 词</span>
+            <span class="stat-lbl">词汇</span>
+            <span class="stat-val" style="color:#0284c7;" id="home-sub-vocab">📖 12</span>
           </div>
           <div class="mission-stat-cell">
-            <span class="stat-lbl">下阶官位</span>
+            <span class="stat-lbl">官位</span>
             <span class="stat-val" style="color:#15803d;" id="home-sub-rank">🔰 足轻组头</span>
           </div>
         </div>
@@ -541,14 +534,12 @@
       <div class="home-actions">
         <button class="btn-home-start" onclick="window.ui.startAdventure()">
           <span class="start-icon">🎴</span>
-          <span class="start-main-text" id="home-start-btn-title">🎴 战术卡牌出征 · 第 1 关</span>
-          <span class="start-sub-badge">英语语义破敌 · 纯策略零做题</span>
+          <span class="start-main-text" id="home-start-btn-title">🎴 出征 · 第 1 关</span>
         </button>
 
-        <button class="btn-home-card-battle" onclick="window.siegeBattle.startSiege((window.progressManager ? Math.floor(window.progressManager.getCurrentIndex() / 3) + 1 : 1))" title="温故演武：军机密报侦查与拼读听写演练">
+        <button class="btn-home-card-battle" onclick="window.siegeBattle.startSiege((window.progressManager ? Math.floor(window.progressManager.getCurrentIndex() / 3) + 1 : 1))" title="演武复习">
           <span class="start-icon">📜</span>
-          <span class="start-main-text">📜 军机密报演武 (Drill & Review)</span>
-          <span class="start-sub-badge">课本拼读 · 课文填空</span>
+          <span class="start-main-text">📜 演武复习</span>
         </button>
 
         <!-- 次级功能卡片网格 (战国雕花木牌札) -->
@@ -567,52 +558,52 @@
           </button>
           <button class="home-nav-btn" id="btn-nav-lexicon" data-feature="lexicon" onclick="window.ui.handleNavFeatureClick('lexicon', () => window.ui.openLexiconModal())">
             <span class="home-nav-icon">📜</span>
-            <span class="home-nav-label">词汇图鉴</span>
+            <span class="home-nav-label">图鉴</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-hyojo" data-feature="hyojo" onclick="window.ui.handleNavFeatureClick('hyojo', () => window.questSystem.openHyojoModal())">
             <span class="home-nav-icon">🏯</span>
-            <span class="home-nav-label">大名评定</span>
+            <span class="home-nav-label">评定</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-cards" data-feature="cards" onclick="window.cardBattle.openDeckViewerModal()" title="查看并倾听我的战术卡组">
             <span class="home-nav-icon">🎴</span>
-            <span class="home-nav-label">战术卡组</span>
+            <span class="home-nav-label">卡组</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-overworld" data-feature="overworld" onclick="window.ui.handleNavFeatureClick('overworld', () => window.overworld.show())">
             <span class="home-nav-icon">🗺️</span>
-            <span class="home-nav-label">天下舆图</span>
+            <span class="home-nav-label">舆图</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-town" data-feature="town" onclick="window.ui.handleNavFeatureClick('town', () => window.taikouTown.enterTown('kiyosu'))">
             <span class="home-nav-icon">🏮</span>
-            <span class="home-nav-label">城下町</span>
+            <span class="home-nav-label">町市</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-officer" data-feature="officer" onclick="window.ui.handleNavFeatureClick('officer', () => window.officerSystem.openResidenceModal('hidenaga'))">
             <span class="home-nav-icon">📜</span>
-            <span class="home-nav-label">武将列传</span>
+            <span class="home-nav-label">武将</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-trade" data-feature="trade" onclick="window.ui.handleNavFeatureClick('trade', () => window.nanbanTrade.openTradeModal('kiyosu'))">
             <span class="home-nav-icon">🚢</span>
-            <span class="home-nav-label">特产商行</span>
+            <span class="home-nav-label">商行</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-chapters" data-feature="chapters" onclick="window.ui.handleNavFeatureClick('chapters', () => window.ui.openChaptersModal())">
             <span class="home-nav-icon">🏯</span>
-            <span class="home-nav-label">攻城关卡</span>
+            <span class="home-nav-label">关卡</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-honor" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal()">
             <span class="home-nav-icon">📜</span>
-            <span class="home-nav-label">军功状</span>
+            <span class="home-nav-label">感状</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-rest" onclick="if(window.honorScroll) window.honorScroll.triggerEyeRestForTesting()">
             <span class="home-nav-icon">🍵</span>
-            <span class="home-nav-label">歇息护眼</span>
+            <span class="home-nav-label">茶室</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-parent" data-feature="parent" onclick="window.ui.openParentProgressModal()">
             <span class="parent-badge-pill">家长</span>
             <span class="home-nav-icon">📌</span>
-            <span class="home-nav-label">教学对齐</span>
+            <span class="home-nav-label">学情</span>
           </button>
           <button class="home-nav-btn" id="btn-nav-speech" data-feature="speech" onclick="window.ui.handleNavFeatureClick('speech', () => window.ui.openSpeechEvalModal())">
             <span class="home-nav-icon">🎙️</span>
-            <span class="home-nav-label">发音演武</span>
+            <span class="home-nav-label">发音</span>
           </button>
         </div>
       </div>
@@ -919,7 +910,7 @@
   <div class="modal-overlay hidden" id="modal-tea-ceremony">
     <div class="modal-container" style="max-width: 580px;">
       <div class="modal-header">
-        <h3>🍵 宗休茶室 · 茶道翻牌与家臣茶会</h3>
+        <h3>🍵 宗休茶室</h3>
         <button class="modal-close" onclick="window.teaMinigame.close()">✕</button>
       </div>
       <div class="modal-body" style="padding: 16px;">
@@ -927,7 +918,7 @@
         <div id="tea-companion-banquet-bar"></div>
 
         <div class="tea-info-bar">
-          <span id="tea-status-msg">🍵 翻开茶盏，匹配中英词义。</span>
+          <span id="tea-status-msg">🍵 匹配词义</span>
           <span class="tea-count-badge">已参透: <strong id="tea-pairs-count">0 / 3</strong></span>
         </div>
         <div class="tea-board" id="tea-board"></div>
@@ -939,7 +930,7 @@
   <div class="modal-overlay hidden" id="modal-medicine-game">
     <div class="modal-container" style="max-width: 520px;">
       <div class="modal-header">
-        <h3>🌿 南蛮药庐 · 研药炼丸</h3>
+        <h3>🌿 药庐调药</h3>
         <button class="modal-close" onclick="window.medicineMinigame.close()">✕</button>
       </div>
       <div class="modal-body" style="padding: 16px; text-align: center;">
@@ -951,7 +942,7 @@
           <canvas id="medicine-canvas" width="460" height="340"></canvas>
         </div>
         <div class="med-touch-hint">
-          <span>💡 拖动或按键盘 <strong>A / D / 方向键</strong> 接取药草</span>
+          <span>💡 拖动或按 <strong>◀ ▶</strong> 接取药草</span>
         </div>
       </div>
     </div>
@@ -961,7 +952,7 @@
   <div class="modal-overlay hidden" id="modal-keep-dialog">
     <div class="modal-container" style="max-width: 580px;">
       <div class="modal-header">
-        <h3>🏯 清洲天守阁 · 谒见信长</h3>
+        <h3>🏯 天守阁谒见</h3>
         <button class="modal-close" onclick="document.getElementById('modal-keep-dialog').classList.add('hidden')">✕</button>
       </div>
       <div class="modal-body" id="keep-dialog-body" style="padding: 20px;"></div>
@@ -1067,7 +1058,7 @@
     <div class="modal-container achievements-modal" style="max-width: 720px;">
       <button class="modal-close" onclick="window.ui.closeAchievementsModal()">✕</button>
       <div class="modal-header">
-        <h3 class="modal-title">🏆 战国大名殿堂 · 传世信物与成就徽章</h3>
+        <h3 class="modal-title">🏆 大名殿堂</h3>
       </div>
       <div class="modal-body achievements-modal-body" id="achievements-modal-content">
         <!-- 动态渲染信物陈列、里程碑勋章与言灵总成 -->
@@ -1146,33 +1137,33 @@
   </script>
 
     <!-- 脚本模块按依赖加载 -->
-  <script src="js/words-data.js?v=37"></script>
-  <script src="js/phonics.js?v=37"></script>
-  <script src="js/progress.js?v=37"></script>
-  <script src="js/speech.js?v=37"></script>
-  <script src="js/skill-cards.js?v=37"></script>
-  <script src="js/quest-system.js?v=37"></script>
-  <script src="js/officer-system.js?v=37"></script>
-  <script src="js/nanban-trade.js?v=37"></script>
-  <script src="js/minigame-dojo.js?v=37"></script>
-  <script src="js/minigame-temple.js?v=37"></script>
-  <script src="js/hero.js?v=37"></script>
-  <script src="js/game-characters.js?v=37"></script>
-  <script src="js/treasure-hunt.js?v=37"></script>
-  <script src="js/tokichiro-estate.js?v=37"></script>
-  <script src="js/taikou-theater.js?v=37"></script>
-  <script src="js/lexicon-scrolls.js?v=37"></script>
-  <script src="js/game-map.js?v=37"></script>
-  <script src="js/minigame-tea.js?v=37"></script>
-  <script src="js/minigame-medicine.js?v=37"></script>
-  <script src="js/taikou-town.js?v=37"></script>
-  <script src="js/overworld.js?v=37"></script>
-  <script src="js/game-engine.js?v=37"></script>
-  <script src="js/scenic-world.js?v=37"></script>
-  <script src="js/siege-battle.js?v=37"></script>
-  <script src="js/card-battle.js?v=37"></script>
-  <script src="js/honor-scroll.js?v=37"></script>
-  <script src="js/ui.js?v=37"></script>
-  <script src="js/app.js?v=37"></script>
+  <script src="js/words-data.js?v=38"></script>
+  <script src="js/phonics.js?v=38"></script>
+  <script src="js/progress.js?v=38"></script>
+  <script src="js/speech.js?v=38"></script>
+  <script src="js/skill-cards.js?v=38"></script>
+  <script src="js/quest-system.js?v=38"></script>
+  <script src="js/officer-system.js?v=38"></script>
+  <script src="js/nanban-trade.js?v=38"></script>
+  <script src="js/minigame-dojo.js?v=38"></script>
+  <script src="js/minigame-temple.js?v=38"></script>
+  <script src="js/hero.js?v=38"></script>
+  <script src="js/game-characters.js?v=38"></script>
+  <script src="js/treasure-hunt.js?v=38"></script>
+  <script src="js/tokichiro-estate.js?v=38"></script>
+  <script src="js/taikou-theater.js?v=38"></script>
+  <script src="js/lexicon-scrolls.js?v=38"></script>
+  <script src="js/game-map.js?v=38"></script>
+  <script src="js/minigame-tea.js?v=38"></script>
+  <script src="js/minigame-medicine.js?v=38"></script>
+  <script src="js/taikou-town.js?v=38"></script>
+  <script src="js/overworld.js?v=38"></script>
+  <script src="js/game-engine.js?v=38"></script>
+  <script src="js/scenic-world.js?v=38"></script>
+  <script src="js/siege-battle.js?v=38"></script>
+  <script src="js/card-battle.js?v=38"></script>
+  <script src="js/honor-scroll.js?v=38"></script>
+  <script src="js/ui.js?v=38"></script>
+  <script src="js/app.js?v=38"></script>
 </body>
 </html>

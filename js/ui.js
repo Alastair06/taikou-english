@@ -222,12 +222,12 @@ class UIManager {
     const startBtnTitle = document.getElementById('home-start-btn-title') || document.querySelector('.start-main-text');
     if (startBtnTitle) {
       if (isLimitReached) {
-        startBtnTitle.textContent = `🏯 今日大捷 · 休整练兵`;
+        startBtnTitle.textContent = `🏯 今日休整`;
         if (startBtn) startBtn.classList.add('finished');
       } else {
         startBtnTitle.textContent = (isTodayDone && window.progressManager && window.progressManager.state.dailyLimitUnlocked)
-          ? `🎴 战术出征 · 第 ${curStage} 关 (家长特许)`
-          : `🎴 战术卡牌出征 · 第 ${curStage} 关`;
+          ? `🎴 出征 · 第 ${curStage} 关 (特许)`
+          : `🎴 出征 · 第 ${curStage} 关`;
         if (startBtn) startBtn.classList.remove('finished');
       }
     }
@@ -1255,26 +1255,20 @@ class UIManager {
 
       content.innerHTML = `
         <div class="victory-body-grid">
-          <!-- 左侧：信长军功与封赏 -->
+          <!-- 左侧：战功封赏 -->
           <div class="victory-col-info">
-            <div class="nobunaga-crest">${isReplay ? '⚡ 织田信长温故感状 ⚡' : '⚡ 织田信长军功感状 ⚡'}</div>
-            <h2 class="victory-title">${isReplay ? '合战演武 · 温故大捷！' : '今日主命 · 大捷告成！'}</h2>
-            <div class="victory-stage-tag">🚩 第 ${stageNum} 关 ${isReplay ? '· 温故演武' : `/ 共 ${totalStages} 关 · 【${curWord.unit || 'Unit 1'}】`}</div>
-            <p class="victory-sub" id="victory-evaluation">
-              ${data.evaluation 
-                ? `<strong>${data.evaluation}</strong>` 
-                : (isReplay 
-                  ? '信长公赞道：<strong>“温故而知新，赏格分毫不差！”</strong>'
-                  : '信长公大喜：<strong>“真乃奇才！今日之词尽皆参透，封赏必重！”</strong>')}
-            </p>
+            <div class="nobunaga-crest">🎉 战役平定 VICTORY</div>
+            <h2 class="victory-title">${isReplay ? '演武胜捷！' : `第 ${stageNum} 关 胜捷！`}</h2>
+            <div class="victory-stage-tag">🚩 第 ${stageNum} 关 · 【${curWord.unit || 'Unit 1'}】</div>
+            
             <div class="victory-rewards-box" id="victory-rewards-box">
               <div class="v-reward-col">
                 <div class="v-val">⭐ +${data.totalMerit || 120}</div>
-                <div class="v-lbl">受封武勋</div>
+                <div class="v-lbl">武勋</div>
               </div>
               <div class="v-reward-col">
-                <div class="v-val">🪙 +${data.totalGold || 100} 贯</div>
-                <div class="v-lbl">赐封金判</div>
+                <div class="v-val">🪙 +${data.totalGold || 100}</div>
+                <div class="v-lbl">金贯</div>
               </div>
               <div class="v-reward-col">
                 <div class="v-val">🔥 ${data.streakDays || 1} 天</div>
@@ -1283,17 +1277,14 @@ class UIManager {
             </div>
             <div class="victory-actions-grid">
               <button class="btn btn-primary btn-claim-main" id="btn-victory-claim" onclick="window.ui.claimVictoryReward()">
-                🎌 领赏入仕 · 晋升官位
-              </button>
-              <button class="btn btn-secondary btn-theater-link" onclick="window.ui.openTheaterModal('${currentStory.id}')" title="进入织田信长主线历史战役">
-                ⚔️ 战役：${currentStory.title.split(' · ')[1] || '微末立志'}
+                🏆 领取战功 ➡️
               </button>
             </div>
           </div>
 
           <!-- 右侧：本关攻克掌握的秘传词汇 -->
           <div class="victory-col-words">
-            <div class="v-word-box-header">📖 本关攻克言灵（点击发音跟读）</div>
+            <div class="v-word-box-header">📖 战利品词汇</div>
             <div class="v-words-stack">
               ${wordsList.map(w => `
                 <div class="v-compact-card" onclick="if(window.audioEngine) window.audioEngine.speak('${w.en}')">
@@ -1395,7 +1386,7 @@ class UIManager {
         <div class="victory-body-grid">
           <!-- 左侧：敕命封赏与主行动 -->
           <div class="victory-col-info">
-            <div class="nobunaga-crest">⚡ 织田信长敕命晋阶状 · 第 ${curStageNum} 关平定 ⚡</div>
+            <div class="nobunaga-crest">🎉 平定晋封 · 第 ${curStageNum} 关</div>
             
             ${(meritRes.promoted && meritRes.newRank) ? `
               <div class="victory-promo-box">
@@ -1421,17 +1412,17 @@ class UIManager {
                 </button>
               ` : (window.progressManager && window.progressManager.state.dailyLimitUnlocked) ? `
                 <button class="btn btn-primary btn-claim-main btn-next-stage" onclick="window.ui.proceedToNextStage()">
-                  ⚔️ 进军第 ${nextStageNum} 关 (家长特许)
+                  ⚔️ 进军第 ${nextStageNum} 关
                 </button>
                 <button class="btn btn-secondary" onclick="window.ui.returnHomeFromVictory()">
                   🏠 回大营
                 </button>
               ` : `
                 <button class="btn btn-primary btn-claim-main" onclick="window.ui.returnHomeFromVictory()">
-                  🏯 今日大捷 · 回营休整
+                  🏯 返回大本营
                 </button>
-                <button class="btn btn-secondary" onclick="window.ui.openTownFromVictory()">
-                  🏮 城下町
+                <button class="btn btn-secondary" onclick="window.ui.proceedToNextStage()">
+                  ⚔️ 下一关
                 </button>
               `}
               <button class="btn btn-secondary" onclick="if(window.honorScroll) window.honorScroll.showCertificateModal(window.ui.lastVictoryData)">

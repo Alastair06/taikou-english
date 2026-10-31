@@ -8478,16 +8478,16 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
-  border: 2px solid #fca5a5;
+  background: linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%);
+  border: 2px solid #7dd3fc;
   border-radius: 12px;
   color: #ffffff;
   padding: 10px 14px;
   font-size: 15px;
   font-weight: 800;
-  margin-top: 8px;
+  margin-top: 4px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.4);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
   transition: transform 0.15s;
 }
 

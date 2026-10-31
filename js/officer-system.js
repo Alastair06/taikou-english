@@ -65,24 +65,24 @@ class OfficerSystem {
     div.innerHTML = `
       <div class="modal-container modal-officer-container">
         <div class="modal-header">
-          <h3 id="officer-residence-title"><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;vertical-align:middle;margin-right:6px;"> 武家府邸 · 名将结交</h3>
+          <h3 id="officer-residence-title"><img src="assets/ui/seal_taikou.png" style="width:22px;height:22px;vertical-align:middle;margin-right:6px;"> 武家府邸</h3>
           <button class="modal-close" onclick="document.getElementById('modal-officer-residence').classList.add('hidden')">✕</button>
         </div>
         <div class="officer-tabs-row" style="flex-wrap:wrap;gap:6px;">
           <button class="officer-tab-btn" data-officer="hidenaga" onclick="window.officerSystem.renderResidence('hidenaga')">
-            秀长 (错题参谋)
+            秀长 (参谋)
           </button>
           <button class="officer-tab-btn" data-officer="toshiie" onclick="window.officerSystem.renderResidence('toshiie')">
-            利家 (枪阵先锋)
+            利家 (先锋)
           </button>
           <button class="officer-tab-btn" data-officer="hanbei" onclick="window.officerSystem.renderResidence('hanbei')">
-            半兵卫 (奇策军师)
+            半兵卫 (军师)
           </button>
           <button class="officer-tab-btn" data-officer="sokyu" onclick="window.officerSystem.renderResidence('sokyu')">
-            宗久 (南蛮商脉)
+            宗久 (商行)
           </button>
           <button class="officer-tab-btn" data-officer="rikyu" onclick="window.officerSystem.renderResidence('rikyu')">
-            利休 (茶道宗匠)
+            利休 (茶道)
           </button>
         </div>
         <div class="modal-body" id="officer-residence-body" style="padding: 16px 20px;"></div>
@@ -157,7 +157,7 @@ class OfficerSystem {
             `).join('')}
           </div>
           <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="window.officerSystem.startHidenagaQuiz('${wrongWords[0]}')">
-            立即与秀长温故核心错词：【${wrongWords[0]}】
+            复习错词：【${wrongWords[0]}】
           </button>
         </div>
       `;

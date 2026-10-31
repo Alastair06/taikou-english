@@ -684,13 +684,8 @@ class JapanOverworldManager {
           <button class="btn-close-scenario" onclick="document.getElementById('modal-ow-scenario')?.remove()">✕</button>
         </div>
 
-        <div class="scenario-prompt-card">
-          <div class="prompt-speaker-row">
-            <span class="prompt-speaker-btn" onclick="window.audioEngine?.speak('${cp.promptEn.replace(/'/g, "\\'")}')">
-              🔊 倾听情境英文
-            </span>
-          </div>
-          <div class="prompt-text-en">"${cp.promptEn}"</div>
+        <div class="scenario-prompt-card" onclick="window.audioEngine?.speak('${cp.promptEn.replace(/'/g, "\\'")}')" style="cursor:pointer;" title="点击听语音">
+          <div class="prompt-text-en">🔊 "${cp.promptEn}"</div>
           <div class="prompt-text-cn">${cp.promptCn}</div>
         </div>
 
@@ -744,9 +739,9 @@ class JapanOverworldManager {
       if (modal) {
         modal.innerHTML = `
           <div class="modal-scenario-box is-success animate-pop-in">
-            <div class="scenario-success-badge">🎉 奇谋破局 · 英语实践大赏</div>
+            <div class="scenario-success-badge">🎉 破局成功</div>
             <h3 class="scenario-success-title">"${opt.feedback}"</h3>
-            <p class="scenario-success-desc">运用动词【${opt.verb}】成功解决行军危机！获得 25 贯军资金与 25 点武勋！</p>
+            <p class="scenario-success-desc" style="font-weight:700; color:#15803d;">🪙 +25 贯 · ⭐ +25 武勋</p>
             <button class="btn btn-primary" onclick="document.getElementById('modal-ow-scenario')?.remove()">
               继续行军 ➡️
             </button>

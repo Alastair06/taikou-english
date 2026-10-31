@@ -40,7 +40,7 @@ class DojoArcheryMinigame {
     div.innerHTML = `
       <div class="modal-container modal-dojo-container">
         <div class="modal-header">
-          <h3>🏹 尾张演武道场 · 弓道自然拼读靶心狙击</h3>
+          <h3>🏹 弓道修行</h3>
           <button class="modal-close" onclick="window.dojoMinigame.close()">✕</button>
         </div>
         <div class="modal-body" style="padding: 16px;">
@@ -48,20 +48,20 @@ class DojoArcheryMinigame {
             <div class="dojo-sensei">
               <span class="sensei-avatar">🥋</span>
               <span class="sensei-speech" id="dojo-speech-text">
-                师范喝道：“凝神静气！听准单词发音，拉弓狙击包含正确拼读音节之飞靶！”
+                “听准发音，狙击目标飞靶！”
               </span>
             </div>
             <div class="dojo-step-indicator" id="dojo-step-indicator">
-              试炼进度：1 / 3
+              第 1 / 3 轮
             </div>
           </div>
 
           <div class="dojo-target-area">
             <div class="dojo-listen-panel">
               <button class="btn btn-secondary dojo-audio-btn" onclick="window.dojoMinigame.replayAudio()">
-                🔊 点击重听标准原音
+                🔊 听音
               </button>
-              <div class="dojo-word-hint" id="dojo-word-hint">目标字词：???</div>
+              <div class="dojo-word-hint" id="dojo-word-hint">目标：???</div>
             </div>
 
             <!-- 弓道靶场画布/容器 -->

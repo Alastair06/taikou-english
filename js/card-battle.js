@@ -1343,11 +1343,11 @@ class CardBattleEngine {
       banner.className = 'tactical-counter-banner animate-pop-in';
       banner.innerHTML = `
         <div class="counter-badge-icon">⚡ PERFECT COUNTER</div>
-        <div class="counter-badge-title">看破敌意 · 英语妙策破敌！</div>
+        <div class="counter-badge-title">妙策破敌！</div>
         <div class="counter-badge-desc">${msg}</div>
       `;
       arena.appendChild(banner);
-      setTimeout(() => banner.remove(), 1900);
+      setTimeout(() => banner.remove(), 1600);
     }
 
     if (window.ui) {
@@ -1373,16 +1373,16 @@ class CardBattleEngine {
       const banner = document.createElement('div');
       banner.className = 'phrase-combo-banner animate-pop-in';
       banner.innerHTML = `
-        <div class="phrase-combo-tag">🎴 连词成句 · Collocation Combo!</div>
+        <div class="phrase-combo-tag">🎴 COMBO!</div>
         <div class="phrase-combo-en">"${combo.phraseEn}"</div>
         <div class="phrase-combo-cn">${combo.phraseCn} · ${combo.desc}</div>
       `;
       arena.appendChild(banner);
-      setTimeout(() => banner.remove(), 2200);
+      setTimeout(() => banner.remove(), 1800);
     }
 
     if (window.ui) {
-      window.ui.showToast(`🌟 连词成句【${combo.phraseEn}】生效！${combo.desc}`, '🎴');
+      window.ui.showToast(`🌟【${combo.phraseEn}】${combo.desc}`, '🎴');
     }
   }
 
@@ -1669,13 +1669,11 @@ class CardBattleEngine {
     banner.className = `turn-change-banner is-${type}`;
     if (type === 'enemy') {
       banner.innerHTML = `
-        <div class="banner-main-title">⚔️ 敌方行动回合 · ENEMY TURN ⚔️</div>
-        <div class="banner-sub-title">【${this.enemy.name}】正在释放战术技能！</div>
+        <div class="banner-main-title">⚔️ 敌方回合 · ENEMY TURN</div>
       `;
     } else {
       banner.innerHTML = `
-        <div class="banner-main-title">🎴 我方行动回合 · YOUR TURN 🎴</div>
-        <div class="banner-sub-title">⚡ 气力蓄满 · 摸牌出策！</div>
+        <div class="banner-main-title">🎴 我方回合 · YOUR TURN</div>
       `;
     }
     arena.appendChild(banner);
@@ -1700,15 +1698,15 @@ class CardBattleEngine {
     let valText = '';
     if (skill.type === 'attack') {
       const dmg = skill.baseVal + enemyAtk;
-      valText = skill.hits > 1 ? `⚔️ 伤害: ${dmg} x ${skill.hits} 连斩` : `⚔️ 伤害: ${dmg}${skill.pierce ? ' (穿甲)' : ''}`;
+      valText = skill.hits > 1 ? `⚔️ ${dmg} x ${skill.hits}` : `⚔️ ${dmg}${skill.pierce ? ' 破甲' : ''}`;
     } else if (skill.type === 'defend') {
-      valText = `🛡️ 护甲: +${skill.baseVal}`;
+      valText = `🛡️ +${skill.baseVal}`;
     } else if (skill.type === 'buff') {
-      valText = `💪 增益: 战力 +${skill.strength || 2}${skill.block ? ` / 护甲 +${skill.block}` : ''}`;
+      valText = `💪 +${skill.strength || 2}${skill.block ? ` 🛡️+${skill.block}` : ''}`;
     }
 
     pop.innerHTML = `
-      <div class="enemy-card-top-tag">${skill.type === 'attack' ? '⚔️ 敌将攻击技能' : (skill.type === 'defend' ? '🛡️ 敌将防守技能' : '✨ 敌将强化战术')}</div>
+      <div class="enemy-card-top-tag">${skill.type === 'attack' ? '⚔️ ATTACK' : (skill.type === 'defend' ? '🛡️ DEFEND' : '✨ BUFF')}</div>
       <div class="enemy-card-icon">${skill.icon}</div>
       <div class="enemy-card-title-en">${skill.nameEn}</div>
       ${skill.phonetic ? `<div class="enemy-card-phonetic">${skill.phonetic}</div>` : ''}
@@ -2004,9 +2002,7 @@ class CardBattleEngine {
     modal.innerHTML = `
       <div class="card-draft-modal-box">
         <div class="card-draft-header">
-          <div class="draft-badge">🎉 合战大捷 · 战术领悟</div>
-          <h2 class="draft-title">挑选 1 张战术指令加入你的永久卡组</h2>
-          <p class="draft-subtitle">点击卡牌可听纯正战吼发音，选入卡组可永久提升未来战斗力！</p>
+          <h2 class="draft-title">🎁 挑选 1 张新卡</h2>
         </div>
 
         <div class="card-draft-grid">
@@ -2019,19 +2015,9 @@ class CardBattleEngine {
                 <div class="card-title-en">${c.en}</div>
                 ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
                 <div class="card-title-cn">${c.cn}</div>
-                <div class="card-desc-pill">${c.desc}</div>
-                <div class="draft-card-actions">
-                  <button class="btn btn-xs btn-sound-read" onclick="event.stopPropagation(); window.audioEngine?.speak('${c.en}')">
-                    🔊 朗读
-                  </button>
-                  ${c.phonics ? `
-                    <button class="btn btn-xs btn-phonics-spell" onclick="event.stopPropagation(); window.cardBattle.playPhonicsSpelling('${cid}')">
-                      🔤 拼读
-                    </button>
-                  ` : ''}
-                </div>
+                <div class="card-badge-val">${this.getCardBadgeVal(c)}</div>
                 <button class="btn btn-primary btn-draft-pick" onclick="event.stopPropagation(); window.cardBattle.pickDraftCard('${cid}', this)">
-                  📥 收入卡组
+                  📥 选择
                 </button>
               </div>
             `;
@@ -2040,7 +2026,7 @@ class CardBattleEngine {
 
         <div class="card-draft-footer">
           <button class="btn btn-secondary btn-draft-skip" onclick="window.cardBattle.skipDraftCard()">
-            ✕ 暂不添卡（跳过）
+            跳过 ✕
           </button>
         </div>
       </div>
@@ -2219,11 +2205,7 @@ class CardBattleEngine {
         <div class="card-battle-turn-indicator">
           <div class="turn-badge">第 ${this.turn} 回合</div>
           <div class="enemy-tactical-bubble" onclick="window.cardBattle.speakEnemyIntent()" title="点击倾听敌将语音">
-            <div class="bubble-header-row">
-              <span class="bubble-audio-btn">🔊 听敌战术</span>
-              <span class="bubble-keyword-pill">Target: <strong>${intent.keyword}</strong></span>
-            </div>
-            <div class="bubble-speech-en">"${intent.speechEn}"</div>
+            <div class="bubble-speech-en">🔊 "${intent.speechEn}"</div>
             <div class="bubble-speech-cn">${intent.speechCn}</div>
           </div>
         </div>
@@ -2267,30 +2249,24 @@ class CardBattleEngine {
 
       deckEl.innerHTML = `
         <div class="card-deck-container">
-          <!-- 听音识策提示条 (Pedagogy Hint Strip) -->
-          <div class="battle-pedagogy-tip-strip" onclick="window.cardBattle.speakEnemyIntent()" title="点击重听敌将英语">
-            <span class="tip-lead">💡 听音识计：</span>
-            <span class="tip-body">${intent.counterHint || '根据英语词义选择克制战术！'}</span>
-          </div>
-
           <!-- 气力槽与牌堆统计 -->
           <div class="card-control-header">
             <div class="energy-orb-container ${this.heroEnergy === 0 ? 'is-empty' : ''}" id="card-energy-orb">
               <span class="energy-crest">⚡</span>
               <span class="energy-val">${this.heroEnergy}</span>
-              <span class="energy-max">/${this.heroMaxEnergy} 气力</span>
+              <span class="energy-max">/${this.heroMaxEnergy}</span>
             </div>
 
             <div class="deck-counts-strip">
-              <span class="deck-count-pill" title="抽牌堆">🎴 抽牌: ${this.drawPile.length}</span>
-              <span class="deck-count-pill" title="弃牌堆">🗑️ 弃牌: ${this.discardPile.length}</span>
+              <span class="deck-count-pill" title="抽牌堆">🎴 ${this.drawPile.length}</span>
+              <span class="deck-count-pill" title="弃牌堆">🗑️ ${this.discardPile.length}</span>
             </div>
 
             <div class="end-turn-btn-wrapper" style="position:relative;">
               <button class="btn btn-end-turn ${shouldUrgeEndTurn ? 'pulse-urgent' : ''}" 
                       onclick="window.cardBattle.endTurn()"
                       ${this.isEnemyActing ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
-                ${shouldUrgeEndTurn ? '<span class="end-turn-tip-bubble">⚡ 气力耗尽，点击迎敌！</span>' : ''}
+                ${shouldUrgeEndTurn ? '<span class="end-turn-tip-bubble">⚡ 结束出牌</span>' : ''}
                 <span>结束回合 ➡️</span>
               </button>
             </div>
@@ -2308,7 +2284,7 @@ class CardBattleEngine {
                      onclick="window.cardBattle.playCard(${idx})"
                      title="${c.desc}">
                   <div class="card-cost-badge">${c.cost} ⚡</div>
-                  ${isCounter ? `<div class="card-counter-sparkle-badge">⚡ 克制破敌</div>` : ''}
+                  ${isCounter ? `<div class="card-counter-sparkle-badge">⚡ 克制</div>` : ''}
                   <div class="card-crest-icon">${c.icon}</div>
                   <div class="card-title-en">${c.en}</div>
                   <div class="card-title-cn">${c.cn}</div>
@@ -2336,7 +2312,7 @@ class CardBattleEngine {
       if (!btn.querySelector('.end-turn-tip-bubble')) {
         const bubble = document.createElement('span');
         bubble.className = 'end-turn-tip-bubble';
-        bubble.textContent = '⚡ 气力耗尽，点击迎敌！';
+        bubble.textContent = '⚡ 结束出牌';
         btn.appendChild(bubble);
       }
     }

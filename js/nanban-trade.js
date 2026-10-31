@@ -403,52 +403,26 @@ class NanbanTradeManager {
 
     // 顶部商贾信息与礼貌砍价栏
     const merchantBannerHtml = `
-      <div class="market-merchant-card">
-        <div class="merchant-avatar-wrap">
-          <div class="merchant-avatar">🧔🏻‍♂️</div>
-          <button class="btn btn-sm btn-replay-sound" onclick="window.nanbanTrade.speakMerchantGreeting()" title="重听商贾问候">
-            🔊 听问候
-          </button>
+      <div class="market-merchant-card" style="padding: 10px 14px; gap: 10px;">
+        <div class="merchant-avatar-wrap" style="flex-shrink:0;">
+          <div class="merchant-avatar" style="font-size: 32px; width: 44px; height: 44px; line-height:44px;">🧔🏻‍♂️</div>
         </div>
-        <div class="merchant-speech-box">
-          <div class="merchant-name-row">
-            <span class="merchant-name">南蛮商会长 · 阿方索 (Alfonso)</span>
-            <span class="trade-gold-pill">🪙 商资: <strong>${heroGold}</strong> 贯</span>
+        <div class="merchant-speech-box" style="gap: 4px; flex:1;">
+          <div class="merchant-name-row" style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="merchant-name" style="font-size:13px; font-weight:800;">阿方索商会</span>
+            <span class="trade-gold-pill" style="font-size:12px;">🪙 <strong>${heroGold}</strong> 贯</span>
           </div>
-          <div class="merchant-quote-en">“Welcome, Lord Tokichiro! Fresh Apples, fine Swords, and strong Horses are ready!”</div>
-          <div class="merchant-quote-cn">欢迎藤吉郎大人！今日有新鲜红苹果、备前名刀与尾张骏马，请随意挑选！</div>
-
-          <!-- 礼貌英语寒暄议价 (生活化互动) -->
-          <div class="merchant-polite-bar">
-            <span class="polite-lead">💬 礼貌寒暄获人情折扣：</span>
-            <button class="polite-chip ${this.hasGreeted ? 'is-active' : ''}" onclick="window.nanbanTrade.greetMerchant('Good morning!', 'Good morning! Take 20% off!')">
-              ☀️ "Good morning!"
+          <div class="merchant-quote-en" onclick="window.nanbanTrade.speakMerchantGreeting()" style="cursor:pointer; font-size:12px; line-height:1.25;" title="点击听语音">
+            🔊 “Welcome! Fresh Apples & fine Swords are ready!”
+          </div>
+          <div class="merchant-polite-bar" style="margin-top: 2px; display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="polite-chip ${this.hasGreeted ? 'is-active' : ''}" onclick="window.nanbanTrade.greetMerchant('Nice to meet you!', 'Welcome! Take 20% off!')" style="font-size:11px; padding:3px 8px;">
+              🤝 "Nice to meet you!" (-20%)
             </button>
-            <button class="polite-chip ${this.hasGreeted ? 'is-active' : ''}" onclick="window.nanbanTrade.greetMerchant('Nice to meet you!', 'Nice to meet you too! Enjoy your discount!')">
-              🤝 "Nice to meet you!"
-            </button>
-            <button class="polite-chip ${this.hasGreeted ? 'is-active' : ''}" onclick="window.nanbanTrade.greetMerchant('Thank you!', 'You are very welcome, my friend!')">
-              ✨ "Thank you!"
+            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('discount')" style="font-size:11px; padding:3px 8px;">
+              🏷️ "Discount, please?"
             </button>
           </div>
-
-          <!-- 真实口语实践对话 (自然习得生活表达) -->
-          <div class="merchant-dialogue-bar">
-            <span class="dialogue-lead">🗣️ 用英语向掌柜问询交流：</span>
-            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('apple')">
-              🍎 "I want an apple, please!"
-            </button>
-            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('sword')">
-              ⚔️ "Can I look at the sword?"
-            </button>
-            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('shoes')">
-              🏃 "Can I run fast with these shoes?"
-            </button>
-            <button class="dialogue-chip" onclick="window.nanbanTrade.speakShoppingDialogue('discount')">
-              🏷️ "Can you give me a discount, please?"
-            </button>
-          </div>
-          ${this.discountRate < 1.0 ? `<div class="discount-active-banner">🏷️ 礼貌寒暄生效中！全场物资立享 8 折人情特惠！</div>` : ''}
         </div>
       </div>
     `;
@@ -457,10 +431,10 @@ class NanbanTradeManager {
     const tabsHtml = `
       <div class="market-nav-tabs">
         <button class="market-tab-btn ${this.currentTab === 'goods' ? 'active' : ''}" onclick="window.nanbanTrade.openTradeModal('${townId}', 'goods')">
-          🍎 集市物资采买 (${MARKET_DAILY_GOODS.length})
+          🍎 物资采买
         </button>
         <button class="market-tab-btn ${this.currentTab === 'specialty' ? 'active' : ''}" onclick="window.nanbanTrade.openTradeModal('${townId}', 'specialty')">
-          🚢 战国特产跑商 (${SENGOKU_SPECIALTIES.length})
+          🚢 特产跑商
         </button>
       </div>
     `;

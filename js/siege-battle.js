@@ -662,8 +662,7 @@ class SiegeBattleEngine {
     deckEl.innerHTML = `
       <div class="deck-phase-wrapper deck-phase-1">
         <div class="deck-instruction-bar">
-          <span class="inst-badge">军机密报 · 潜伏排查</span>
-          <span class="inst-text">仔细听原声，选择对应图意破除鹿砦！</span>
+          <span class="inst-badge">🔍 排查潜伏敌谍</span>
           <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentClue()" title="倾听斥候原声密报">🔊 听密报</button>
         </div>
 
@@ -714,8 +713,7 @@ class SiegeBattleEngine {
     deckEl.innerHTML = `
       <div class="deck-phase-wrapper deck-phase-2">
         <div class="deck-instruction-bar">
-          <span class="inst-badge">阵前战术 · 破门突击</span>
-          <span class="inst-text">拼装自然拼读积木，装填神威大筒轰碎城门！</span>
+          <span class="inst-badge">💣 破门大筒装填</span>
           <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakTacticalOrder()" title="听战阵号令">🔊 听号令</button>
         </div>
 
@@ -779,8 +777,7 @@ class SiegeBattleEngine {
     deckEl.innerHTML = `
       <div class="deck-phase-wrapper deck-phase-3">
         <div class="deck-instruction-bar">
-          <span class="inst-badge">本丸决战 · 斩将落城</span>
-          <span class="inst-text">选出恰当词汇补全课本对话，斩将落城！</span>
+          <span class="inst-badge">⚔️ 本丸斩将决战</span>
           <button class="btn btn-sm btn-replay-sound" onclick="window.siegeBattle.speakCurrentSentence()">🔊 读整句</button>
         </div>
 
