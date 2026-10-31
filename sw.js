@@ -5,7 +5,7 @@
  * - 智能缓存更新：Stale-While-Revalidate 机制，自动感知版本更新并平滑替换
  */
 
-const CACHE_NAME = 'taikou-english-v36';
+const CACHE_NAME = 'taikou-english-v37';
 
 const PRECACHE_ASSETS = [
   './',

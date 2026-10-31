@@ -107,6 +107,294 @@ const ENGLISH_PHRASE_COMBOS = [
   }
 ];
 
+/**
+ * 战国敌将专属战术技能卡库 (Enemy Skill Cards Database)
+ * 杀戮尖塔 (Slay the Spire) 式敌我互相出技能博弈体系：
+ * 敌将不仅拥有意图预告，更在敌方回合具象化打出技能卡牌！
+ * 包含英文全名、国际音标、中文意译、纯正 TTS 战吼与震撼物理打击演出！
+ */
+const ENEMY_SKILL_DATABASE = {
+  // --- 常规敌将基础战术技能 ---
+  strike: {
+    id: 'strike',
+    nameEn: 'Blade Strike',
+    nameCn: '刀刃重斩',
+    phonetic: '/bleɪd straɪk/',
+    icon: '⚔️',
+    type: 'attack',
+    baseVal: 8,
+    vfx: 'vfx-slash',
+    speechEn: 'Blade Strike! Take this!',
+    speechCn: '看我太刀重斩！接招！',
+    keyword: 'strike',
+    counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
+    counterHint: '敌将出【Blade Strike】！出【Guard/Dodge】格挡招架！',
+    desc: '敌将挥动锋锐太刀发起冲斩，造成直接物理伤害。'
+  },
+  heavy_strike: {
+    id: 'heavy_strike',
+    nameEn: 'Heavy Strike',
+    nameCn: '破阵重劈',
+    phonetic: '/ˈhevi straɪk/',
+    icon: '💥⚔️',
+    type: 'attack',
+    baseVal: 13,
+    vfx: 'vfx-thunder',
+    speechEn: 'Heavy Strike! Smash the line!',
+    speechCn: '力劈千钧！崩碎你的防线！',
+    keyword: 'strike',
+    counterWords: ['guard', 'iron_wall', 'dodge', 'run'],
+    counterHint: '敌将蓄力【Heavy Strike】！必须出【Guard/Iron Wall】固守！',
+    desc: '聚全身力道于刀刃的强力一击，造成巨额重创。'
+  },
+  double_slash: {
+    id: 'double_slash',
+    nameEn: 'Double Slash',
+    nameCn: '疾风二段连斩',
+    phonetic: '/ˈdʌbl slæʃ/',
+    icon: '⚔️⚔️',
+    type: 'attack',
+    baseVal: 5,
+    hits: 2,
+    vfx: 'vfx-slash',
+    speechEn: 'Double Slash! One, two!',
+    speechCn: '一刀！两刀！疾风二连击！',
+    keyword: 'strike',
+    counterWords: ['guard', 'iron_wall', 'jump', 'dodge'],
+    counterHint: '敌将疾风【Double Slash】！出【Guard】挡住多段攻击！',
+    desc: '迅捷利落的二段连续挥砍，共造成 2 次打击。'
+  },
+  arrows: {
+    id: 'arrows',
+    nameEn: 'Volley of Arrows',
+    nameCn: '飞矢连射',
+    phonetic: '/ˈvɒli əv ˈærəʊz/',
+    icon: '🏹💨',
+    type: 'attack',
+    baseVal: 10,
+    vfx: 'vfx-arrow',
+    speechEn: 'Arrows incoming! Watch out!',
+    speechCn: '乱箭齐发！小心头顶！',
+    keyword: 'arrows',
+    counterWords: ['guard', 'jump', 'dodge', 'run'],
+    counterHint: '敌弓兵齐射【Arrows】！出【Jump/Guard/Run】腾跃盾挡或跑开！',
+    desc: '弓箭队远距离乱射箭雨，难以捉摸。'
+  },
+  shield: {
+    id: 'shield',
+    nameEn: 'Iron Shield',
+    nameCn: '铁盾坚守',
+    phonetic: '/ˈaɪən ʃiːld/',
+    icon: '🛡️✨',
+    type: 'defend',
+    baseVal: 10,
+    vfx: 'vfx-shield',
+    speechEn: 'Iron Shield! My armor is solid!',
+    speechCn: '铁壁玄武！坚不可摧！',
+    keyword: 'shield',
+    counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
+    counterHint: '敌将立【Iron Shield】！出【Shoot/Fly/Pencil】弱点穿透！',
+    desc: '举起沉重的铁裹精盾，为自己提供坚厚护甲。'
+  },
+  wall: {
+    id: 'wall',
+    nameEn: 'Wood Barricade',
+    nameCn: '扎立拒马木栅',
+    phonetic: '/wʊd ˌbærɪˈkeɪd/',
+    icon: '🪵🛡️',
+    type: 'defend',
+    baseVal: 14,
+    vfx: 'vfx-wood',
+    speechEn: 'Wooden wall! You cannot pass!',
+    speechCn: '扎紧木栅！休想越过一步！',
+    keyword: 'wall',
+    counterWords: ['jump', 'fly', 'shoot', 'piercing_arrow'],
+    counterHint: '敌将筑【Wooden Wall】！出【Jump/Fly】轻功腾跃无视阻拦！',
+    desc: '战场快速布设木桩拒马，大幅增强驻守防御。'
+  },
+  fire: {
+    id: 'fire',
+    nameEn: 'Fire Attack',
+    nameCn: '烈焰焚营',
+    phonetic: '/ˈfaɪər əˈtæk/',
+    icon: '🔥💥',
+    type: 'attack',
+    baseVal: 12,
+    vfx: 'vfx-thunder',
+    speechEn: 'Fire Attack! Burn everything down!',
+    speechCn: '放火！烈焰将吞噬一切！',
+    keyword: 'fire',
+    counterWords: ['water', 'swim', 'run'],
+    counterHint: '敌引燃【Fire】！出【Water】清泉灭火或【Run】迅速脱险！',
+    desc: '发射引火之箭点燃草料，烈火熊熊造成灼热重击。'
+  },
+  horse: {
+    id: 'horse',
+    nameEn: 'Cavalry Charge',
+    nameCn: '铁骑奔袭冲锋',
+    phonetic: '/ˈkævlri tʃɑːdʒ/',
+    icon: '🐎💨',
+    type: 'attack',
+    baseVal: 11,
+    vfx: 'vfx-slash',
+    speechEn: 'Cavalry Charge! Running fast like the wind!',
+    speechCn: '战马嘶鸣！全军神速奔袭！',
+    keyword: 'horse',
+    counterWords: ['jump', 'dodge', 'run', 'wind'],
+    counterHint: '敌军【Horse】冲杀！出【Jump/Dodge】侧跃规避铁蹄！',
+    desc: '铁甲骏马集群突刺，具有强烈的压迫力与冲撞伤害。'
+  },
+  war_cry: {
+    id: 'war_cry',
+    nameEn: 'War Cry',
+    nameCn: '战吼壮胆',
+    phonetic: '/wɔː kraɪ/',
+    icon: '😤💪',
+    type: 'buff',
+    strength: 2,
+    block: 6,
+    vfx: 'vfx-shield',
+    speechEn: 'War Cry! Hear my thunderous roar!',
+    speechCn: '全军呐喊！军心大振！战意澎湃！',
+    keyword: 'strike',
+    counterWords: ['strike', 'slash', 'heavy_strike'],
+    counterHint: '敌将在【War Cry】提振战意！下回合攻击暴增，速速攻击！',
+    desc: '引吭战吼震慑三军，获得 6 护甲并使自身战力永久 +2。'
+  },
+
+  // --- 战国名将专属传奇神技 ---
+  imagawa_bow: {
+    id: 'imagawa_bow',
+    nameEn: 'Master Bow Shoot',
+    nameCn: '东海道名弓神射',
+    phonetic: '/ˈmɑːstə bəʊ ʃuːt/',
+    icon: '🏹✨',
+    type: 'attack',
+    baseVal: 12,
+    vfx: 'vfx-arrow',
+    speechEn: 'I will shoot arrows from my great bow!',
+    speechCn: '东海道第一弓取名不虚传！接此神矢！',
+    keyword: 'arrows',
+    counterWords: ['guard', 'jump', 'dodge', 'iron_wall'],
+    counterHint: '义元射出名弓【Arrows】！出【Guard/Jump/Dodge】避其锋芒！',
+    desc: '今川家传国重弓，离弦之箭破风啸空。'
+  },
+  imagawa_thunder: {
+    id: 'imagawa_thunder',
+    nameEn: 'Thunder Rain',
+    nameCn: '桶狭间骤雨雷霆',
+    phonetic: '/ˈθʌndə reɪn/',
+    icon: '⛈️⚡',
+    type: 'attack',
+    baseVal: 16,
+    vfx: 'vfx-thunder',
+    speechEn: 'Heavy thunder and strike from the storm!',
+    speechCn: '狂风暴雨！雷霆重击！',
+    keyword: 'strike',
+    counterWords: ['guard', 'iron_wall', 'run', 'dodge'],
+    counterHint: '暴雨雷击【Strike】！出【Guard/Iron Wall】固守阵地！',
+    desc: '借暴雨与雷电之势奋力挥斩，威力极大。'
+  },
+  shingen_wind: {
+    id: 'shingen_wind',
+    nameEn: 'Wind Cavalry',
+    nameCn: '其疾如风 · 赤备突刺',
+    phonetic: '/wɪnd ˈkævlri/',
+    icon: '🐎🔥',
+    type: 'attack',
+    baseVal: 14,
+    vfx: 'vfx-slash',
+    speechEn: 'My war horse is running fast like the wind!',
+    speechCn: '疾如风！赤备如烈火席卷！',
+    keyword: 'horse',
+    counterWords: ['jump', 'dodge', 'run', 'wind'],
+    counterHint: '信玄【Horse】神骑突入！出【Jump/Dodge/Run】跃起躲避！',
+    desc: '甲斐武田家赤备精锐，如狂风席卷战场。'
+  },
+  shingen_mountain: {
+    id: 'shingen_mountain',
+    nameEn: 'Mountain Shield',
+    nameCn: '不动如山 · 金汤军配',
+    phonetic: '/ˈmaʊntɪn ʃiːld/',
+    icon: '⛰️🛡️',
+    type: 'defend',
+    baseVal: 20,
+    vfx: 'vfx-shield',
+    speechEn: 'My shield stands firm like a mountain!',
+    speechCn: '不动如山！谁敢动摇甲斐金汤！',
+    keyword: 'shield',
+    counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
+    counterHint: '信玄【Mountain Shield】！出【Shoot/Fly/Pencil】寻找破绽！',
+    desc: '军配一展，三军如山岳般岿然不动，获得坚固护甲。'
+  },
+  shingen_fire: {
+    id: 'shingen_fire',
+    nameEn: 'Raging Fire',
+    nameCn: '侵掠如火 · 龙虎燎原',
+    phonetic: '/ˈreɪdʒɪŋ ˈfaɪər/',
+    icon: '🔥💥',
+    type: 'attack',
+    baseVal: 18,
+    vfx: 'vfx-thunder',
+    speechEn: 'Fire is raging! Total charge!',
+    speechCn: '侵掠如火！甲斐龙虎踏平四方！',
+    keyword: 'fire',
+    counterWords: ['water', 'swim', 'run', 'iron_wall'],
+    counterHint: '信玄【Fire】燎原！出【Water】扑灭烈焰或【Run】躲避！',
+    desc: '势如燎原烈火，不可阻挡的全军冲锋。'
+  },
+  masamune_dragon: {
+    id: 'masamune_dragon',
+    nameEn: 'Dragon Fangs',
+    nameCn: '独眼龙牙 · 狂岚三段',
+    phonetic: '/ˈdræɡən fæŋz/',
+    icon: '🐉⚔️',
+    type: 'attack',
+    baseVal: 6,
+    hits: 3,
+    vfx: 'vfx-slash',
+    speechEn: 'Look at the dragon in the sky! It is ready to fly!',
+    speechCn: '九天独眼黑龙降临！撕裂敌阵！',
+    keyword: 'dragon',
+    counterWords: ['jump', 'fly', 'dragon', 'dodge'],
+    counterHint: '政宗【Dragon】啸空！出【Jump/Fly】凌空飞跃对抗！',
+    desc: '独眼龙奥州绝技，黑龙怒啸的三段疾风狂斩。'
+  },
+  masamune_crescent: {
+    id: 'masamune_crescent',
+    nameEn: 'Crescent Moon Guard',
+    nameCn: '黑漆金月 · 无双坚盔',
+    phonetic: '/ˈkresnt muːn ɡɑːd/',
+    icon: '🌙🛡️',
+    type: 'defend',
+    baseVal: 18,
+    vfx: 'vfx-shield',
+    speechEn: 'Look at my crescent moon helmet! Unbreakable!',
+    speechCn: '金弦月兜盔！天下无双！刀枪不入！',
+    keyword: 'look',
+    counterWords: ['look', 'book', 'piercing_arrow', 'pencil'],
+    counterHint: '政宗亮盔【Look】！出【Look/Book】窥测刀锋隙间！',
+    desc: '黑漆五枚胴与黄金弦月盔提供周密防护。'
+  },
+  masamune_cannon: {
+    id: 'masamune_cannon',
+    nameEn: 'Dragon Cannon',
+    nameCn: '南蛮国崩 · 龙骑轰天炮',
+    phonetic: '/ˈdræɡən ˈkænən/',
+    icon: '💥⚡',
+    type: 'attack',
+    baseVal: 22,
+    pierce: true,
+    vfx: 'vfx-thunder',
+    speechEn: 'I will shoot heavy fire from my guns!',
+    speechCn: '西洋国崩大筒轰鸣！震天动地！',
+    keyword: 'shoot',
+    counterWords: ['guard', 'dodge', 'jump', 'water'],
+    counterHint: '政宗大筒【Shoot】！出【Guard/Dodge/Jump】翻滚闪避！',
+    desc: '南蛮巨炮与铁炮龙骑联合轰鸣，直接穿透护甲！'
+  }
+};
+
 class CardBattleEngine {
   constructor() {
     this.isActive = false;
@@ -808,36 +1096,37 @@ class CardBattleEngine {
 
   /**
    * 配置敌将档案与数值
+   * 调优敌方血量与抗击打能力，确保双方有来有回互相出招 (Slay the Spire Balance)
    */
   setupEnemy(stageNum, customEnemy = null) {
     let name = `尾张守将 · 第 ${stageNum} 关`;
     let title = '守城大将';
-    let hp = 32 + stageNum * 4;
-    let baseAtk = 6 + Math.floor(stageNum * 0.8);
+    let hp = 44 + stageNum * 4;
+    let baseAtk = 7 + Math.floor(stageNum * 0.7);
     let avatar = 'assets/characters/goblin.png';
 
     if (stageNum === 5) {
       name = '今川义元';
       title = '东海道第一弓取';
-      hp = 55;
+      hp = 70;
       baseAtk = 10;
       avatar = 'assets/portraits/nobunaga.jpg';
     } else if (stageNum === 10) {
       name = '斋藤防线大将 · 稻叶山先锋';
       title = '美浓总大将';
-      hp = 70;
+      hp = 85;
       baseAtk = 12;
       avatar = 'assets/portraits/shibata.jpg';
     } else if (stageNum === 25) {
       name = '武田信玄';
       title = '甲斐之虎 · 风林火山';
-      hp = 105;
+      hp = 120;
       baseAtk = 14;
       avatar = 'assets/portraits/shingen.jpg';
     } else if (stageNum === 35) {
       name = '伊达政宗';
       title = '独眼龙 · 奥州霸主';
-      hp = 130;
+      hp = 145;
       baseAtk = 16;
       avatar = 'assets/portraits/masamune.jpg';
     } else if (customEnemy) {
@@ -856,239 +1145,114 @@ class CardBattleEngine {
       maxHp: hp,
       block: 0,
       baseAtk,
+      strength: 0,
       turnCount: 0,
-      intent: { 
-        type: 'attack', 
-        value: baseAtk, 
-        icon: '⚔️', 
-        text: `蓄力突击 (${baseAtk} 伤)`,
-        speechEn: "I will strike you with my blade!",
-        speechCn: "看我挥刀斩击！",
-        keyword: "strike",
-        counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
-        counterHint: "听到了【strike】！出【Guard/Dodge】格挡招架！"
-      }
+      currentSkill: null,
+      intent: null
+    };
+    this.rollEnemyIntent();
+  }
+
+  /**
+   * 将技能卡数据转换为杀戮尖塔风格的意图对象 (Intent Object)
+   */
+  skillToIntent(skill) {
+    if (!skill) skill = ENEMY_SKILL_DATABASE.strike;
+    const enemyAtk = (this.enemy && this.enemy.strength) || 0;
+    let text = '';
+    let val = 0;
+
+    if (skill.type === 'attack') {
+      const dmg = skill.baseVal + enemyAtk;
+      val = dmg;
+      text = skill.hits > 1 ? `${skill.nameCn} (${dmg}x${skill.hits} 连斩)` : `${skill.nameCn} (${dmg} 伤${skill.pierce ? ' 穿甲' : ''})`;
+    } else if (skill.type === 'defend') {
+      val = skill.baseVal;
+      text = `${skill.nameCn} (+${skill.baseVal} 护甲)`;
+    } else if (skill.type === 'buff') {
+      val = skill.strength || 2;
+      text = `${skill.nameCn} (+${val} 战力)`;
+    }
+
+    return {
+      skillId: skill.id,
+      type: skill.type,
+      value: val,
+      hits: skill.hits || 1,
+      icon: skill.icon,
+      text: text,
+      nameEn: skill.nameEn,
+      nameCn: skill.nameCn,
+      phonetic: skill.phonetic,
+      speechEn: skill.speechEn,
+      speechCn: skill.speechCn,
+      keyword: skill.keyword,
+      counterWords: skill.counterWords,
+      counterHint: skill.counterHint
     };
   }
 
   /**
-   * 轮换生成敌方的下回合意图 (Intent AI)
+   * 轮换生成敌方的下回合意图与准备释放的技能卡牌 (Intent AI & Skill Deck)
    * 深度融合人教版英语听音辨意与语义克制 (Task-Based Learning)
    */
   rollEnemyIntent() {
     this.enemy.turnCount++;
     const t = this.enemy.turnCount;
-    const base = this.enemy.baseAtk;
+    let selectedSkill = null;
 
-    // 特殊阶段 BOSS 意图轮换
+    // 特殊阶段 BOSS 专属技能卡牌轮转
     if (this.stageNum === 5) {
       // 桶狭间 今川义元
       if (t % 3 === 1) {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base, 
-          icon: '🏹⚔️', 
-          text: `名弓连射 (${base} 伤)`,
-          speechEn: "I will shoot arrows from my great bow!",
-          speechCn: "我要用名弓射穿你的阵线！",
-          keyword: "arrows",
-          counterWords: ['guard', 'jump', 'dodge', 'iron_wall'],
-          counterHint: "敌将欲射【arrows】！出【Guard/Jump/Dodge】腾跃或盾牌避箭！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.imagawa_bow;
       } else if (t % 3 === 2) {
-        this.enemy.intent = { 
-          type: 'defend', 
-          value: 12, 
-          icon: '🛡️', 
-          text: `本阵护卫 (+12 护甲)`,
-          speechEn: "My strong iron shield will protect me!",
-          speechCn: "本阵铁卫立起坚盾！",
-          keyword: "shield",
-          counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
-          counterHint: "敌将举【shield】！出【Shoot/Fly/Pencil】等穿透弱点！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.shield;
       } else {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base + 6, 
-          icon: '⛈️💥', 
-          text: `突击重创 (${base + 6} 伤！)`,
-          speechEn: "I will strike you with heavy thunder!",
-          speechCn: "雷霆万钧！准备承受这一击！",
-          keyword: "strike",
-          counterWords: ['guard', 'dodge', 'iron_wall', 'run'],
-          counterHint: "敌将欲发动【strike】！出【Guard/Iron Wall】固守招架！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.imagawa_thunder;
       }
-      return;
-    }
-
-    if (this.stageNum === 10) {
+    } else if (this.stageNum === 10) {
       // 墨俣一夜城 斋藤大将
       if (t % 3 === 1) {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base, 
-          icon: '⚔️', 
-          text: `破阵重劈 (${base} 伤)`,
-          speechEn: "My big sword will strike you down!",
-          speechCn: "看我大刀破阵重劈！",
-          keyword: "strike",
-          counterWords: ['guard', 'dodge', 'strike', 'iron_wall'],
-          counterHint: "敌将欲出【strike】！出【Guard/Dodge】抵挡化解！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.heavy_strike;
       } else if (t % 3 === 2) {
-        this.enemy.intent = { 
-          type: 'defend', 
-          value: 14, 
-          icon: '🪵🛡️', 
-          text: `构筑拒马 (+14 护甲)`,
-          speechEn: "I will guard the castle behind my wall!",
-          speechCn: "构筑坚固拒马木栅！",
-          keyword: "wall",
-          counterWords: ['jump', 'fly', 'shoot', 'piercing_arrow'],
-          counterHint: "敌将在筑【wall】！出【Jump/Fly】凌空飞跃无视拒马！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.wall;
       } else {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base + 8, 
-          icon: '🔥', 
-          text: `放火焚城 (${base + 8} 伤！)`,
-          speechEn: "Fire attack! Burn everything down!",
-          speechCn: "放火焚城！烈焰熊熊！",
-          keyword: "fire",
-          counterWords: ['water', 'swim', 'run'],
-          counterHint: "敌将引燃【fire】！出【Water】甘泉泼灭或【Run】迅速脱险！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.fire;
       }
-      return;
-    }
-
-    if (this.stageNum === 25) {
+    } else if (this.stageNum === 25) {
       // 甲斐之虎 武田信玄 (风林火山)
       if (t % 3 === 1) {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base, 
-          icon: '🐎💨', 
-          text: `赤备如风突袭 (${base} 伤)`,
-          speechEn: "My war horse is running fast like the wind!",
-          speechCn: "赤备神骑如风奔袭！",
-          keyword: "horse",
-          counterWords: ['jump', 'dodge', 'run', 'relic_wind', 'wind'],
-          counterHint: "敌将骑【horse】奔袭！出【Jump/Dodge】跃起避其锋芒！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.shingen_wind;
       } else if (t % 3 === 2) {
-        this.enemy.intent = { 
-          type: 'defend', 
-          value: 16, 
-          icon: '⛰️🛡️', 
-          text: `不动如山军阵 (+16 护甲)`,
-          speechEn: "My shield stands firm like a mountain!",
-          speechCn: "不动如山！玄武重盾！",
-          keyword: "shield",
-          counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
-          counterHint: "敌将如山【shield】！出【Shoot/Fly/Pencil】破甲！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.shingen_mountain;
       } else {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base + 8, 
-          icon: '🔥💥', 
-          text: `侵掠如火猛攻 (${base + 8} 伤！)`,
-          speechEn: "Fire is raging! Total charge!",
-          speechCn: "侵掠如火！全军压上！",
-          keyword: "fire",
-          counterWords: ['water', 'swim', 'run', 'iron_wall'],
-          counterHint: "烈火【fire】席卷！出【Water/Run】清泉扑火或神速规避！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.shingen_fire;
       }
-      return;
-    }
-
-    if (this.stageNum === 35) {
+    } else if (this.stageNum === 35) {
       // 奥州霸者 伊达政宗 (独眼龙)
       if (t % 3 === 1) {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base, 
-          icon: '🐉⚔️', 
-          text: `双刀龙牙狂岚 (${base} 伤)`,
-          speechEn: "Look at the dragon in the sky! It is ready to fly!",
-          speechCn: "九天独眼黑龙腾飞！",
-          keyword: "dragon",
-          counterWords: ['jump', 'fly', 'relic_dragon', 'dragon', 'dodge'],
-          counterHint: "黑龙【dragon】啸空！出【Jump/Fly】凌空交锋迎击！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.masamune_dragon;
       } else if (t % 3 === 2) {
-        this.enemy.intent = { 
-          type: 'defend', 
-          value: 18, 
-          icon: '🌙🛡️', 
-          text: `黑漆金月守御 (+18 护甲)`,
-          speechEn: "Look at my crescent moon helmet! Unbreakable!",
-          speechCn: "金弦月兜盔刀枪不入！",
-          keyword: "look",
-          counterWords: ['look', 'book', 'piercing_arrow', 'pencil'],
-          counterHint: "敌将亮盔【look】！出【Look/Book】洞察破绽予以贯穿！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.masamune_crescent;
       } else {
-        this.enemy.intent = { 
-          type: 'attack', 
-          value: base + 10, 
-          icon: '💥⚡', 
-          text: `龙骑铁炮轰击 (${base + 10} 穿甲！)`,
-          speechEn: "I will shoot heavy fire from my guns!",
-          speechCn: "南蛮重炮轰天鸣响！",
-          keyword: "shoot",
-          counterWords: ['guard', 'dodge', 'jump', 'water'],
-          counterHint: "敌将开枪【shoot】！出【Guard/Dodge/Jump】迅捷翻腾规避！"
-        };
+        selectedSkill = ENEMY_SKILL_DATABASE.masamune_cannon;
       }
-      return;
+    } else {
+      // 常规城池敌将技能库循环：刀斩 ➔ 铁盾 ➔ 箭雨 ➔ 双刀连击 ➔ 战吼壮胆 ➔ 破阵重劈
+      const regularSkills = [
+        ENEMY_SKILL_DATABASE.strike,
+        ENEMY_SKILL_DATABASE.shield,
+        ENEMY_SKILL_DATABASE.arrows,
+        ENEMY_SKILL_DATABASE.double_slash,
+        ENEMY_SKILL_DATABASE.war_cry,
+        ENEMY_SKILL_DATABASE.heavy_strike
+      ];
+      selectedSkill = regularSkills[(t - 1) % regularSkills.length];
     }
 
-    // 常规敌人意图 (攻击 ➔ 防守 ➔ 箭雨重攻)
-    if (t % 3 === 1) {
-      this.enemy.intent = { 
-        type: 'attack', 
-        value: base, 
-        icon: '⚔️', 
-        text: `蓄力突击 (${base} 伤)`,
-        speechEn: "I will strike you with my blade!",
-        speechCn: "喝！看我挥刀重击！",
-        keyword: "strike",
-        counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
-        counterHint: "敌将欲出【strike】！出【Guard/Dodge】格挡招架！"
-      };
-    } else if (t % 3 === 2) {
-      const defVal = Math.max(5, Math.floor(base * 0.9));
-      this.enemy.intent = { 
-        type: 'defend', 
-        value: defVal, 
-        icon: '🛡️', 
-        text: `举盾坚守 (+${defVal} 护甲)`,
-        speechEn: "I hide behind my wooden shield!",
-        speechCn: "立盾固守！",
-        keyword: "shield",
-        counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
-        counterHint: "敌将举【shield】！出【Shoot/Fly/Pencil】无视护甲穿透！"
-      };
-    } else {
-      const heavyVal = base + 4;
-      this.enemy.intent = { 
-        type: 'attack', 
-        value: heavyVal, 
-        icon: '🏹💥', 
-        text: `飞矢齐射 (${heavyVal} 伤！)`,
-        speechEn: "Watch out! Arrows are flying from above!",
-        speechCn: "箭矢如雨自天而降！",
-        keyword: "arrows",
-        counterWords: ['jump', 'guard', 'dodge', 'run'],
-        counterHint: "漫天【arrows】袭来！出【Jump/Guard/Run】腾跃盾挡或跑开！"
-      };
-    }
+    this.enemy.currentSkill = selectedSkill;
+    this.enemy.intent = this.skillToIntent(selectedSkill);
   }
 
   /**
@@ -1102,9 +1266,10 @@ class CardBattleEngine {
   }
 
   /**
-   * 回合开始
+   * 回合开始 (杀戮尖塔风格：横幅演出 + 气力注满 + 手牌重置 + 意图播报)
    */
   startTurn() {
+    this.isEnemyActing = false;
     this.heroEnergy = this.heroMaxEnergy;
     this.heroBlock = 0; // 回合初护甲重置
     this.enemy.block = 0; // 敌方护甲重置
@@ -1122,8 +1287,13 @@ class CardBattleEngine {
     }
     this.drawCards(drawCount);
 
-    // 决定敌方本回合意图
-    this.rollEnemyIntent();
+    // 决定敌方本回合将要释放的技能与意图 (第 1 回合已在 setupEnemy 初始化)
+    if (this.turn > 1) {
+      this.rollEnemyIntent();
+    }
+
+    // 弹出【我方行动回合 YOUR TURN】全屏交锋横幅
+    this.showTurnBanner('hero');
 
     // 播放气力蓄满提示音
     if (window.audioEngine?.playEnergyCharge) {
@@ -1135,7 +1305,7 @@ class CardBattleEngine {
     // 回合开始：敌将用英语呼喊战术意图！(儿童英语纯正美音输入)
     setTimeout(() => {
       this.speakEnemyIntent();
-    }, 450);
+    }, 550);
   }
 
   /**
@@ -1249,7 +1419,7 @@ class CardBattleEngine {
    * 融入英语词汇连词成句：打出连携卡触发 Phrase Combo！
    */
   playCard(index) {
-    if (!this.isActive) return;
+    if (!this.isActive || this.isEnemyActing) return;
     if (index < 0 || index >= this.hand.length) return;
 
     const cardId = this.hand[index];
@@ -1447,9 +1617,12 @@ class CardBattleEngine {
 
   /**
    * 玩家点击【结束回合】按钮
+   * 杀戮尖塔风格：弹出敌方行动大横幅，锁定出牌，转交敌方回合
    */
   endTurn() {
-    if (!this.isActive) return;
+    if (!this.isActive || this.isEnemyActing) return;
+
+    this.isEnemyActing = true;
 
     // 弃置当前剩余所有手牌
     while (this.hand.length > 0) {
@@ -1457,79 +1630,287 @@ class CardBattleEngine {
     }
     this.renderBattleArena();
 
-    // 敌方行动阶段 (Enemy Action Phase)
+    // 1. 弹出【敌方行动回合 ENEMY TURN】全屏交锋横幅
+    this.showTurnBanner('enemy');
+
+    if (window.audioEngine?.playTaikoDrum) {
+      window.audioEngine.playTaikoDrum();
+    }
+
+    // 敌方行动指令台状态指示
     const deckDeckEl = document.getElementById('siege-command-deck');
     if (deckDeckEl) {
       deckDeckEl.innerHTML = `
         <div class="card-turn-status-bar is-enemy-turn">
           <span class="status-pulse-dot">⚔️</span>
-          <span>敌方回合：【${this.enemy.name}】正在执行【${this.enemy.intent.text}】...</span>
+          <span>敌方回合：【${this.enemy.name}】正在出招【${this.enemy.intent?.nameEn || this.enemy.intent?.text}】...</span>
         </div>
       `;
     }
 
+    // 2. 800ms 后敌方正式打出技能卡牌
     setTimeout(() => {
       this.executeEnemyAction();
-    }, 600);
+    }, 850);
   }
 
   /**
-   * 执行敌方意图行动
+   * 弹出全屏回合转换横幅 (杀戮尖塔 Slay the Spire 风格)
+   * @param {'enemy' | 'hero'} type 
+   */
+  showTurnBanner(type) {
+    const arena = document.getElementById('siege-arena') || document.getElementById('scene-siege-battle');
+    if (!arena) return;
+
+    // 移除历史旧横幅
+    arena.querySelectorAll('.turn-change-banner').forEach(b => b.remove());
+
+    const banner = document.createElement('div');
+    banner.className = `turn-change-banner is-${type}`;
+    if (type === 'enemy') {
+      banner.innerHTML = `
+        <div class="banner-main-title">⚔️ 敌方行动回合 · ENEMY TURN ⚔️</div>
+        <div class="banner-sub-title">【${this.enemy.name}】正在释放战术技能！</div>
+      `;
+    } else {
+      banner.innerHTML = `
+        <div class="banner-main-title">🎴 我方行动回合 · YOUR TURN 🎴</div>
+        <div class="banner-sub-title">⚡ 气力蓄满 · 摸牌出策！</div>
+      `;
+    }
+    arena.appendChild(banner);
+    setTimeout(() => {
+      if (banner && banner.parentElement) banner.remove();
+    }, 1150);
+  }
+
+  /**
+   * 战场正中央具象化弹出敌方技能卡牌 (Enemy Skill Card Pop)
+   */
+  showEnemySkillCard(skill, enemyAtk = 0) {
+    const arena = document.getElementById('siege-arena') || document.getElementById('scene-siege-battle');
+    if (!arena) return;
+
+    this.dismissEnemySkillCard();
+
+    const pop = document.createElement('div');
+    pop.id = 'enemy-skill-card-pop';
+    pop.className = `enemy-skill-card-pop is-${skill.type}`;
+
+    let valText = '';
+    if (skill.type === 'attack') {
+      const dmg = skill.baseVal + enemyAtk;
+      valText = skill.hits > 1 ? `⚔️ 伤害: ${dmg} x ${skill.hits} 连斩` : `⚔️ 伤害: ${dmg}${skill.pierce ? ' (穿甲)' : ''}`;
+    } else if (skill.type === 'defend') {
+      valText = `🛡️ 护甲: +${skill.baseVal}`;
+    } else if (skill.type === 'buff') {
+      valText = `💪 增益: 战力 +${skill.strength || 2}${skill.block ? ` / 护甲 +${skill.block}` : ''}`;
+    }
+
+    pop.innerHTML = `
+      <div class="enemy-card-top-tag">${skill.type === 'attack' ? '⚔️ 敌将攻击技能' : (skill.type === 'defend' ? '🛡️ 敌将防守技能' : '✨ 敌将强化战术')}</div>
+      <div class="enemy-card-icon">${skill.icon}</div>
+      <div class="enemy-card-title-en">${skill.nameEn}</div>
+      ${skill.phonetic ? `<div class="enemy-card-phonetic">${skill.phonetic}</div>` : ''}
+      <div class="enemy-card-title-cn">${skill.nameCn}</div>
+      <div class="enemy-card-val-badge">${valText}</div>
+    `;
+
+    arena.appendChild(pop);
+  }
+
+  /**
+   * 收回/消散战场中央敌方技能卡
+   */
+  dismissEnemySkillCard() {
+    const pop = document.getElementById('enemy-skill-card-pop');
+    if (pop) {
+      pop.classList.add('is-leaving');
+      setTimeout(() => pop.remove(), 260);
+    }
+  }
+
+  /**
+   * 敌将人物立绘猛烈冲刺攻击动画 (Lunge Animation)
+   */
+  animateEnemyLunge() {
+    const enemyImg = document.getElementById('siege-enemy-avatar') || document.getElementById('siege-enemy-img');
+    if (enemyImg) {
+      enemyImg.classList.add('enemy-lunge-anim');
+      setTimeout(() => enemyImg.classList.remove('enemy-lunge-anim'), 480);
+    }
+  }
+
+  /**
+   * 我方受到伤害时的全屏暗红受击闪烁 (Screen Damage Flash)
+   */
+  flashDamageScreen() {
+    const arena = document.getElementById('siege-arena') || document.getElementById('scene-siege-battle');
+    if (!arena) return;
+    const flash = document.createElement('div');
+    flash.className = 'screen-damage-flash';
+    arena.appendChild(flash);
+    setTimeout(() => flash.remove(), 360);
+  }
+
+  /**
+   * 实时平滑刷新双方血条、血量文字与护甲药丸
+   */
+  updateHpAndBlockBars() {
+    const heroHpPct = Math.max(0, Math.min(100, (this.heroHp / this.heroMaxHp) * 100));
+    const enemyHpPct = Math.max(0, Math.min(100, (this.enemy.hp / this.enemy.maxHp) * 100));
+
+    // 主角血条与文字
+    const heroFill = document.querySelector('.card-hp-fill.is-hero');
+    if (heroFill) heroFill.style.width = `${heroHpPct}%`;
+    const heroHpLabel = document.querySelector('#siege-side-hero .card-hp-label');
+    if (heroHpLabel) heroHpLabel.textContent = `❤️ ${this.heroHp}/${this.heroMaxHp}`;
+
+    // 主角护甲光晕
+    const heroAvatar = document.getElementById('siege-hero-avatar');
+    if (heroAvatar) {
+      let shieldAura = heroAvatar.querySelector('.hero-shield-aura');
+      if (this.heroBlock > 0) {
+        if (!shieldAura) {
+          shieldAura = document.createElement('div');
+          shieldAura.className = 'hero-shield-aura';
+          heroAvatar.appendChild(shieldAura);
+        }
+        shieldAura.textContent = `🛡️ ${this.heroBlock}`;
+      } else if (shieldAura) {
+        shieldAura.remove();
+      }
+    }
+
+    // 敌人血条与文字
+    const enemyFill = document.querySelector('.card-hp-fill.is-enemy');
+    if (enemyFill) enemyFill.style.width = `${enemyHpPct}%`;
+    const enemyHpLabel = document.querySelector('#siege-side-enemy .card-hp-label');
+    if (enemyHpLabel) enemyHpLabel.textContent = `❤️ ${this.enemy.hp}/${this.enemy.maxHp}`;
+
+    // 敌人护甲药丸
+    const enemyStatGroup = document.querySelector('#siege-side-enemy .card-stat-bar-group');
+    if (enemyStatGroup) {
+      let enemyBlockPill = enemyStatGroup.querySelector('.enemy-block-pill');
+      if (this.enemy.block > 0) {
+        if (!enemyBlockPill) {
+          enemyBlockPill = document.createElement('div');
+          enemyBlockPill.className = 'enemy-block-pill';
+          enemyStatGroup.appendChild(enemyBlockPill);
+        }
+        enemyBlockPill.textContent = `🛡️ 护甲: ${this.enemy.block}`;
+      } else if (enemyBlockPill) {
+        enemyBlockPill.remove();
+      }
+    }
+  }
+
+  /**
+   * 执行敌方意图技能 (杀戮尖塔风格：出牌展开 + TTS战吼 + 冲锋打击 + 受击闪红 + 血条平滑缩减)
    */
   executeEnemyAction() {
     if (!this.isActive) return;
 
-    const intent = this.enemy.intent;
+    const skill = this.enemy.currentSkill || ENEMY_SKILL_DATABASE[this.enemy.intent?.skillId] || ENEMY_SKILL_DATABASE.strike;
+    const enemyAtk = this.enemy.strength || 0;
 
-    if (intent.type === 'attack') {
-      let dmg = intent.value;
-      // 我方护甲抵挡伤害
-      if (this.heroBlock > 0) {
-        if (this.heroBlock >= dmg) {
-          this.heroBlock -= dmg;
-          this.showFloatingNumber(this.getHeroElem(), `抵挡 -${dmg} 🛡️`, 'fct-block');
-          dmg = 0;
-        } else {
-          dmg -= this.heroBlock;
-          this.showFloatingNumber(this.getHeroElem(), `破甲 -${this.heroBlock}`, 'fct-block');
-          this.heroBlock = 0;
-        }
-      }
+    // 1. 战场正中央具象化弹出敌方技能卡
+    this.showEnemySkillCard(skill, enemyAtk);
 
-      if (dmg > 0) {
-        this.heroHp = Math.max(0, this.heroHp - dmg);
-        this.showFloatingNumber(this.getHeroElem(), `-${dmg} 💔`, 'fct-damage');
-        if (window.audioEngine?.playKatanaSlash) window.audioEngine.playKatanaSlash();
-        this.shakeElement(this.getHeroElem());
-      } else {
-        if (window.audioEngine?.playShieldBlock) window.audioEngine.playShieldBlock();
-      }
-    } else if (intent.type === 'defend') {
-      this.enemy.block += intent.value;
-      this.showFloatingNumber(this.getEnemyElem(), `+${intent.value} 🛡️`, 'fct-defense');
-      if (window.audioEngine?.playShieldBlock) window.audioEngine.playShieldBlock();
+    // 2. 敌将用纯正美音大声朗读出英文技能名与战吼台词！
+    if (window.audioEngine && skill.speechEn) {
+      window.audioEngine.speak(skill.speechEn);
     }
 
-    // 检查我方是否阵亡
-    if (this.heroHp <= 0) {
-      // 检查背包是否有饭团自动护体
-      const inv = window.heroManager ? window.heroManager.hero.inventory : null;
-      if (inv && inv['item-riceball'] && inv['item-riceball'] > 0) {
-        inv['item-riceball']--;
-        this.heroHp = 15;
-        this.showFloatingNumber(this.getHeroElem(), `🍙 饭团复活 +15 HP!`, 'fct-heal');
-        if (window.audioEngine?.playHealChime) window.audioEngine.playHealChime();
-        if (window.ui) window.ui.showToast('🍙 宁宁温热饭团发挥奇效！藤吉郎重整旗鼓！', '💖');
-      } else {
-        setTimeout(() => this.handleDefeat(), 500);
-        return;
-      }
-    }
-
-    // 回合交替，开启我方下一回合
-    this.turn++;
+    // 3. 700ms 后敌将发起物理冲刺打击 (Lunge Animation)
     setTimeout(() => {
-      this.startTurn();
+      this.animateEnemyLunge();
+
+      // 4. 结算技能数值效果
+      let finalDmg = 0;
+      if (skill.type === 'attack') {
+        const hits = skill.hits || 1;
+        const perHitDmg = (skill.baseVal + enemyAtk);
+        finalDmg = perHitDmg * hits;
+
+        // 特效与打击音效
+        this.triggerVfx(skill.vfx || 'vfx-slash');
+        if (skill.vfx === 'vfx-arrow') {
+          if (window.audioEngine?.playBowShoot) window.audioEngine.playBowShoot();
+        } else if (skill.vfx === 'vfx-thunder') {
+          if (window.audioEngine?.playThunder) window.audioEngine.playThunder();
+        } else {
+          if (window.audioEngine?.playKatanaSlash) window.audioEngine.playKatanaSlash();
+        }
+
+        // 玩家护甲抵挡伤害
+        let actualDmg = finalDmg;
+        if (!skill.pierce && this.heroBlock > 0) {
+          if (this.heroBlock >= actualDmg) {
+            this.heroBlock -= actualDmg;
+            this.showFloatingNumber(this.getHeroElem(), `抵挡 -${actualDmg} 🛡️`, 'fct-block');
+            if (window.audioEngine?.playShieldBlock) window.audioEngine.playShieldBlock();
+            actualDmg = 0;
+          } else {
+            actualDmg -= this.heroBlock;
+            this.showFloatingNumber(this.getHeroElem(), `破甲 -${this.heroBlock}`, 'fct-block');
+            this.heroBlock = 0;
+          }
+        }
+
+        if (actualDmg > 0) {
+          this.heroHp = Math.max(0, this.heroHp - actualDmg);
+          this.showFloatingNumber(this.getHeroElem(), `-${actualDmg} 💔`, 'fct-damage');
+          // 主角受击剧烈震动 & 全屏血红受击闪烁！
+          this.shakeElement(this.getHeroElem());
+          this.flashDamageScreen();
+        }
+      } else if (skill.type === 'defend') {
+        const gainBlock = skill.baseVal;
+        this.enemy.block += gainBlock;
+        this.showFloatingNumber(this.getEnemyElem(), `+${gainBlock} 🛡️`, 'fct-defense');
+        if (window.audioEngine?.playShieldBlock) window.audioEngine.playShieldBlock();
+        this.triggerVfx('vfx-shield');
+      } else if (skill.type === 'buff') {
+        if (skill.strength) {
+          this.enemy.strength = (this.enemy.strength || 0) + skill.strength;
+          this.showFloatingNumber(this.getEnemyElem(), `+${skill.strength} 力量 💪`, 'fct-buff');
+        }
+        if (skill.block) {
+          this.enemy.block += skill.block;
+          this.showFloatingNumber(this.getEnemyElem(), `+${skill.block} 🛡️`, 'fct-defense');
+        }
+        if (window.audioEngine?.playEnergyCharge) window.audioEngine.playEnergyCharge();
+      }
+
+      // 实时平滑刷新双方血条与护甲
+      this.updateHpAndBlockBars();
+
+      // 5. 1100ms 后收回技能卡，检查是否阵亡，或进入我方下一回合
+      setTimeout(() => {
+        this.dismissEnemySkillCard();
+
+        // 检查我方阵亡与饭团复活
+        if (this.heroHp <= 0) {
+          const inv = window.heroManager ? window.heroManager.hero.inventory : null;
+          if (inv && inv['item-riceball'] && inv['item-riceball'] > 0) {
+            inv['item-riceball']--;
+            this.heroHp = 15;
+            this.updateHpAndBlockBars();
+            this.showFloatingNumber(this.getHeroElem(), `🍙 饭团复活 +15 HP!`, 'fct-heal');
+            if (window.audioEngine?.playHealChime) window.audioEngine.playHealChime();
+            if (window.ui) window.ui.showToast('🍙 宁宁温热饭团发挥奇效！藤吉郎重整旗鼓！', '💖');
+          } else {
+            setTimeout(() => this.handleDefeat(), 400);
+            return;
+          }
+        }
+
+        // 回合交替：进入玩家下一回合！
+        this.turn++;
+        this.isEnemyActing = false;
+        this.startTurn();
+      }, 1000);
     }, 700);
   }
 
@@ -1823,6 +2204,15 @@ class CardBattleEngine {
     }
 
     // 中间区域：意图告示与听音辨敌
+    const intent = (this.enemy && this.enemy.intent) || { 
+      icon: '⚔️', 
+      text: '准备行动', 
+      keyword: 'strike', 
+      speechEn: 'I will strike!', 
+      speechCn: '接招！',
+      counterHint: '根据英语词义选择克制战术！'
+    };
+
     const vsCenter = document.querySelector('.siege-vs-center');
     if (vsCenter) {
       vsCenter.innerHTML = `
@@ -1831,10 +2221,10 @@ class CardBattleEngine {
           <div class="enemy-tactical-bubble" onclick="window.cardBattle.speakEnemyIntent()" title="点击倾听敌将语音">
             <div class="bubble-header-row">
               <span class="bubble-audio-btn">🔊 听敌战术</span>
-              <span class="bubble-keyword-pill">Target: <strong>${this.enemy.intent.keyword}</strong></span>
+              <span class="bubble-keyword-pill">Target: <strong>${intent.keyword}</strong></span>
             </div>
-            <div class="bubble-speech-en">"${this.enemy.intent.speechEn}"</div>
-            <div class="bubble-speech-cn">${this.enemy.intent.speechCn}</div>
+            <div class="bubble-speech-en">"${intent.speechEn}"</div>
+            <div class="bubble-speech-cn">${intent.speechCn}</div>
           </div>
         </div>
         <div class="siege-impact-vfx hidden" id="siege-impact-vfx"></div>
@@ -1859,7 +2249,7 @@ class CardBattleEngine {
           </div>
           <div class="enemy-avatar-wrap" id="siege-enemy-avatar">
             <img src="${this.enemy.avatar}" class="enemy-battle-sprite" id="siege-enemy-img" alt="敌将">
-            <div class="enemy-intent-crown">${this.enemy.intent.icon}</div>
+            <div class="enemy-intent-crown">${intent.icon}</div>
           </div>
         </div>
       `;
@@ -1868,17 +2258,24 @@ class CardBattleEngine {
     // 3. 底部指令台：手牌阵列 + 气力指示 + 结束回合按钮
     const deckEl = document.getElementById('siege-command-deck');
     if (deckEl) {
+      // 检查是否有任何手牌可以打出，智能引导点击【结束回合】
+      const hasPlayableCard = this.hand.some(cid => {
+        const c = this.cardDatabase[cid];
+        return c && this.heroEnergy >= c.cost;
+      });
+      const shouldUrgeEndTurn = (!hasPlayableCard || this.heroEnergy === 0) && !this.isEnemyActing;
+
       deckEl.innerHTML = `
         <div class="card-deck-container">
           <!-- 听音识策提示条 (Pedagogy Hint Strip) -->
           <div class="battle-pedagogy-tip-strip" onclick="window.cardBattle.speakEnemyIntent()" title="点击重听敌将英语">
             <span class="tip-lead">💡 听音识计：</span>
-            <span class="tip-body">${this.enemy.intent.counterHint || '根据英语词义选择克制战术！'}</span>
+            <span class="tip-body">${intent.counterHint || '根据英语词义选择克制战术！'}</span>
           </div>
 
           <!-- 气力槽与牌堆统计 -->
           <div class="card-control-header">
-            <div class="energy-orb-container" id="card-energy-orb">
+            <div class="energy-orb-container ${this.heroEnergy === 0 ? 'is-empty' : ''}" id="card-energy-orb">
               <span class="energy-crest">⚡</span>
               <span class="energy-val">${this.heroEnergy}</span>
               <span class="energy-max">/${this.heroMaxEnergy} 气力</span>
@@ -1889,17 +2286,22 @@ class CardBattleEngine {
               <span class="deck-count-pill" title="弃牌堆">🗑️ 弃牌: ${this.discardPile.length}</span>
             </div>
 
-            <button class="btn btn-end-turn" onclick="window.cardBattle.endTurn()">
-              <span>结束回合 ➡️</span>
-            </button>
+            <div class="end-turn-btn-wrapper" style="position:relative;">
+              <button class="btn btn-end-turn ${shouldUrgeEndTurn ? 'pulse-urgent' : ''}" 
+                      onclick="window.cardBattle.endTurn()"
+                      ${this.isEnemyActing ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+                ${shouldUrgeEndTurn ? '<span class="end-turn-tip-bubble">⚡ 气力耗尽，点击迎敌！</span>' : ''}
+                <span>结束回合 ➡️</span>
+              </button>
+            </div>
           </div>
 
           <!-- 展开的手牌 (支持单屏横滑/平铺) -->
-          <div class="card-hand-deck" id="card-hand-deck">
+          <div class="card-hand-deck" id="card-hand-deck" style="${this.isEnemyActing ? 'pointer-events:none; opacity:0.6;' : ''}">
             ${this.hand.map((cid, idx) => {
               const c = this.cardDatabase[cid];
               if (!c) return '';
-              const canPlay = this.heroEnergy >= c.cost;
+              const canPlay = !this.isEnemyActing && this.heroEnergy >= c.cost;
               const isCounter = this.enemy.intent && Array.isArray(this.enemy.intent.counterWords) && this.enemy.intent.counterWords.includes(cid);
               return `
                 <div class="tactical-card hand-card-item is-${c.type} ${canPlay ? 'can-play' : 'no-energy'} ${isCounter ? 'is-counter-ready' : ''}" 
@@ -1917,6 +2319,26 @@ class CardBattleEngine {
           </div>
         </div>
       `;
+    }
+  }
+
+  /**
+   * 检查并高亮【结束回合】按钮指引
+   */
+  checkEndTurnGuidance() {
+    const hasPlayableCard = this.hand.some(cid => {
+      const c = this.cardDatabase[cid];
+      return c && this.heroEnergy >= c.cost;
+    });
+    const btn = document.querySelector('.btn-end-turn');
+    if (btn && (!hasPlayableCard || this.heroEnergy === 0) && !this.isEnemyActing) {
+      btn.classList.add('pulse-urgent');
+      if (!btn.querySelector('.end-turn-tip-bubble')) {
+        const bubble = document.createElement('span');
+        bubble.className = 'end-turn-tip-bubble';
+        bubble.textContent = '⚡ 气力耗尽，点击迎敌！';
+        btn.appendChild(bubble);
+      }
     }
   }
 
