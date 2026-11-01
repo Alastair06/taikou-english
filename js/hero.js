@@ -64,6 +64,8 @@ class HeroManager {
       baseHp: 100,
       currentHp: 100,
       currentHearts: 3,
+      bonusMaxHp: 0, // 战国卡牌决斗永久生命上限提升 (Slay-the-Spire Style Growth)
+      battleCurrentHp: 30, // 决斗跨关卡持久化生命值
       equippedWeapon: 'wpn-wood',
       equippedArmor: 'arm-cloth',
       equippedRelic: 'relic-none',
@@ -207,6 +209,63 @@ class HeroManager {
     return this.hero.baseHp + (armor.bonusHp || 0);
   }
 
+  /**
+   * 获取战国卡牌决斗主角生命上限 (Card Battle Max HP)
+   * 包含：基础30 HP + 官阶晋升加成(+5 HP/阶) + 防具加成 + 永久成长bonusMaxHp
+   */
+  getBattleMaxHp() {
+    let max = 30;
+    // 官位晋升生命加成 (草鞋小厮 30, 足轻头 35, 目付 40, 部将 45, 家老 50, 城主 55, 天下人 60)
+    const rankIdx = SENGOKU_RANKS.indexOf(this.getCurrentRank());
+    if (rankIdx > 0) max += rankIdx * 5;
+
+    // 防具加成
+    const armor = this.getEquippedArmor();
+    if (armor.hearts && armor.hearts > 3) {
+      max += (armor.hearts - 3) * 10;
+    }
+
+    // 永久成长的生命值上限 (过关奖励、大将斩获、营地煎茶休整)
+    if (this.hero.bonusMaxHp) {
+      max += this.hero.bonusMaxHp;
+    }
+    return max;
+  }
+
+  /**
+   * 获取决斗跨关卡生命值 (继承战役间损耗与军医恢复)
+   */
+  getBattleCurrentHp() {
+    const max = this.getBattleMaxHp();
+    if (typeof this.hero.battleCurrentHp === 'undefined') {
+      this.hero.battleCurrentHp = max;
+    }
+    return Math.max(15, Math.min(max, this.hero.battleCurrentHp));
+  }
+
+  /**
+   * 持久化当前决斗生命值
+   */
+  setBattleCurrentHp(hp) {
+    const max = this.getBattleMaxHp();
+    this.hero.battleCurrentHp = Math.max(0, Math.min(max, Math.round(hp)));
+    this.saveHeroData();
+  }
+
+  /**
+   * 永久增加决斗生命上限 (Slay-the-Spire Max HP Growth)
+   */
+  addPermanentMaxHp(amount = 5) {
+    this.hero.bonusMaxHp = (this.hero.bonusMaxHp || 0) + amount;
+    const max = this.getBattleMaxHp();
+    this.hero.battleCurrentHp = Math.min(max, (this.hero.battleCurrentHp || 30) + amount);
+    this.saveHeroData();
+    if (window.ui) {
+      window.ui.showToast(`🌟 气血充盈！生命上限永久 +${amount} HP (当前上限: ${max} HP)!`, '💖');
+    }
+    return max;
+  }
+
   getAttackPower() {
     const weapon = this.getEquippedWeapon();
     const rankBonus = SENGOKU_RANKS.indexOf(this.getCurrentRank()) * 10;
@@ -221,11 +280,25 @@ class HeroManager {
     const prevRank = this.getCurrentRank();
     this.hero.merit += finalEarn;
     const newRank = this.getCurrentRank();
+    const promoted = prevRank.id !== newRank.id;
+
+    if (promoted) {
+      // 织田信长当面擢升！不仅居所与地位跃迁，生命上限增加，决斗当前生命全额回满！
+      const maxHp = this.getBattleMaxHp();
+      this.hero.battleCurrentHp = maxHp;
+      this.resetHearts();
+      if (window.ui) {
+        setTimeout(() => {
+          window.ui.showToast(`👑 晋升【${newRank.title}】！官位威仪提升，生命上限增加，全生命已恢复！`, '🌟');
+        }, 800);
+      }
+    }
+
     this.saveHeroData();
 
     return {
       earned: finalEarn,
-      promoted: prevRank.id !== newRank.id,
+      promoted,
       newRank
     };
   }

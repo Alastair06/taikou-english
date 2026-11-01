@@ -1163,6 +1163,525 @@ class CardBattleEngine {
         vfx: 'heal',
         isTextbook: true,
         desc: '【三年级动词】如鱼得水！恢复 6 点生命并净化我方全部负面状态'
+      },
+
+      // ==========================================
+      // 7. 杀戮尖塔风格强化进阶卡 (Upgraded Cards +)
+      // ==========================================
+      'slash+': {
+        id: 'slash+',
+        baseId: 'slash',
+        isUpgraded: true,
+        en: 'Slash+',
+        cn: '斩击 · 强化',
+        phonetic: '/slæʃ/',
+        phonics: 's-l-a-sh',
+        type: 'attack',
+        cost: 1,
+        icon: '⚔️✨',
+        dmg: 12,
+        block: 0,
+        heal: 0,
+        vfx: 'slash',
+        desc: '精湛刀法！造成 12 点物理伤害'
+      },
+      'guard+': {
+        id: 'guard+',
+        baseId: 'guard',
+        isUpgraded: true,
+        en: 'Guard+',
+        cn: '格挡 · 强化',
+        phonetic: '/ɡɑːrd/',
+        phonics: 'g-u-ar-d',
+        type: 'defense',
+        cost: 1,
+        icon: '🛡️✨',
+        dmg: 0,
+        block: 9,
+        heal: 0,
+        vfx: 'shield',
+        desc: '严密布防！获得 9 点防御护甲'
+      },
+      'bash+': {
+        id: 'bash+',
+        baseId: 'bash',
+        isUpgraded: true,
+        en: 'Bash+',
+        cn: '痛击 · 强化',
+        phonetic: '/bæʃ/',
+        phonics: 'b-a-sh',
+        type: 'attack',
+        cost: 2,
+        icon: '💥🔨',
+        dmg: 14,
+        applyVulnerable: 3,
+        vfx: 'strike',
+        desc: '雷霆痛击！造成 14 伤害并施加 3 回合【易伤】(+50%受创)'
+      },
+      'crush+': {
+        id: 'crush+',
+        baseId: 'crush',
+        isUpgraded: true,
+        en: 'Crush+',
+        cn: '碾碎 · 强化',
+        phonetic: '/krʌʃ/',
+        phonics: 'c-r-u-sh',
+        type: 'attack',
+        cost: 2,
+        icon: '🔨💢',
+        dmg: 15,
+        applyWeak: 3,
+        vfx: 'strike',
+        desc: '千钧碾碎！造成 15 伤害并施加 3 回合【虚弱】(-25%输出)'
+      },
+      'heavy+': {
+        id: 'heavy+',
+        baseId: 'heavy',
+        isUpgraded: true,
+        en: 'Heavy Blade+',
+        cn: '重刃斩 · 强化',
+        phonetic: '/ˈhevi bleɪd/',
+        phonics: 'h-ea-vy-b-l-a-de',
+        type: 'attack',
+        cost: 2,
+        icon: '🗡️💥',
+        dmg: 18,
+        strengthMultiplier: 5,
+        vfx: 'strike',
+        desc: '万钧巨刃！造成 18 伤害，力量加成效果乘 5 倍！'
+      },
+      'whirlwind+': {
+        id: 'whirlwind+',
+        baseId: 'whirlwind',
+        isUpgraded: true,
+        en: 'Whirlwind+',
+        cn: '旋风斩 · 强化',
+        phonetic: '/ˈwɜːlwɪnd/',
+        phonics: 'wh-ir-l-w-i-n-d',
+        type: 'attack',
+        cost: 0,
+        isXCost: true,
+        icon: '🌪️⚔️',
+        dmg: 8,
+        vfx: 'slash',
+        desc: '狂暴旋风！消耗当前全部气力，每点气力造成 8 伤连续斩'
+      },
+      'quick+': {
+        id: 'quick+',
+        baseId: 'quick',
+        isUpgraded: true,
+        en: 'Quick Slash+',
+        cn: '迅捷斩 · 强化',
+        phonetic: '/kwɪk slæʃ/',
+        phonics: 'qu-i-ck-s-l-a-sh',
+        type: 'attack',
+        cost: 1,
+        icon: '⚡🗡️',
+        dmg: 10,
+        draw: 2,
+        vfx: 'slash',
+        desc: '无影极速！造成 10 点伤害并立即摸 2 张牌'
+      },
+      'shrug+': {
+        id: 'shrug+',
+        baseId: 'shrug',
+        isUpgraded: true,
+        en: 'Shrug It Off+',
+        cn: '耸肩无视 · 强化',
+        phonetic: '/ʃrʌɡ ɪt ɒf/',
+        phonics: 'sh-r-u-g',
+        type: 'defense',
+        cost: 1,
+        icon: '🤷‍♂️🛡️',
+        block: 11,
+        draw: 1,
+        vfx: 'shield',
+        desc: '泰然处之！获得 11 点护甲并立即摸 1 张牌'
+      },
+      'counter+': {
+        id: 'counter+',
+        baseId: 'counter',
+        isUpgraded: true,
+        en: 'Counter Guard+',
+        cn: '防守反击 · 强化',
+        phonetic: '/ˈkaʊntər ɡɑːrd/',
+        phonics: 'c-ou-n-ter',
+        type: 'defense',
+        cost: 2,
+        icon: '🛡️🌵',
+        block: 14,
+        applyThorns: 7,
+        vfx: 'shield',
+        desc: '金汤反震！获得 14 护甲并使自身获得 7 点【荆棘反伤】'
+      },
+      'entrench+': {
+        id: 'entrench+',
+        baseId: 'entrench',
+        isUpgraded: true,
+        en: 'Entrench+',
+        cn: '固守巩固 · 强化',
+        phonetic: '/ɪnˈtrentʃ/',
+        phonics: 'en-t-r-en-ch',
+        type: 'defense',
+        cost: 0,
+        doubleBlock: true,
+        vfx: 'shield',
+        desc: '无消耗固守！消耗 0 点气力使当前拥有的护甲值翻倍！'
+      },
+      'power+': {
+        id: 'power+',
+        baseId: 'power',
+        isUpgraded: true,
+        en: 'Power Surge+',
+        cn: '战意激昂 · 强化',
+        phonetic: '/ˈpaʊər sɜːdʒ/',
+        phonics: 'p-ow-er',
+        type: 'skill',
+        cost: 1,
+        icon: '🔥💪',
+        applyStrength: 3,
+        vfx: 'charge',
+        desc: '战意冲霄！获得 3 点【力量】(所有后续攻击伤害提升)'
+      },
+      'armor+': {
+        id: 'armor+',
+        baseId: 'armor',
+        isUpgraded: true,
+        en: 'Metallic Armor+',
+        cn: '坚实甲胄 · 强化',
+        phonetic: '/mɪˈtælɪk ˈɑːmər/',
+        phonics: 'ar-m-or',
+        type: 'defense',
+        cost: 1,
+        icon: '🛡️✨',
+        applyMetallicize: 5,
+        vfx: 'shield',
+        desc: '玄铁重铠！获得 5 点【金属化】(每回合初自动获得 5 护甲)'
+      },
+      'disarm+': {
+        id: 'disarm+',
+        baseId: 'disarm',
+        isUpgraded: true,
+        en: 'Disarm+',
+        cn: '巧妙缴械 · 强化',
+        phonetic: '/dɪsˈɑːm/',
+        phonics: 'dis-arm',
+        type: 'skill',
+        cost: 1,
+        icon: '✋🗡️',
+        disarm: 3,
+        vfx: 'charge',
+        desc: '化劲缴械！使敌将【力量】永久降低 3 点'
+      },
+      'pierce+': {
+        id: 'pierce+',
+        baseId: 'pierce',
+        isUpgraded: true,
+        en: 'Pierce+',
+        cn: '破甲刺 · 强化',
+        phonetic: '/pɪəs/',
+        phonics: 'p-ier-ce',
+        type: 'attack',
+        cost: 1,
+        icon: '🏹💥',
+        dmg: 13,
+        pierce: true,
+        vfx: 'arrow',
+        desc: '破魔贯穿！造成 13 点无视护甲的真实穿甲伤害'
+      },
+      'poison_blade+': {
+        id: 'poison_blade+',
+        baseId: 'poison_blade',
+        isUpgraded: true,
+        en: 'Poison Blade+',
+        cn: '淬毒刃 · 强化',
+        phonetic: '/ˈpɔɪzn bleɪd/',
+        phonics: 'p-oi-son-b-l-a-de',
+        type: 'attack',
+        cost: 1,
+        icon: '🧪🗡️',
+        dmg: 6,
+        applyPoison: 6,
+        vfx: 'slash',
+        desc: '剧毒淬炼！造成 6 伤害并施加 6 层【剧毒】'
+      },
+      'strike+': {
+        id: 'strike+',
+        baseId: 'strike',
+        isUpgraded: true,
+        en: 'Strike+',
+        cn: '突刺 · 强化',
+        phonetic: '/straɪk/',
+        phonics: 's-t-r-i-k-e',
+        type: 'attack',
+        cost: 1,
+        icon: '⚡',
+        dmg: 11,
+        vulnerableBonus: 7,
+        vfx: 'strike',
+        desc: '雷芒突刺！造成 11 伤害，若敌方易伤额外追击 7 暴击伤'
+      },
+      'dodge+': {
+        id: 'dodge+',
+        baseId: 'dodge',
+        isUpgraded: true,
+        en: 'Dodge+',
+        cn: '闪避 · 强化',
+        phonetic: '/dɒdʒ/',
+        phonics: 'd-o-dge',
+        type: 'defense',
+        cost: 1,
+        icon: '🌀',
+        block: 8,
+        draw: 1,
+        vfx: 'shield',
+        desc: '踏风闪身！获得 8 点护甲并摸 1 张牌'
+      },
+      'shoot+': {
+        id: 'shoot+',
+        baseId: 'shoot',
+        isUpgraded: true,
+        en: 'Shoot+',
+        cn: '射击 · 强化',
+        phonetic: '/ʃuːt/',
+        phonics: 'sh-oo-t',
+        type: 'attack',
+        cost: 1,
+        icon: '🏹',
+        dmg: 10,
+        pierce: true,
+        vfx: 'arrow',
+        desc: '百步穿杨！造成 10 点真实穿甲伤害'
+      },
+      'double_slash+': {
+        id: 'double_slash+',
+        baseId: 'double_slash',
+        isUpgraded: true,
+        en: 'Double Slash+',
+        cn: '双重连斩 · 强化',
+        phonetic: '/ˈdʌbl slæʃ/',
+        phonics: 'd-ou-ble-s-l-a-sh',
+        type: 'attack',
+        cost: 2,
+        icon: '⚔️⚔️',
+        dmg: 10,
+        hits: 2,
+        vfx: 'slash',
+        desc: '疾风双绝！连续劈出两刀，造成 20 点爆发伤害'
+      },
+      'iron_wall+': {
+        id: 'iron_wall+',
+        baseId: 'iron_wall',
+        isUpgraded: true,
+        en: 'Iron Wall+',
+        cn: '铁壁 · 强化',
+        phonetic: '/ˈaɪərn wɔːl/',
+        phonics: 'i-ron-w-a-ll',
+        type: 'defense',
+        cost: 2,
+        icon: '🛡️🛡️',
+        block: 20,
+        vfx: 'shield',
+        desc: '叹息之壁！获得 20 点巍峨护甲'
+      },
+      'war_cry+': {
+        id: 'war_cry+',
+        baseId: 'war_cry',
+        isUpgraded: true,
+        en: 'War Cry+',
+        cn: '战吼 · 强化',
+        phonetic: '/wɔːr kraɪ/',
+        phonics: 'w-ar-c-r-y',
+        type: 'skill',
+        cost: 1,
+        icon: '📢',
+        applyStrength: 4,
+        vfx: 'charge',
+        desc: '声震四野！获得 4 点【力量】'
+      },
+      'first_aid+': {
+        id: 'first_aid+',
+        baseId: 'first_aid',
+        isUpgraded: true,
+        en: 'First Aid+',
+        cn: '急救包扎 · 强化',
+        phonetic: '/fɜːrst eɪd/',
+        phonics: 'f-ir-st-a-i-d',
+        type: 'skill',
+        cost: 1,
+        icon: '🩹',
+        heal: 10,
+        vfx: 'heal',
+        desc: '灵药妙手！消耗 1 能量恢复 10 生命'
+      },
+      'focus+': {
+        id: 'focus+',
+        baseId: 'focus',
+        isUpgraded: true,
+        en: 'Focus+',
+        cn: '明镜止水 · 强化',
+        phonetic: '/ˈfəʊkəs/',
+        phonics: 'f-o-c-u-s',
+        type: 'skill',
+        cost: 0,
+        icon: '🧘',
+        energy: 2,
+        draw: 1,
+        vfx: 'charge',
+        desc: '太虚玄通！恢复 2 点气力并摸 1 张牌'
+      },
+      'heal+': {
+        id: 'heal+',
+        baseId: 'heal',
+        isUpgraded: true,
+        en: 'Heal+',
+        cn: '治愈 · 强化',
+        phonetic: '/hiːl/',
+        phonics: 'h-ea-l',
+        type: 'skill',
+        cost: 2,
+        icon: '💚',
+        heal: 14,
+        vfx: 'heal',
+        desc: '甘露普降！恢复 14 点生命值'
+      },
+      'run+': {
+        id: 'run+',
+        baseId: 'run',
+        isUpgraded: true,
+        en: 'Run+',
+        cn: '疾跑 · 强化',
+        phonetic: '/rʌn/',
+        phonics: 'r-u-n',
+        type: 'attack',
+        cost: 1,
+        icon: '🏃💨',
+        dmg: 10,
+        applyVulnerable: 2,
+        vfx: 'charge',
+        isTextbook: true,
+        desc: '【三年级动词】神速奔袭！造成 10 点伤害并施加 2 回合【易伤】'
+      },
+      'jump+': {
+        id: 'jump+',
+        baseId: 'jump',
+        isUpgraded: true,
+        en: 'Jump+',
+        cn: '飞跃 · 强化',
+        phonetic: '/dʒʌmp/',
+        phonics: 'j-u-m-p',
+        type: 'defense',
+        cost: 1,
+        icon: '🦘⬆️',
+        block: 10,
+        draw: 2,
+        vfx: 'shield',
+        isTextbook: true,
+        desc: '【三年级动词】凌空飞跃！获得 10 点护甲并抽 2 张手牌'
+      },
+      'fly+': {
+        id: 'fly+',
+        baseId: 'fly',
+        isUpgraded: true,
+        en: 'Fly+',
+        cn: '鹰击 · 强化',
+        phonetic: '/flaɪ/',
+        phonics: 'f-l-y',
+        type: 'attack',
+        cost: 1,
+        icon: '🦅✨',
+        dmg: 12,
+        block: 6,
+        pierce: true,
+        vfx: 'arrow',
+        isTextbook: true,
+        desc: '【三年级动词】大鹏展翅！造成 12 穿甲伤并获 6 点护甲'
+      },
+      'swim+': {
+        id: 'swim+',
+        baseId: 'swim',
+        isUpgraded: true,
+        en: 'Swim+',
+        cn: '游弋 · 强化',
+        phonetic: '/swɪm/',
+        phonics: 's-w-i-m',
+        type: 'skill',
+        cost: 1,
+        icon: '🏊‍♂️🌊',
+        heal: 9,
+        block: 6,
+        cleanse: true,
+        vfx: 'heal',
+        isTextbook: true,
+        desc: '【三年级动词】如鱼得水！恢复 9 生命，获 6 护甲并净化所有负面状态'
+      },
+      'book+': {
+        id: 'book+',
+        baseId: 'book',
+        isUpgraded: true,
+        en: 'Book+',
+        cn: '兵书 · 强化',
+        phonetic: '/bʊk/',
+        phonics: 'b-oo-k',
+        type: 'skill',
+        cost: 1,
+        icon: '📕',
+        applyMetallicize: 5,
+        energy: 1,
+        draw: 1,
+        vfx: 'charge',
+        isTextbook: true,
+        desc: '【Unit 2 核心词】精研六韬！获得 5 点【金属化】，回 1 气力并抽 1 牌'
+      },
+      'look+': {
+        id: 'look+',
+        baseId: 'look',
+        isUpgraded: true,
+        en: 'Look+',
+        cn: '观察 · 强化',
+        phonetic: '/lʊk/',
+        phonics: 'l-oo-k',
+        type: 'defense',
+        cost: 0,
+        icon: '👀',
+        applyVulnerable: 3,
+        applyWeak: 2,
+        block: 6,
+        vfx: 'shield',
+        isTextbook: true,
+        desc: '【高频动作词】洞察机先！获 6 护甲并施加 3 易伤与 2 虚弱'
+      },
+      'friend+': {
+        id: 'friend+',
+        baseId: 'friend',
+        isUpgraded: true,
+        en: 'Friend+',
+        cn: '知己 · 强化',
+        phonetic: '/frend/',
+        phonics: 'f-r-ie-n-d',
+        type: 'attack',
+        cost: 1,
+        icon: '🧑‍🤝‍🧑',
+        dmg: 16,
+        vfx: 'strike',
+        isTextbook: true,
+        desc: '【Unit 1 核心词】肝胆相照！战友合力突刺造成 16 巨创'
+      },
+      'water+': {
+        id: 'water+',
+        baseId: 'water',
+        isUpgraded: true,
+        en: 'Water+',
+        cn: '甘泉 · 强化',
+        phonetic: '/ˈwɔːtər/',
+        phonics: 'w-a-t-er',
+        type: 'skill',
+        cost: 1,
+        icon: '💧',
+        heal: 16,
+        vfx: 'heal',
+        isTextbook: true,
+        desc: '【高频生活词】玉液琼浆！恢复 16 点生命值'
       }
     };
   }
@@ -1172,7 +1691,7 @@ class CardBattleEngine {
    */
   loadPersistentDeck() {
     try {
-      const saved = localStorage.getItem('taikou_card_deck_v39');
+      const saved = localStorage.getItem('taikou_card_deck_v40') || localStorage.getItem('taikou_card_deck_v39');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length >= 6) {
@@ -1194,7 +1713,7 @@ class CardBattleEngine {
    */
   savePersistentDeck() {
     try {
-      localStorage.setItem('taikou_card_deck_v39', JSON.stringify(this.persistentDeck));
+      localStorage.setItem('taikou_card_deck_v40', JSON.stringify(this.persistentDeck));
     } catch (e) {}
   }
 
@@ -1210,6 +1729,36 @@ class CardBattleEngine {
         window.ui.showToast(`🎴 战术新卡【${c.en} · ${c.cn}】已永久加入卡组！`, '✨');
       }
     }
+  }
+
+  /**
+   * 强化升级卡组中的一张卡牌 (Slay the Spire Card Upgrade)
+   */
+  upgradeCardInDeck(cardId) {
+    const upId = cardId.endsWith('+') ? cardId : cardId + '+';
+    if (!this.cardDatabase[upId]) return false;
+    const baseId = cardId.replace(/\+$/, '');
+    const idx = this.persistentDeck.indexOf(baseId);
+    if (idx === -1) return false;
+
+    const oldCard = this.cardDatabase[baseId];
+    const newCard = this.cardDatabase[upId];
+
+    this.persistentDeck[idx] = upId;
+    this.savePersistentDeck();
+
+    if (window.audioEngine) {
+      if (window.audioEngine.playWoodHammer) window.audioEngine.playWoodHammer();
+      setTimeout(() => {
+        window.audioEngine.speak(`${oldCard.en} upgraded to ${newCard.en}!`);
+      }, 300);
+    }
+
+    if (window.ui) {
+      window.ui.showToast(`🔨 研武功成！【${oldCard.en} · ${oldCard.cn}】强化为【${newCard.en}】！`, '✨');
+    }
+
+    return true;
   }
 
   /**
@@ -1231,11 +1780,11 @@ class CardBattleEngine {
     this.onVictoryCallback = config.onVictory || null;
     this.onDefeatCallback = config.onDefeat || null;
 
-    // 同步主角生命上限与当前生命
-    const maxHearts = window.heroManager?.getMaxHearts ? window.heroManager.getMaxHearts() : 3;
-    const curHearts = window.heroManager?.getCurrentHearts ? window.heroManager.getCurrentHearts() : 3;
-    this.heroMaxHp = maxHearts * 10;
-    this.heroHp = Math.max(10, curHearts * 10);
+    // 同步主角生命上限与当前生命 (融合官位晋升、防具与永久战术成长)
+    const battleMaxHp = window.heroManager?.getBattleMaxHp ? window.heroManager.getBattleMaxHp() : 30;
+    const battleCurHp = window.heroManager?.getBattleCurrentHp ? window.heroManager.getBattleCurrentHp() : battleMaxHp;
+    this.heroMaxHp = battleMaxHp;
+    this.heroHp = Math.max(15, Math.min(this.heroMaxHp, battleCurHp));
 
     // 家臣羁绊信物加成
     if (window.estateSystem?.hasRelic('relic-nene-sachet')) {
@@ -2308,7 +2857,7 @@ class CardBattleEngine {
   }
 
   /**
-   * 战胜敌将处理流程 (Slay the Spire 战利品选卡)
+   * 战胜敌将处理流程 (Slay the Spire 战利品选卡 & 休整成长)
    */
   handleVictory() {
     this.isActive = false;
@@ -2330,9 +2879,31 @@ class CardBattleEngine {
       window.heroManager.addMerit(earnedMerit);
     }
 
-    // 开启战利品新卡三选一界面 (Card Drafting)
-    this.showCardDraftModal(() => {
-      // 选卡完成后，触发城池陷落胜仗感状
+    // 战后随军军医包扎休整：恢复 35% 生命上限 (保底 10 HP)
+    const healAmt = Math.max(10, Math.round(this.heroMaxHp * 0.35));
+    this.heroHp = Math.min(this.heroMaxHp, this.heroHp + healAmt);
+    if (window.heroManager?.setBattleCurrentHp) {
+      window.heroManager.setBattleCurrentHp(this.heroHp);
+    }
+
+    // 斩将里程碑关卡 (今川/斋藤/武田/伊达) 永久生命上限突破 (+5 Max HP)
+    let milestoneBonus = false;
+    if ([5, 10, 25, 35].includes(this.stageNum)) {
+      if (window.heroManager?.addPermanentMaxHp) {
+        window.heroManager.addPermanentMaxHp(5);
+        this.heroMaxHp = window.heroManager.getBattleMaxHp();
+        milestoneBonus = true;
+      }
+    }
+
+    // 开启战役大捷【整军休整/锻卡/选卡】弹窗 (Slay the Spire Campfire & Rewards)
+    this.showVictoryRewardsModal({
+      gold: earnedGold,
+      merit: earnedMerit,
+      healAmt,
+      milestoneBonus
+    }, () => {
+      // 选卡或休整完成后，触发城池陷落胜仗感状
       if (window.siegeBattle) {
         window.siegeBattle.triggerCastleConquered();
       } else if (this.onVictoryCallback) {
@@ -2360,85 +2931,202 @@ class CardBattleEngine {
   }
 
   /**
-   * 弹出战利品【战术新卡三选一】选卡弹窗 (Card Draft Modal)
+   * 战利品大捷弹窗：三合一整军休整工作台 (选卡 / 锻卡 / 煎茶休整)
    */
-  showCardDraftModal(onFinish) {
-    // 课本学龄核心词汇卡池 (覆盖日常与新课标高频词)
+  showVictoryRewardsModal(rewards = {}, onFinish) {
+    this._victoryCallback = onFinish;
+
+    // 1. 抽取 3 张战利品新卡
     const textbookCards = [
       'meet', 'friend', 'nice', 'book', 'ruler', 'pencil', 'water', 'apple', 'look',
       'run', 'jump', 'fly', 'swim'
     ];
-    // 进阶战术卡池 (杀戮尖塔经典流派卡牌)
     const tacticalCards = [
       'bash', 'crush', 'heavy', 'whirlwind', 'quick', 'shrug', 'counter', 'entrench',
       'power', 'armor', 'disarm', 'pierce', 'double_slash', 'iron_wall', 'poison_blade', 'strike', 'dodge'
     ];
-
-    // 特殊关卡加入名物限定神卡
     if (this.stageNum === 5) tacticalCards.unshift('thunderstorm');
     if (this.stageNum === 10) tacticalCards.unshift('palisade');
     if (this.stageNum === 25) tacticalCards.unshift('wind');
     if (this.stageNum === 35) tacticalCards.unshift('dragon');
 
-    // 智能配比：优先抽取 1 张课本核心词汇卡 + 2 张战术策略卡，让孩子将课本词汇收入囊中！
     const shuffledTextbook = window.shuffleArray ? window.shuffleArray(textbookCards) : [...textbookCards];
     const shuffledTactical = window.shuffleArray ? window.shuffleArray(tacticalCards) : [...tacticalCards];
+    const selected3 = [shuffledTextbook[0], shuffledTactical[0], shuffledTactical[1]];
 
-    const selected3 = [
-      shuffledTextbook[0],
-      shuffledTactical[0],
-      shuffledTactical[1]
-    ];
+    // 2. 统计卡组中可升级卡牌
+    const upgradeableIds = [...new Set(this.persistentDeck)].filter(id => !id.endsWith('+') && this.cardDatabase[id + '+']);
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop card-draft-modal-backdrop';
-    modal.id = 'modal-card-draft';
+    modal.id = 'modal-card-victory-rewards';
 
     modal.innerHTML = `
       <div class="card-draft-modal-box">
         <div class="card-draft-header">
-          <h2 class="draft-title">🎁 挑选 1 张新卡</h2>
+          <h2 class="draft-title">🎉 战役大捷 · 整军休整</h2>
+          <div class="victory-hero-status-strip">
+            <span class="victory-hp-pill">❤️ 体力 ${this.heroHp}/${this.heroMaxHp} (+${rewards.healAmt || 0} 随军医)</span>
+            <span class="victory-merit-pill">🎖️ 武勋 +${rewards.merit || 0}</span>
+            <span class="victory-gold-pill">💰 金币 +${rewards.gold || 0}</span>
+            ${rewards.milestoneBonus ? '<span class="benefit-tag">✨ 斩将赐药: 生命上限+5</span>' : ''}
+          </div>
+          <div class="victory-tab-nav">
+            <button class="btn-vtab is-active" id="tab-btn-draft" onclick="window.cardBattle.switchVictoryTab('draft')">🎁 挑选新卡</button>
+            <button class="btn-vtab" id="tab-btn-upgrade" onclick="window.cardBattle.switchVictoryTab('upgrade')">🔨 研武锻卡 (${upgradeableIds.length})</button>
+            <button class="btn-vtab" id="tab-btn-rest" onclick="window.cardBattle.switchVictoryTab('rest')">🍵 煎茶休整</button>
+          </div>
         </div>
 
-        <div class="card-draft-grid">
-          ${selected3.map(cid => {
-            const c = this.cardDatabase[cid];
-            return `
-              <div class="tactical-card draft-card-item is-${c.type}" onclick="window.audioEngine?.speak('${c.en}')">
-                <div class="card-cost-badge">${c.isXCost ? 'X' : c.cost} ⚡</div>
-                <div class="card-crest-icon">${c.icon}</div>
-                <div class="card-title-en">${c.en}</div>
-                ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
-                <div class="card-title-cn">${c.cn}</div>
-                <div class="card-badge-val">${this.getCardBadgeVal(c)}</div>
-                <button class="btn btn-primary btn-draft-pick" onclick="event.stopPropagation(); window.cardBattle.pickDraftCard('${cid}', this)">
-                  📥 选择
-                </button>
-              </div>
-            `;
-          }).join('')}
+        <!-- 选项卡 1: 选卡 -->
+        <div class="vtab-pane" id="pane-draft">
+          <div class="card-draft-grid">
+            ${selected3.map(cid => {
+              const c = this.cardDatabase[cid];
+              if (!c) return '';
+              return `
+                <div class="tactical-card draft-card-item is-${c.type}" onclick="window.audioEngine?.speak('${c.en}')">
+                  <div class="card-cost-badge">${c.isXCost ? 'X' : c.cost} ⚡</div>
+                  <div class="card-crest-icon">${c.icon}</div>
+                  <div class="card-title-en">${c.en}</div>
+                  ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
+                  <div class="card-title-cn">${c.cn}</div>
+                  <div class="card-badge-val">${this.getCardBadgeVal(c)}</div>
+                  <button class="btn btn-primary btn-draft-pick" onclick="event.stopPropagation(); window.cardBattle.pickDraftCard('${cid}')">
+                    📥 选择入队
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 选项卡 2: 锻造升级 -->
+        <div class="vtab-pane hidden" id="pane-upgrade">
+          ${upgradeableIds.length === 0 ? `
+            <div class="vtab-rest-card">
+              <div class="rest-icon">✨</div>
+              <h3>所有军略卡牌均已达巅峰！</h3>
+              <p>当前卡组内所有卡牌均已完成进阶强化（+），战力冠绝战国！</p>
+            </div>
+          ` : `
+            <div class="vtab-upgrade-grid">
+              ${upgradeableIds.map(cid => {
+                const c = this.cardDatabase[cid];
+                const up = this.cardDatabase[cid + '+'];
+                if (!c || !up) return '';
+                return `
+                  <div class="tactical-card viewer-card-item is-${c.type}" style="transform: scale(0.95); margin: 0 auto;">
+                    <div class="card-cost-badge">${up.isXCost ? 'X' : up.cost} ⚡</div>
+                    <div class="card-crest-icon">${up.icon}</div>
+                    <div class="card-title-en" style="color: #fef08a;">${up.en}</div>
+                    <div class="card-title-cn">${up.cn}</div>
+                    <div class="card-desc-pill" style="font-size: 10px;">${up.desc}</div>
+                    <button class="btn-card-upgrade" style="width: 100%; margin-top: 4px;" onclick="window.cardBattle.pickUpgradeCard('${cid}')">
+                      🔨 强化为 ${up.en}
+                    </button>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `}
+        </div>
+
+        <!-- 选项卡 3: 煎茶休整 -->
+        <div class="vtab-pane hidden" id="pane-rest">
+          <div class="vtab-rest-card">
+            <div class="rest-icon">🍵</div>
+            <h3>千利休茶室 · 一期一会</h3>
+            <p>在寂静茶室内品味抹茶，心境澄澈无尘，强筋健骨，战意焕然一新。</p>
+            <div class="rest-benefits-row">
+              <div class="benefit-tag">💚 伤势愈合：恢复 +15 点体力</div>
+              <div class="benefit-tag">💖 武魄升华：永久提升生命上限 +3 Max HP</div>
+            </div>
+            <button class="btn-rest-confirm" onclick="window.cardBattle.claimRestReward()">
+              🍵 饮茶休整 (永久增加HP上限)
+            </button>
+          </div>
         </div>
 
         <div class="card-draft-footer">
-          <button class="btn btn-secondary btn-draft-skip" onclick="window.cardBattle.skipDraftCard()">
-            跳过 ✕
+          <button class="btn btn-secondary btn-draft-skip" onclick="window.cardBattle.skipVictoryRewards()">
+            跳过整军 ✕
           </button>
         </div>
       </div>
     `;
 
     document.body.appendChild(modal);
-    this._draftCallback = onFinish;
+  }
+
+  /**
+   * 切换战利品弹窗选项卡
+   */
+  switchVictoryTab(tabName) {
+    const tabs = ['draft', 'upgrade', 'rest'];
+    tabs.forEach(t => {
+      const btn = document.getElementById(`tab-btn-${t}`);
+      const pane = document.getElementById(`pane-${t}`);
+      if (btn) btn.classList.toggle('is-active', t === tabName);
+      if (pane) pane.classList.toggle('hidden', t !== tabName);
+    });
+  }
+
+  /**
+   * 兼容旧接口：弹出战术新卡挑选
+   */
+  showCardDraftModal(onFinish) {
+    this.showVictoryRewardsModal({ gold: 0, merit: 0, healAmt: 0, milestoneBonus: false }, onFinish);
   }
 
   /**
    * 玩家选中一张新卡加入卡组
    */
-  pickDraftCard(cardId, btnElem) {
+  pickDraftCard(cardId) {
     this.addCardToDeck(cardId);
-    const modal = document.getElementById('modal-card-draft');
+    this.finishVictoryRewards();
+  }
+
+  /**
+   * 玩家选择升级强化 1 张卡牌
+   */
+  pickUpgradeCard(cardId) {
+    this.upgradeCardInDeck(cardId);
+    this.finishVictoryRewards();
+  }
+
+  /**
+   * 玩家选择在茶室休整 (永久 +3 HP上限，恢复 15 HP)
+   */
+  claimRestReward() {
+    if (window.heroManager?.addPermanentMaxHp) {
+      window.heroManager.addPermanentMaxHp(3);
+      this.heroMaxHp = window.heroManager.getBattleMaxHp();
+    } else {
+      this.heroMaxHp += 3;
+    }
+    this.heroHp = Math.min(this.heroMaxHp, this.heroHp + 15);
+    if (window.heroManager?.setBattleCurrentHp) {
+      window.heroManager.setBattleCurrentHp(this.heroHp);
+    }
+    if (window.audioEngine?.playLevelUp) window.audioEngine.playLevelUp();
+    if (window.ui) {
+      window.ui.showToast('🍵 静心品茶！生命上限永久提升 +3，体力恢复 +15！', '🍵');
+    }
+    this.finishVictoryRewards();
+  }
+
+  /**
+   * 结束战利品与整军弹窗
+   */
+  finishVictoryRewards() {
+    const modal = document.getElementById('modal-card-victory-rewards') || document.getElementById('modal-card-draft');
     if (modal) modal.remove();
-    if (this._draftCallback) {
+    if (this._victoryCallback) {
+      const cb = this._victoryCallback;
+      this._victoryCallback = null;
+      cb();
+    } else if (this._draftCallback) {
       const cb = this._draftCallback;
       this._draftCallback = null;
       cb();
@@ -2446,21 +3134,19 @@ class CardBattleEngine {
   }
 
   /**
-   * 玩家跳过本次选卡
+   * 跳过战利品与休整
    */
+  skipVictoryRewards() {
+    this.finishVictoryRewards();
+  }
+
   skipDraftCard() {
-    const modal = document.getElementById('modal-card-draft');
-    if (modal) modal.remove();
-    if (this._draftCallback) {
-      const cb = this._draftCallback;
-      this._draftCallback = null;
-      cb();
-    }
+    this.finishVictoryRewards();
   }
 
   /**
    * 打开【我的战术卡组】查看面板 (Deck Viewer)
-   * 融入自然拼读 (Phonics) 与纯正发音教学
+   * 融入自然拼读 (Phonics) 与纯正发音教学，并支持一键锻造强化
    */
   openDeckViewerModal() {
     const counts = {};
@@ -2479,17 +3165,21 @@ class CardBattleEngine {
             <h3>🎴 木下藤吉郎 · 战国军略卡组 (共 ${this.persistentDeck.length} 张)</h3>
             <button class="btn-close-viewer" onclick="document.getElementById('modal-card-deck-viewer')?.remove()">✕</button>
           </div>
-          <p class="viewer-tip">点击卡牌可听纯正美音发音，点击【🔤 拼读】可倾听自然拼读拆解！</p>
+          <p class="viewer-tip">点击卡牌听美音发音；点击【🔤 拼读】拆解发音；可点击【🔨 强化】进阶卡牌！</p>
         </div>
 
         <div class="deck-viewer-grid">
           ${Object.entries(counts).map(([cid, count]) => {
             const c = this.cardDatabase[cid] || { en: cid, cn: cid, type: 'attack', cost: 1, icon: '⚔️', desc: '', phonetic: '' };
+            const isUpgraded = c.isUpgraded || cid.endsWith('+');
+            const canUpgrade = !isUpgraded && !!this.cardDatabase[cid + '+'];
+
             return `
-              <div class="tactical-card viewer-card-item is-${c.type}">
+              <div class="tactical-card viewer-card-item is-${c.type} ${isUpgraded ? 'is-upgraded' : ''}">
                 <div class="card-cost-badge">${c.isXCost ? 'X' : c.cost} ⚡</div>
                 <div class="card-stack-badge">x${count}</div>
                 ${c.isTextbook ? '<div class="card-origin-pill">课本词</div>' : (c.isCompanion ? '<div class="card-origin-pill is-comp">家臣</div>' : '')}
+                ${isUpgraded ? '<div class="card-upgraded-tag" style="position:absolute; top:2px; right:36px;">✨MAX</div>' : ''}
                 <div class="card-crest-icon">${c.icon}</div>
                 <div class="card-title-en">${c.en}</div>
                 ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
@@ -2502,6 +3192,11 @@ class CardBattleEngine {
                   ${c.phonics ? `
                     <button class="btn btn-xs btn-phonics-spell" onclick="window.cardBattle.playPhonicsSpelling('${cid}')" title="自然拼读拆解">
                       🔤 拼读
+                    </button>
+                  ` : ''}
+                  ${canUpgrade ? `
+                    <button class="btn btn-xs btn-card-upgrade" onclick="window.cardBattle.upgradeCardFromViewer('${cid}')" title="进阶锻造此卡牌">
+                      🔨 强化
                     </button>
                   ` : ''}
                 </div>
@@ -2519,6 +3214,15 @@ class CardBattleEngine {
     `;
 
     document.body.appendChild(modal);
+  }
+
+  /**
+   * 从卡组查看器中直接升级卡牌并实时重刷界面
+   */
+  upgradeCardFromViewer(cardId) {
+    this.upgradeCardInDeck(cardId);
+    document.getElementById('modal-card-deck-viewer')?.remove();
+    this.openDeckViewerModal();
   }
 
   /**
@@ -2736,9 +3440,10 @@ class CardBattleEngine {
     if (c.applyMetallicize) return `🛡️ 金属+${c.applyMetallicize}`;
     if (c.applyThorns) return `🌵 荆棘+${c.applyThorns}`;
     if (c.disarm) return `✋ 缴械-${c.disarm}`;
-    if (c.dmg && c.block) return `⚔️${c.dmg + this.heroStrength} 🛡️${c.block}`;
+    const heroStr = this.heroStrength || 0;
+    if (c.dmg && c.block) return `⚔️${c.dmg + heroStr} 🛡️${c.block}`;
     if (c.heal && c.block) return `💚${c.heal} 🛡️${c.block}`;
-    if (c.dmg) return `⚔️ ${c.dmg + this.heroStrength}${c.pierce ? ' 破甲' : ''}`;
+    if (c.dmg) return `⚔️ ${c.dmg + heroStr}${c.pierce ? ' 破甲' : ''}`;
     if (c.block) return `🛡️ +${c.block}`;
     if (c.heal) return `💚 +${c.heal}`;
     if (c.draw) return `🎴 +${c.draw}`;
