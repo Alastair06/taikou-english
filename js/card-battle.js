@@ -114,7 +114,7 @@ const ENGLISH_PHRASE_COMBOS = [
  * 包含英文全名、国际音标、中文意译、纯正 TTS 战吼与震撼物理打击演出！
  */
 const ENEMY_SKILL_DATABASE = {
-  // --- 常规敌将基础战术技能 ---
+  // --- 常规敌将基础战术技能 (杀戮尖塔风：具有真实致命威慑力) ---
   strike: {
     id: 'strike',
     nameEn: 'Blade Strike',
@@ -122,14 +122,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/bleɪd straɪk/',
     icon: '⚔️',
     type: 'attack',
-    baseVal: 8,
+    baseVal: 11,
     vfx: 'vfx-slash',
     speechEn: 'Blade Strike! Take this!',
     speechCn: '看我太刀重斩！接招！',
     keyword: 'strike',
-    counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
-    counterHint: '敌将出【Blade Strike】！出【Guard/Dodge】格挡招架！',
-    desc: '敌将挥动锋锐太刀发起冲斩，造成直接物理伤害。'
+    counterWords: ['guard', 'iron_wall', 'dodge', 'shrug', 'counter'],
+    counterHint: '敌将出【Blade Strike】！必须出【Guard/Dodge】格挡招架！',
+    desc: '敌将挥动锋锐太刀发起冲斩，造成 11 点物理伤害。'
   },
   heavy_strike: {
     id: 'heavy_strike',
@@ -138,14 +138,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈhevi straɪk/',
     icon: '💥⚔️',
     type: 'attack',
-    baseVal: 13,
+    baseVal: 17,
     vfx: 'vfx-thunder',
     speechEn: 'Heavy Strike! Smash the line!',
     speechCn: '力劈千钧！崩碎你的防线！',
     keyword: 'strike',
-    counterWords: ['guard', 'iron_wall', 'dodge', 'run'],
+    counterWords: ['guard', 'iron_wall', 'counter', 'dodge'],
     counterHint: '敌将蓄力【Heavy Strike】！必须出【Guard/Iron Wall】固守！',
-    desc: '聚全身力道于刀刃的强力一击，造成巨额重创。'
+    desc: '聚全身力道于刀刃的强力一击，造成 17 点巨额重创！'
   },
   double_slash: {
     id: 'double_slash',
@@ -154,15 +154,15 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈdʌbl slæʃ/',
     icon: '⚔️⚔️',
     type: 'attack',
-    baseVal: 5,
+    baseVal: 6,
     hits: 2,
     vfx: 'vfx-slash',
     speechEn: 'Double Slash! One, two!',
     speechCn: '一刀！两刀！疾风二连击！',
     keyword: 'strike',
-    counterWords: ['guard', 'iron_wall', 'jump', 'dodge'],
-    counterHint: '敌将疾风【Double Slash】！出【Guard】挡住多段攻击！',
-    desc: '迅捷利落的二段连续挥砍，共造成 2 次打击。'
+    counterWords: ['guard', 'iron_wall', 'shrug', 'counter', 'jump'],
+    counterHint: '敌将疾风【Double Slash】！出【Guard/Shrug】挡住多段攻击！',
+    desc: '迅捷利落的二段连续挥砍，共造成 12 点多段伤害。'
   },
   arrows: {
     id: 'arrows',
@@ -171,14 +171,32 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈvɒli əv ˈærəʊz/',
     icon: '🏹💨',
     type: 'attack',
-    baseVal: 10,
+    baseVal: 4,
+    hits: 3,
     vfx: 'vfx-arrow',
     speechEn: 'Arrows incoming! Watch out!',
     speechCn: '乱箭齐发！小心头顶！',
     keyword: 'arrows',
-    counterWords: ['guard', 'jump', 'dodge', 'run'],
-    counterHint: '敌弓兵齐射【Arrows】！出【Jump/Guard/Run】腾跃盾挡或跑开！',
-    desc: '弓箭队远距离乱射箭雨，难以捉摸。'
+    counterWords: ['guard', 'iron_wall', 'jump', 'dodge'],
+    counterHint: '敌弓兵齐射【Arrows】！出【Jump/Guard/Dodge】腾跃盾挡！',
+    desc: '弓箭队远距离齐射箭雨，连续造成 3 次穿刺打击。'
+  },
+  intimidate: {
+    id: 'intimidate',
+    nameEn: 'Intimidate',
+    nameCn: '破阵威吓',
+    phonetic: '/ɪnˈtɪmɪdeɪt/',
+    icon: '🦁💢',
+    type: 'attack',
+    baseVal: 8,
+    weak: 2,
+    vfx: 'vfx-thunder',
+    speechEn: 'I will crush your spirit! Tremble in fear!',
+    speechCn: '战栗吧！消磨你的斗志！',
+    keyword: 'strike',
+    counterWords: ['power', 'focus', 'shrug', 'guard'],
+    counterHint: '敌将施加【Intimidate】！出【Shrug/Guard】化解虚弱！',
+    desc: '造成 8 伤害，并施加 2 回合【Weak 虚弱】(我方攻击降低 25%)。'
   },
   shield: {
     id: 'shield',
@@ -187,14 +205,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈaɪən ʃiːld/',
     icon: '🛡️✨',
     type: 'defend',
-    baseVal: 10,
+    baseVal: 12,
     vfx: 'vfx-shield',
     speechEn: 'Iron Shield! My armor is solid!',
     speechCn: '铁壁玄武！坚不可摧！',
     keyword: 'shield',
-    counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
-    counterHint: '敌将立【Iron Shield】！出【Shoot/Fly/Pencil】弱点穿透！',
-    desc: '举起沉重的铁裹精盾，为自己提供坚厚护甲。'
+    counterWords: ['shoot', 'fly', 'pierce', 'pencil', 'bash'],
+    counterHint: '敌将立【Iron Shield】！出【Shoot/Pierce/Bash】破盾穿透！',
+    desc: '举起沉重的铁裹精盾，为自己提供 12 点厚重护甲。'
   },
   wall: {
     id: 'wall',
@@ -203,14 +221,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/wʊd ˌbærɪˈkeɪd/',
     icon: '🪵🛡️',
     type: 'defend',
-    baseVal: 14,
+    baseVal: 16,
     vfx: 'vfx-wood',
     speechEn: 'Wooden wall! You cannot pass!',
     speechCn: '扎紧木栅！休想越过一步！',
     keyword: 'wall',
-    counterWords: ['jump', 'fly', 'shoot', 'piercing_arrow'],
-    counterHint: '敌将筑【Wooden Wall】！出【Jump/Fly】轻功腾跃无视阻拦！',
-    desc: '战场快速布设木桩拒马，大幅增强驻守防御。'
+    counterWords: ['shoot', 'fly', 'pierce', 'heavy'],
+    counterHint: '敌将筑【Wooden Wall】！出【Shoot/Heavy】强力破门！',
+    desc: '战场快速布设木桩拒马，获得 16 点高额护甲。'
   },
   fire: {
     id: 'fire',
@@ -219,14 +237,15 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈfaɪər əˈtæk/',
     icon: '🔥💥',
     type: 'attack',
-    baseVal: 12,
+    baseVal: 14,
+    vulnerable: 1,
     vfx: 'vfx-thunder',
     speechEn: 'Fire Attack! Burn everything down!',
     speechCn: '放火！烈焰将吞噬一切！',
     keyword: 'fire',
     counterWords: ['water', 'swim', 'run'],
-    counterHint: '敌引燃【Fire】！出【Water】清泉灭火或【Run】迅速脱险！',
-    desc: '发射引火之箭点燃草料，烈火熊熊造成灼热重击。'
+    counterHint: '敌引燃【Fire】！出【Water】清泉灭火或【Swim】解危！',
+    desc: '烈火熊熊造成 14 点灼热重击，并施加 1 回合【易伤】！'
   },
   horse: {
     id: 'horse',
@@ -235,14 +254,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈkævlri tʃɑːdʒ/',
     icon: '🐎💨',
     type: 'attack',
-    baseVal: 11,
+    baseVal: 14,
     vfx: 'vfx-slash',
     speechEn: 'Cavalry Charge! Running fast like the wind!',
     speechCn: '战马嘶鸣！全军神速奔袭！',
     keyword: 'horse',
-    counterWords: ['jump', 'dodge', 'run', 'wind'],
-    counterHint: '敌军【Horse】冲杀！出【Jump/Dodge】侧跃规避铁蹄！',
-    desc: '铁甲骏马集群突刺，具有强烈的压迫力与冲撞伤害。'
+    counterWords: ['dodge', 'jump', 'counter', 'wind'],
+    counterHint: '敌军【Horse】冲杀！出【Jump/Dodge/Counter】侧跃招架！',
+    desc: '铁甲骏马集群突刺，造成 14 点强力冲撞伤害。'
   },
   war_cry: {
     id: 'war_cry',
@@ -251,15 +270,15 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/wɔː kraɪ/',
     icon: '😤💪',
     type: 'buff',
-    strength: 2,
-    block: 6,
+    strength: 3,
+    block: 8,
     vfx: 'vfx-shield',
     speechEn: 'War Cry! Hear my thunderous roar!',
     speechCn: '全军呐喊！军心大振！战意澎湃！',
     keyword: 'strike',
-    counterWords: ['strike', 'slash', 'heavy_strike'],
-    counterHint: '敌将在【War Cry】提振战意！下回合攻击暴增，速速攻击！',
-    desc: '引吭战吼震慑三军，获得 6 护甲并使自身战力永久 +2。'
+    counterWords: ['bash', 'heavy', 'double_slash', 'strike', 'whirlwind'],
+    counterHint: '敌将在【War Cry】提振战意！下回合攻击暴增，速速集火猛攻！',
+    desc: '引吭战吼震慑三军，获得 8 护甲并使自身战力永久 +3！'
   },
 
   // --- 战国名将专属传奇神技 ---
@@ -286,12 +305,12 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈθʌndə reɪn/',
     icon: '⛈️⚡',
     type: 'attack',
-    baseVal: 16,
+    baseVal: 18,
     vfx: 'vfx-thunder',
     speechEn: 'Heavy thunder and strike from the storm!',
     speechCn: '狂风暴雨！雷霆重击！',
     keyword: 'strike',
-    counterWords: ['guard', 'iron_wall', 'run', 'dodge'],
+    counterWords: ['guard', 'iron_wall', 'dodge', 'shrug', 'counter'],
     counterHint: '暴雨雷击【Strike】！出【Guard/Iron Wall】固守阵地！',
     desc: '借暴雨与雷电之势奋力挥斩，威力极大。'
   },
@@ -302,14 +321,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/wɪnd ˈkævlri/',
     icon: '🐎🔥',
     type: 'attack',
-    baseVal: 14,
+    baseVal: 15,
     vfx: 'vfx-slash',
     speechEn: 'My war horse is running fast like the wind!',
     speechCn: '疾如风！赤备如烈火席卷！',
     keyword: 'horse',
-    counterWords: ['jump', 'dodge', 'run', 'wind'],
-    counterHint: '信玄【Horse】神骑突入！出【Jump/Dodge/Run】跃起躲避！',
-    desc: '甲斐武田家赤备精锐，如狂风席卷战场。'
+    counterWords: ['jump', 'dodge', 'counter', 'guard'],
+    counterHint: '信玄【Horse】神骑突入！出【Jump/Dodge】跃起躲避！',
+    desc: '甲斐武田家赤备精锐，造成 15 点狂风席卷伤害。'
   },
   shingen_mountain: {
     id: 'shingen_mountain',
@@ -318,14 +337,14 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈmaʊntɪn ʃiːld/',
     icon: '⛰️🛡️',
     type: 'defend',
-    baseVal: 20,
+    baseVal: 22,
     vfx: 'vfx-shield',
     speechEn: 'My shield stands firm like a mountain!',
     speechCn: '不动如山！谁敢动摇甲斐金汤！',
     keyword: 'shield',
-    counterWords: ['shoot', 'fly', 'pencil', 'piercing_arrow'],
-    counterHint: '信玄【Mountain Shield】！出【Shoot/Fly/Pencil】寻找破绽！',
-    desc: '军配一展，三军如山岳般岿然不动，获得坚固护甲。'
+    counterWords: ['shoot', 'fly', 'pencil', 'pierce', 'bash'],
+    counterHint: '信玄【Mountain Shield】！出【Shoot/Pierce/Bash】破除坚盾！',
+    desc: '军配一展，三军如山岳般岿然不动，获得 22 点金汤护甲。'
   },
   shingen_fire: {
     id: 'shingen_fire',
@@ -334,14 +353,15 @@ const ENEMY_SKILL_DATABASE = {
     phonetic: '/ˈreɪdʒɪŋ ˈfaɪər/',
     icon: '🔥💥',
     type: 'attack',
-    baseVal: 18,
+    baseVal: 20,
+    vulnerable: 1,
     vfx: 'vfx-thunder',
     speechEn: 'Fire is raging! Total charge!',
     speechCn: '侵掠如火！甲斐龙虎踏平四方！',
     keyword: 'fire',
-    counterWords: ['water', 'swim', 'run', 'iron_wall'],
-    counterHint: '信玄【Fire】燎原！出【Water】扑灭烈焰或【Run】躲避！',
-    desc: '势如燎原烈火，不可阻挡的全军冲锋。'
+    counterWords: ['water', 'swim', 'iron_wall', 'counter'],
+    counterHint: '信玄【Fire】燎原！出【Water】灭火或【Iron Wall】固守！',
+    desc: '势如燎原烈火，造成 20 点伤害并施加 1 回合【易伤】！'
   },
   masamune_dragon: {
     id: 'masamune_dragon',
@@ -356,8 +376,8 @@ const ENEMY_SKILL_DATABASE = {
     speechEn: 'Look at the dragon in the sky! It is ready to fly!',
     speechCn: '九天独眼黑龙降临！撕裂敌阵！',
     keyword: 'dragon',
-    counterWords: ['jump', 'fly', 'dragon', 'dodge'],
-    counterHint: '政宗【Dragon】啸空！出【Jump/Fly】凌空飞跃对抗！',
+    counterWords: ['guard', 'iron_wall', 'dodge', 'counter', 'jump'],
+    counterHint: '政宗【Dragon】啸空！出【Guard/Iron Wall】抵挡三连斩！',
     desc: '独眼龙奥州绝技，黑龙怒啸的三段疾风狂斩。'
   },
   masamune_crescent: {
@@ -401,33 +421,34 @@ class CardBattleEngine {
     this.stageNum = 1;
     this.turn = 1;
 
-    // 主角属性
+    // 主角属性与杀戮尖塔状态机 (Slay the Spire Hero Attributes)
     this.heroMaxHp = 30;
     this.heroHp = 30;
     this.heroBlock = 0;
     this.heroMaxEnergy = 3;
     this.heroEnergy = 3;
-    this.heroStrength = 0; // 攻击力增益
+    this.heroStrength = 0;      // 力量 (Strength: 攻击每段伤害 +X)
+    this.heroDexterity = 0;     // 敏捷 (Dexterity: 每次防御格挡 +X)
+    this.heroVulnerable = 0;    // 易伤回合数 (Vulnerable: 受到伤害 +50%)
+    this.heroWeak = 0;          // 虚弱回合数 (Weak: 造成伤害 -25%)
+    this.heroThorns = 0;        // 荆棘 (Thorns: 受到攻击反弹 X 伤害)
+    this.heroMetallicize = 0;   // 金属化 (Metallicize: 每回合开始自动获 X 护甲)
 
-    // 敌将属性
+    // 敌将属性与杀戮尖塔状态机 (Slay the Spire Enemy Attributes)
     this.enemy = {
       name: '尾张先锋守备',
       title: '城砦先锋',
       avatar: 'assets/characters/goblin.png',
-      hp: 36,
-      maxHp: 36,
+      hp: 48,
+      maxHp: 48,
       block: 0,
-      intent: { 
-        type: 'attack', 
-        value: 7, 
-        icon: '⚔️', 
-        text: '蓄力突击 (7 伤)',
-        speechEn: 'I will strike you with my blade!',
-        speechCn: '看我挥刀斩击！',
-        keyword: 'strike',
-        counterWords: ['guard', 'iron_wall', 'dodge', 'strike'],
-        counterHint: '听到了【strike】！出【Guard/Dodge】格挡招架！'
-      }
+      strength: 0,
+      vulnerable: 0,
+      weak: 0,
+      poison: 0,
+      turnCount: 0,
+      currentSkill: null,
+      intent: null
     };
 
     // 牌库系统 (Draw Pile / Hand / Discard Pile)
@@ -447,11 +468,14 @@ class CardBattleEngine {
   }
 
   /**
-   * 初始化核心卡牌数据库 (极简直觉、强视觉动作词汇)
+   * 初始化核心卡牌数据库 (杀戮尖塔流派深度体系：力量流/防战防反流/过牌流/易伤虚弱/剧毒流)
+   * 每张卡牌完美融合人教版新课标高频动作词汇与纯正自然拼读
    */
   initCardDatabase() {
     return {
-      // 基础核心卡 (Starter Cards)
+      // ==========================================
+      // 1. 经典基础战术卡 (Core Starter Archetypes)
+      // ==========================================
       slash: {
         id: 'slash',
         en: 'Slash',
@@ -465,7 +489,7 @@ class CardBattleEngine {
         block: 0,
         heal: 0,
         vfx: 'slash',
-        desc: '造成 8 点物理伤害'
+        desc: '挥刀斩击！造成 8 点物理伤害'
       },
       guard: {
         id: 'guard',
@@ -480,7 +504,203 @@ class CardBattleEngine {
         block: 6,
         heal: 0,
         vfx: 'shield',
-        desc: '获得 6 点防御护甲'
+        desc: '横刀设防！获得 6 点防御护甲'
+      },
+      bash: {
+        id: 'bash',
+        en: 'Bash',
+        cn: '痛击',
+        phonetic: '/bæʃ/',
+        phonics: 'b-a-sh',
+        type: 'attack',
+        cost: 2,
+        icon: '💥🔨',
+        dmg: 10,
+        applyVulnerable: 2,
+        vfx: 'strike',
+        desc: '重力痛击！造成 10 伤害并施加 2 回合【易伤】(+50%受创)'
+      },
+      crush: {
+        id: 'crush',
+        en: 'Crush',
+        cn: '碾碎',
+        phonetic: '/krʌʃ/',
+        phonics: 'c-r-u-sh',
+        type: 'attack',
+        cost: 2,
+        icon: '🔨💢',
+        dmg: 11,
+        applyWeak: 2,
+        vfx: 'strike',
+        desc: '重锤碾碎！造成 11 伤害并施加 2 回合【虚弱】(-25%输出)'
+      },
+      heavy: {
+        id: 'heavy',
+        en: 'Heavy Blade',
+        cn: '重刃斩',
+        phonetic: '/ˈhevi bleɪd/',
+        phonics: 'h-ea-vy-b-l-a-de',
+        type: 'attack',
+        cost: 2,
+        icon: '🗡️💥',
+        dmg: 14,
+        strengthMultiplier: 3,
+        vfx: 'strike',
+        desc: '运足万钧气力！造成 14 伤害，力量加成效果乘 3 倍！'
+      },
+      whirlwind: {
+        id: 'whirlwind',
+        en: 'Whirlwind',
+        cn: '旋风斩',
+        phonetic: '/ˈwɜːlwɪnd/',
+        phonics: 'wh-ir-l-w-i-n-d',
+        type: 'attack',
+        cost: 0,
+        isXCost: true,
+        icon: '🌪️⚔️',
+        dmg: 6,
+        vfx: 'slash',
+        desc: '旋风横扫！消耗当前全部气力，每点气力造成 6 伤连续斩'
+      },
+      quick: {
+        id: 'quick',
+        en: 'Quick Slash',
+        cn: '迅捷斩',
+        phonetic: '/kwɪk slæʃ/',
+        phonics: 'qu-i-ck-s-l-a-sh',
+        type: 'attack',
+        cost: 1,
+        icon: '⚡🗡️',
+        dmg: 7,
+        draw: 1,
+        vfx: 'slash',
+        desc: '神速出击！造成 7 点伤害并立即摸 1 张牌'
+      },
+      shrug: {
+        id: 'shrug',
+        en: 'Shrug It Off',
+        cn: '耸肩无视',
+        phonetic: '/ʃrʌɡ ɪt ɒf/',
+        phonics: 'sh-r-u-g',
+        type: 'defense',
+        cost: 1,
+        icon: '🤷‍♂️🛡️',
+        block: 8,
+        draw: 1,
+        vfx: 'shield',
+        desc: '坦然无惧！获得 8 点护甲并立即摸 1 张牌'
+      },
+      counter: {
+        id: 'counter',
+        en: 'Counter Guard',
+        cn: '防守反击',
+        phonetic: '/ˈkaʊntər ɡɑːrd/',
+        phonics: 'c-ou-n-ter',
+        type: 'defense',
+        cost: 2,
+        icon: '🛡️🌵',
+        block: 10,
+        applyThorns: 4,
+        vfx: 'shield',
+        desc: '立盾生芒！获得 10 护甲并使自身获得 4 点【荆棘反伤】'
+      },
+      entrench: {
+        id: 'entrench',
+        en: 'Entrench',
+        cn: '固守巩固',
+        phonetic: '/ɪnˈtrentʃ/',
+        phonics: 'en-t-r-en-ch',
+        type: 'defense',
+        cost: 1,
+        icon: '🏰🛡️',
+        doubleBlock: true,
+        vfx: 'shield',
+        desc: '深沟壁垒！使当前拥有的护甲值直接翻倍！'
+      },
+      power: {
+        id: 'power',
+        en: 'Power Surge',
+        cn: '战意激昂',
+        phonetic: '/ˈpaʊər sɜːdʒ/',
+        phonics: 'p-ow-er',
+        type: 'skill',
+        cost: 1,
+        icon: '🔥💪',
+        applyStrength: 2,
+        vfx: 'charge',
+        desc: '战意沸腾！获得 2 点【力量】(后续所有攻击伤害永久增加)'
+      },
+      armor: {
+        id: 'armor',
+        en: 'Metallic Armor',
+        cn: '坚实甲胄',
+        phonetic: '/mɪˈtælɪk ˈɑːmər/',
+        phonics: 'ar-m-or',
+        type: 'defense',
+        cost: 1,
+        icon: '🛡️✨',
+        applyMetallicize: 3,
+        vfx: 'shield',
+        desc: '厚铠重装！获得 3 点【金属化】(每回合开始自动获得 3 护甲)'
+      },
+      disarm: {
+        id: 'disarm',
+        en: 'Disarm',
+        cn: '巧妙缴械',
+        phonetic: '/dɪsˈɑːm/',
+        phonics: 'dis-arm',
+        type: 'skill',
+        cost: 1,
+        icon: '✋🗡️',
+        disarm: 2,
+        vfx: 'charge',
+        desc: '夺兵缴刃！使敌将【力量】永久降低 2 点'
+      },
+      pierce: {
+        id: 'pierce',
+        en: 'Pierce',
+        cn: '破甲刺',
+        phonetic: '/pɪəs/',
+        phonics: 'p-ier-ce',
+        type: 'attack',
+        cost: 1,
+        icon: '🏹💥',
+        dmg: 9,
+        pierce: true,
+        vfx: 'arrow',
+        desc: '贯穿长枪！造成 9 点无视护甲的真实伤害'
+      },
+      poison_blade: {
+        id: 'poison_blade',
+        en: 'Poison Blade',
+        cn: '淬毒刃',
+        phonetic: '/ˈpɔɪzn bleɪd/',
+        phonics: 'p-oi-son-b-l-a-de',
+        type: 'attack',
+        cost: 1,
+        icon: '🧪🗡️',
+        dmg: 4,
+        applyPoison: 4,
+        vfx: 'slash',
+        desc: '幽绿淬毒！造成 4 伤害并施加 4 层【剧毒】(回合初掉血)'
+      },
+
+      // ==========================================
+      // 2. 经典战利品卡 (Reward Cards)
+      // ==========================================
+      strike: {
+        id: 'strike',
+        en: 'Strike',
+        cn: '突刺',
+        phonetic: '/straɪk/',
+        phonics: 's-t-r-i-k-e',
+        type: 'attack',
+        cost: 1,
+        icon: '⚡',
+        dmg: 8,
+        vulnerableBonus: 5,
+        vfx: 'strike',
+        desc: '枪出如龙！造成 8 伤害，若敌方易伤额外追击 5 暴击伤'
       },
       shoot: {
         id: 'shoot',
@@ -491,40 +711,10 @@ class CardBattleEngine {
         type: 'attack',
         cost: 1,
         icon: '🏹',
-        dmg: 6,
-        block: 0,
+        dmg: 7,
         pierce: true,
         vfx: 'arrow',
-        desc: '射出穿甲箭！造成 6 点真实穿甲伤害'
-      },
-      heal: {
-        id: 'heal',
-        en: 'Heal',
-        cn: '治愈',
-        phonetic: '/hiːl/',
-        phonics: 'h-ea-l',
-        type: 'skill',
-        cost: 2,
-        icon: '💚',
-        dmg: 0,
-        block: 0,
-        heal: 8,
-        vfx: 'heal',
-        desc: '运转生机！恢复 8 点生命值'
-      },
-      strike: {
-        id: 'strike',
-        en: 'Strike',
-        cn: '突刺',
-        phonetic: '/straɪk/',
-        phonics: 's-t-r-i-k-e',
-        type: 'attack',
-        cost: 1,
-        icon: '⚡',
-        dmg: 7,
-        block: 0,
-        vfx: 'strike',
-        desc: '枪出如龙！造成 7 点凌厉伤害'
+        desc: '弯弓搭箭！造成 7 点真实穿甲伤害'
       },
       dodge: {
         id: 'dodge',
@@ -535,14 +725,11 @@ class CardBattleEngine {
         type: 'defense',
         cost: 1,
         icon: '🌀',
-        dmg: 0,
-        block: 4,
+        block: 5,
         draw: 1,
         vfx: 'shield',
-        desc: '敏捷身法！获得 4 点护甲并摸 1 张牌'
+        desc: '敏捷身法！获得 5 点护甲并摸 1 张牌'
       },
-
-      // 进阶战利品卡 (Reward Cards)
       double_slash: {
         id: 'double_slash',
         en: 'Double Slash',
@@ -566,10 +753,9 @@ class CardBattleEngine {
         type: 'defense',
         cost: 2,
         icon: '🛡️🛡️',
-        dmg: 0,
-        block: 14,
+        block: 15,
         vfx: 'shield',
-        desc: '坚不可摧！获得 14 点巨额护甲'
+        desc: '坚不可摧！获得 15 点巨额护甲'
       },
       war_cry: {
         id: 'war_cry',
@@ -580,10 +766,9 @@ class CardBattleEngine {
         type: 'skill',
         cost: 1,
         icon: '📢',
-        dmg: 0,
-        strength: 3,
+        applyStrength: 3,
         vfx: 'charge',
-        desc: '鼓舞全军！本场战斗攻击力永久 +3'
+        desc: '鼓舞全军！获得 3 点【力量】'
       },
       piercing_arrow: {
         id: 'piercing_arrow',
@@ -612,6 +797,19 @@ class CardBattleEngine {
         vfx: 'strike',
         desc: '运足气力！造成 16 点摧枯拉朽的重伤'
       },
+      heal: {
+        id: 'heal',
+        en: 'Heal',
+        cn: '治愈',
+        phonetic: '/hiːl/',
+        phonics: 'h-ea-l',
+        type: 'skill',
+        cost: 2,
+        icon: '💚',
+        heal: 9,
+        vfx: 'heal',
+        desc: '运转生机！恢复 9 点生命值'
+      },
       first_aid: {
         id: 'first_aid',
         en: 'First Aid',
@@ -621,10 +819,9 @@ class CardBattleEngine {
         type: 'skill',
         cost: 1,
         icon: '🩹',
-        dmg: 0,
-        heal: 6,
+        heal: 7,
         vfx: 'heal',
-        desc: '临阵包扎！消耗 1 能量恢复 6 生命'
+        desc: '临阵包扎！消耗 1 能量恢复 7 生命'
       },
       focus: {
         id: 'focus',
@@ -635,28 +832,15 @@ class CardBattleEngine {
         type: 'skill',
         cost: 0,
         icon: '🧘',
-        dmg: 0,
         energy: 1,
         draw: 1,
         vfx: 'charge',
         desc: '凝神静气！恢复 1 点能量并摸 1 张牌'
       },
-      poison_blade: {
-        id: 'poison_blade',
-        en: 'Poison Blade',
-        cn: '淬毒刃',
-        phonetic: '/ˈpɔɪzn bleɪd/',
-        phonics: 'p-oi-son-b-l-a-de',
-        type: 'attack',
-        cost: 1,
-        icon: '🧪',
-        dmg: 5,
-        poison: 3,
-        vfx: 'slash',
-        desc: '幽绿淬毒！造成 5 伤害并施加 3 层剧毒'
-      },
 
-      // 历史特殊机关战役限定神卡 (Stage Relic Cards)
+      // ==========================================
+      // 3. 历史特殊战役限定神卡 (Stage Relic Cards)
+      // ==========================================
       thunderstorm: {
         id: 'thunderstorm',
         en: 'Thunderstorm',
@@ -666,9 +850,10 @@ class CardBattleEngine {
         type: 'special',
         cost: 2,
         icon: '⛈️⚡',
-        dmg: 18,
+        dmg: 20,
+        applyVulnerable: 2,
         vfx: 'thunder',
-        desc: '【桶狭间秘宝】借九天雷霆轰击！造成 18 点雷电重创'
+        desc: '【桶狭间秘宝】借九天雷霆轰击！造成 20 雷伤并施加 2 易伤'
       },
       palisade: {
         id: 'palisade',
@@ -679,13 +864,15 @@ class CardBattleEngine {
         type: 'special',
         cost: 1,
         icon: '🪵🛡️',
-        dmg: 0,
-        block: 12,
+        block: 14,
+        applyThorns: 3,
         vfx: 'wood',
-        desc: '【墨俣秘宝】一昼夜拔地耸立马防栅！获得 12 点坚固护甲'
+        desc: '【墨俣秘宝】一昼夜拔地耸立马防栅！获得 14 护甲与 3 荆棘'
       },
 
-      // 随行家臣专属战术支援神卡 (Companion Signature Cards)
+      // ==========================================
+      // 4. 随行家臣专属战术支援神卡 (Companion Signature Cards)
+      // ==========================================
       eat: {
         id: 'eat',
         en: 'Eat',
@@ -725,10 +912,10 @@ class CardBattleEngine {
         type: 'attack',
         cost: 0,
         icon: '🦁',
-        strength: 4,
+        applyStrength: 4,
         vfx: 'charge',
         isCompanion: true,
-        desc: '【利家枪之又左】并肩勇武！本回合所有攻击伤害 +4'
+        desc: '【利家枪之又左】并肩勇武！本场战斗力量永久 +4'
       },
       plan: {
         id: 'plan',
@@ -740,9 +927,10 @@ class CardBattleEngine {
         cost: 0,
         icon: '🪭',
         draw: 2,
+        energy: 1,
         vfx: 'charge',
         isCompanion: true,
-        desc: '【半兵卫今孔明】运筹帷幄！立即从抽牌堆摸 2 张牌'
+        desc: '【半兵卫今孔明】运筹帷幄！抽 2 张牌并回复 1 气力'
       },
       wind: {
         id: 'wind',
@@ -753,11 +941,11 @@ class CardBattleEngine {
         type: 'attack',
         cost: 0,
         icon: '🐎💨',
-        dmg: 10,
-        block: 4,
+        dmg: 11,
+        block: 5,
         vfx: 'charge',
         isCompanion: true,
-        desc: '【武田赤备如风】其疾如风！造成 10 点爆发伤害并获得 4 点冲锋护甲'
+        desc: '【武田赤备如风】其疾如风！造成 11 伤并获 5 冲锋护甲'
       },
       dragon: {
         id: 'dragon',
@@ -770,12 +958,15 @@ class CardBattleEngine {
         icon: '🐉⚡',
         dmg: 12,
         pierce: true,
+        applyVulnerable: 1,
         vfx: 'slash',
         isCompanion: true,
-        desc: '【独眼龙狂澜秘剑】龙啸雷霆！造成 12 点真实穿甲伤害'
+        desc: '【独眼龙狂澜秘剑】龙啸雷霆！造成 12 穿甲伤并施加 1 易伤'
       },
 
-      // 人教版新课标核心词汇战术卡 (Curriculum Core Vocabulary Cards)
+      // ==========================================
+      // 5. 人教版新课标核心词汇战术卡 (Curriculum Core Cards)
+      // ==========================================
       meet: {
         id: 'meet',
         en: 'Meet',
@@ -828,11 +1019,11 @@ class CardBattleEngine {
         type: 'skill',
         cost: 1,
         icon: '📕',
+        applyMetallicize: 3,
         energy: 1,
-        draw: 1,
         vfx: 'charge',
         isTextbook: true,
-        desc: '【Unit 2 核心词】研习兵书！恢复 1 气力并摸 1 张牌'
+        desc: '【Unit 2 核心词】研习兵法！获得 3 点【金属化】并回 1 气力'
       },
       ruler: {
         id: 'ruler',
@@ -844,10 +1035,10 @@ class CardBattleEngine {
         cost: 1,
         icon: '📏',
         dmg: 9,
-        block: 3,
+        block: 4,
         vfx: 'strike',
         isTextbook: true,
-        desc: '【Unit 2 核心词】矩不正不可为方！造成 9 伤害并获 3 护盾'
+        desc: '【Unit 2 核心词】矩不正不可为方！造成 9 伤害并获 4 护盾'
       },
       pencil: {
         id: 'pencil',
@@ -858,11 +1049,11 @@ class CardBattleEngine {
         type: 'attack',
         cost: 1,
         icon: '✏️',
-        dmg: 7,
+        dmg: 8,
         pierce: true,
         vfx: 'arrow',
         isTextbook: true,
-        desc: '【Unit 2 核心词】笔锋如剑！造成 7 点真实穿甲伤害'
+        desc: '【Unit 2 核心词】笔锋如剑！造成 8 点真实穿甲伤害'
       },
       water: {
         id: 'water',
@@ -887,10 +1078,10 @@ class CardBattleEngine {
         type: 'skill',
         cost: 0,
         icon: '🍎',
-        heal: 5,
+        heal: 6,
         vfx: 'heal',
         isTextbook: true,
-        desc: '【高频生活词】清脆多汁的苹果！恢复 5 点生命'
+        desc: '【高频生活词】清脆多汁的苹果！恢复 6 点生命'
       },
       look: {
         id: 'look',
@@ -901,13 +1092,17 @@ class CardBattleEngine {
         type: 'defense',
         cost: 0,
         icon: '👀',
-        block: 5,
+        applyVulnerable: 2,
+        applyWeak: 1,
+        block: 4,
         vfx: 'shield',
         isTextbook: true,
-        desc: '【高频动作词】洞察敌将破绽！获得 5 护盾'
+        desc: '【高频动作词】洞察敌将破绽！获 4 护甲并施加 2 易伤与 1 虚弱'
       },
 
-      // 人教新课标三年级下册核心日常动词 (Action Verbs)
+      // ==========================================
+      // 6. 人教新课标三年级下册核心日常动词 (Action Verbs)
+      // ==========================================
       run: {
         id: 'run',
         en: 'Run',
@@ -918,10 +1113,10 @@ class CardBattleEngine {
         cost: 1,
         icon: '🏃💨',
         dmg: 7,
-        block: 5,
+        applyVulnerable: 1,
         vfx: 'charge',
         isTextbook: true,
-        desc: '【三年级动词】神速奔袭！造成 7 点伤害并获得 5 点护甲'
+        desc: '【三年级动词】神速奔袭！造成 7 点伤害并施加 1 回合【易伤】'
       },
       jump: {
         id: 'jump',
@@ -932,12 +1127,11 @@ class CardBattleEngine {
         type: 'defense',
         cost: 1,
         icon: '🦘⬆️',
-        dmg: 0,
-        block: 8,
+        block: 7,
         draw: 1,
         vfx: 'shield',
         isTextbook: true,
-        desc: '【三年级动词】凌空腾跃！获得 8 点护甲并抽 1 张手牌'
+        desc: '【三年级动词】凌空腾跃！获得 7 点护甲并抽 1 张手牌'
       },
       fly: {
         id: 'fly',
@@ -948,11 +1142,12 @@ class CardBattleEngine {
         type: 'attack',
         cost: 1,
         icon: '🦅✨',
-        dmg: 10,
+        dmg: 9,
+        block: 4,
         pierce: true,
         vfx: 'arrow',
         isTextbook: true,
-        desc: '【三年级动词】天鹰破空！射出 10 点真实穿透伤害'
+        desc: '【三年级动词】天鹰破空！造成 9 点穿甲伤害并获 4 点护甲'
       },
       swim: {
         id: 'swim',
@@ -964,20 +1159,20 @@ class CardBattleEngine {
         cost: 1,
         icon: '🏊‍♂️🌊',
         heal: 6,
-        block: 4,
+        cleanse: true,
         vfx: 'heal',
         isTextbook: true,
-        desc: '【三年级动词】如鱼得水！恢复 6 点生命并获得 4 点护甲'
+        desc: '【三年级动词】如鱼得水！恢复 6 点生命并净化我方全部负面状态'
       }
     };
   }
 
   /**
-   * 读取或创建玩家的持久化战术卡组
+   * 读取或创建玩家的持久化战术卡组 (杀戮尖塔风平衡初始卡组)
    */
   loadPersistentDeck() {
     try {
-      const saved = localStorage.getItem('taikou_card_deck');
+      const saved = localStorage.getItem('taikou_card_deck_v39');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length >= 6) {
@@ -986,11 +1181,11 @@ class CardBattleEngine {
       }
     } catch (e) {}
 
-    // 默认初始新手卡组 (10 张平衡卡牌)
+    // 默认初始新手卡组 (10 张杀戮尖塔流派卡牌：3 斩击 + 1 痛击易伤 + 3 格挡 + 1 耸肩过牌 + 1 突刺 + 1 奔袭)
     return [
-      'slash', 'slash', 'slash', 'slash',
-      'guard', 'guard', 'guard', 'guard',
-      'shoot', 'heal'
+      'slash', 'slash', 'slash', 'bash',
+      'guard', 'guard', 'guard', 'shrug',
+      'strike', 'run'
     ];
   }
 
@@ -999,7 +1194,7 @@ class CardBattleEngine {
    */
   savePersistentDeck() {
     try {
-      localStorage.setItem('taikou_card_deck', JSON.stringify(this.persistentDeck));
+      localStorage.setItem('taikou_card_deck_v39', JSON.stringify(this.persistentDeck));
     } catch (e) {}
   }
 
@@ -1025,6 +1220,11 @@ class CardBattleEngine {
     this.stageNum = config.stageNum || 1;
     this.turn = 1;
     this.heroStrength = 0;
+    this.heroDexterity = 0;
+    this.heroVulnerable = 0;
+    this.heroWeak = 0;
+    this.heroThorns = 0;
+    this.heroMetallicize = 0;
     this.heroBlock = 0;
     this.heroMaxEnergy = 3;
     this.heroEnergy = 3;
@@ -1101,33 +1301,33 @@ class CardBattleEngine {
   setupEnemy(stageNum, customEnemy = null) {
     let name = `尾张守将 · 第 ${stageNum} 关`;
     let title = '守城大将';
-    let hp = 44 + stageNum * 4;
-    let baseAtk = 7 + Math.floor(stageNum * 0.7);
+    let hp = 48 + stageNum * 5;
+    let baseAtk = 8 + Math.floor(stageNum * 0.8);
     let avatar = 'assets/characters/goblin.png';
 
     if (stageNum === 5) {
       name = '今川义元';
       title = '东海道第一弓取';
-      hp = 70;
-      baseAtk = 10;
+      hp = 75;
+      baseAtk = 11;
       avatar = 'assets/portraits/nobunaga.jpg';
     } else if (stageNum === 10) {
       name = '斋藤防线大将 · 稻叶山先锋';
       title = '美浓总大将';
-      hp = 85;
-      baseAtk = 12;
+      hp = 90;
+      baseAtk = 13;
       avatar = 'assets/portraits/shibata.jpg';
     } else if (stageNum === 25) {
       name = '武田信玄';
       title = '甲斐之虎 · 风林火山';
-      hp = 120;
-      baseAtk = 14;
+      hp = 125;
+      baseAtk = 15;
       avatar = 'assets/portraits/shingen.jpg';
     } else if (stageNum === 35) {
       name = '伊达政宗';
       title = '独眼龙 · 奥州霸主';
-      hp = 145;
-      baseAtk = 16;
+      hp = 150;
+      baseAtk = 17;
       avatar = 'assets/portraits/masamune.jpg';
     } else if (customEnemy) {
       name = customEnemy.name || name;
@@ -1146,6 +1346,9 @@ class CardBattleEngine {
       block: 0,
       baseAtk,
       strength: 0,
+      vulnerable: 0,
+      weak: 0,
+      poison: 0,
       turnCount: 0,
       currentSkill: null,
       intent: null
@@ -1163,15 +1366,25 @@ class CardBattleEngine {
     let val = 0;
 
     if (skill.type === 'attack') {
-      const dmg = skill.baseVal + enemyAtk;
+      let dmg = skill.baseVal + enemyAtk;
+      if (this.enemy && this.enemy.weak > 0) {
+        dmg = Math.floor(dmg * 0.75);
+      }
+      if (this.heroVulnerable > 0) {
+        dmg = Math.floor(dmg * 1.5);
+      }
       val = dmg;
-      text = skill.hits > 1 ? `${skill.nameCn} (${dmg}x${skill.hits} 连斩)` : `${skill.nameCn} (${dmg} 伤${skill.pierce ? ' 穿甲' : ''})`;
+      let tags = [];
+      if (this.enemy && this.enemy.weak > 0) tags.push('🥀虚弱');
+      if (this.heroVulnerable > 0) tags.push('💢易伤');
+      const tagStr = tags.length ? ` [${tags.join(' ')}]` : '';
+      text = skill.hits > 1 ? `${skill.nameCn} (${dmg}x${skill.hits} 连斩${tagStr})` : `${skill.nameCn} (${dmg} 伤${skill.pierce ? ' 穿甲' : ''}${tagStr})`;
     } else if (skill.type === 'defend') {
       val = skill.baseVal;
       text = `${skill.nameCn} (+${skill.baseVal} 护甲)`;
     } else if (skill.type === 'buff') {
       val = skill.strength || 2;
-      text = `${skill.nameCn} (+${val} 战力)`;
+      text = `${skill.nameCn} (+${val} 力量)`;
     }
 
     return {
@@ -1239,10 +1452,11 @@ class CardBattleEngine {
         selectedSkill = ENEMY_SKILL_DATABASE.masamune_cannon;
       }
     } else {
-      // 常规城池敌将技能库循环：刀斩 ➔ 铁盾 ➔ 箭雨 ➔ 双刀连击 ➔ 战吼壮胆 ➔ 破阵重劈
+      // 常规城池敌将技能库循环：刀斩 ➔ 铁盾 ➔ 破阵威吓 ➔ 箭雨 ➔ 双刀连击 ➔ 战吼 ➔ 破阵重劈
       const regularSkills = [
         ENEMY_SKILL_DATABASE.strike,
         ENEMY_SKILL_DATABASE.shield,
+        ENEMY_SKILL_DATABASE.intimidate || ENEMY_SKILL_DATABASE.strike,
         ENEMY_SKILL_DATABASE.arrows,
         ENEMY_SKILL_DATABASE.double_slash,
         ENEMY_SKILL_DATABASE.war_cry,
@@ -1266,19 +1480,42 @@ class CardBattleEngine {
   }
 
   /**
-   * 回合开始 (杀戮尖塔风格：横幅演出 + 气力注满 + 手牌重置 + 意图播报)
+   * 回合开始 (杀戮尖塔风格：横幅演出 + 气力注满 + 手牌重置 + 金属化护甲 + 中毒结算 + 意图播报)
    */
   startTurn() {
     this.isEnemyActing = false;
     this.heroEnergy = this.heroMaxEnergy;
     this.heroBlock = 0; // 回合初护甲重置
-    this.enemy.block = 0; // 敌方护甲重置
     this.turnCardsPlayed = []; // 重置本回合打出卡牌记录
+
+    // 金属化 (Metallicize: 回合初自动获得护甲)
+    if (this.heroMetallicize > 0) {
+      this.heroBlock += this.heroMetallicize;
+      this.showFloatingNumber(this.getHeroElem(), `+${this.heroMetallicize} 🛡️金属化`, 'fct-defense');
+    }
 
     // 羁绊信物：武田信玄军配 (每回合初获得 3 点风林火山坚固护甲)
     if (window.estateSystem?.hasRelic('relic-shingen-war-fan')) {
       this.heroBlock += 3;
     }
+
+    // 敌方中毒状态结算 (Poison Tick at Start of Turn)
+    if (this.enemy && this.enemy.poison > 0) {
+      const pDmg = this.enemy.poison;
+      this.enemy.hp = Math.max(0, this.enemy.hp - pDmg);
+      this.showFloatingNumber(this.getEnemyElem(), `-${pDmg} 🧪剧毒`, 'fct-poison');
+      this.enemy.poison = Math.max(0, this.enemy.poison - 1);
+      if (this.enemy.hp <= 0) {
+        this.enemy.hp = 0;
+        this.renderBattleArena();
+        setTimeout(() => this.handleVictory(), 450);
+        return;
+      }
+    }
+
+    // 我方负面状态回合衰减 (易伤、虚弱递减)
+    if (this.heroVulnerable > 0) this.heroVulnerable--;
+    if (this.heroWeak > 0) this.heroWeak--;
 
     // 抽卡 (半兵卫军扇信物首回合多摸 1 张牌)
     let drawCount = 4;
@@ -1426,16 +1663,26 @@ class CardBattleEngine {
     const card = this.cardDatabase[cardId];
     if (!card) return;
 
-    // 检查气力是否充足
-    if (this.heroEnergy < card.cost) {
-      if (window.audioEngine?.playMistake) window.audioEngine.playMistake();
-      this.flashEnergyWarning();
-      if (window.ui) window.ui.showToast(`⚡ 气力不足！需要 ${card.cost} 点气力`, '⚠️');
-      return;
+    // 检查气力是否充足 (支持 Whirlwind X-Cost)
+    let spentEnergy = card.cost;
+    if (card.isXCost) {
+      if (this.heroEnergy <= 0) {
+        if (window.audioEngine?.playMistake) window.audioEngine.playMistake();
+        this.flashEnergyWarning();
+        if (window.ui) window.ui.showToast('⚡ 需要至少 1 点气力释放旋风斩！', '⚠️');
+        return;
+      }
+      spentEnergy = this.heroEnergy;
+      this.heroEnergy = 0;
+    } else {
+      if (this.heroEnergy < card.cost) {
+        if (window.audioEngine?.playMistake) window.audioEngine.playMistake();
+        this.flashEnergyWarning();
+        if (window.ui) window.ui.showToast(`⚡ 气力不足！需要 ${card.cost} 点气力`, '⚠️');
+        return;
+      }
+      this.heroEnergy -= card.cost;
     }
-
-    // 扣除气力
-    this.heroEnergy -= card.cost;
 
     // 从手牌移至弃牌堆并记录本回合出牌
     this.hand.splice(index, 1);
@@ -1448,6 +1695,7 @@ class CardBattleEngine {
     }
 
     // 1. 检查是否达成【语义克制破敌】(Tactical Semantic Counter)
+    // 关键设计：攻击牌绝不能凭空送免费格挡！只有防守或针对性策略卡才能获得招架收益！
     let isCounter = false;
     let counterMsg = '';
     if (this.enemy.intent && Array.isArray(this.enemy.intent.counterWords)) {
@@ -1456,32 +1704,46 @@ class CardBattleEngine {
         this.countersTriggeredThisBattle = (this.countersTriggeredThisBattle || 0) + 1;
 
         if (this.enemy.intent.keyword === 'arrows') {
-          this.heroBlock += 6;
-          counterMsg = '🎯 识破箭雨 (Arrows)！腾跃规避，额外获得 +6 护甲！';
+          this.heroBlock += 4;
+          counterMsg = '🎯 识破箭雨 (Arrows)！腾跃规避，额外获得 +4 护甲！';
         } else if (this.enemy.intent.keyword === 'shield' || this.enemy.intent.keyword === 'wall') {
           if (this.enemy.block > 0) {
             this.enemy.block = 0;
-            counterMsg = '💥 识破坚盾 (Shield)！弱点贯穿，瞬间破除敌方全部护甲！';
+            counterMsg = '💥 识破坚盾 (Shield)！瞬间破除敌方全部护甲！';
           } else {
             counterMsg = '🏹 破甲突刺！直接造成弱点暴击！';
           }
         } else if (this.enemy.intent.keyword === 'fire') {
           const prev = this.heroHp;
-          this.heroHp = Math.min(this.heroMaxHp, this.heroHp + 8);
+          this.heroHp = Math.min(this.heroMaxHp, this.heroHp + 6);
           counterMsg = `💧 清泉熄灭烈火 (Fire)！恢复 ${this.heroHp - prev} 点生命！`;
         } else if (this.enemy.intent.keyword === 'horse') {
           this.heroEnergy = Math.min(this.heroMaxEnergy + 2, this.heroEnergy + 1);
-          counterMsg = '🐎 飞跃神驹 (Horse)！避其锋芒，顺势恢复 1 点气力！';
+          counterMsg = '🐎 飞跃神驹 (Horse)！顺势恢复 1 点气力！';
         } else if (this.enemy.intent.keyword === 'strike') {
-          this.heroBlock += 8;
-          counterMsg = '⚔️ 招架重击 (Strike)！稳如磐石，额外获得 +8 坚固护盾！';
+          if (card.type === 'defense') {
+            this.heroBlock += 4;
+            this.enemy.hp = Math.max(0, this.enemy.hp - 4);
+            this.showFloatingNumber(this.getEnemyElem(), '-4 ⚡防反', 'fct-damage');
+            counterMsg = '⚔️ 完美招架 (Strike)！稳如磐石，反击 4 伤害！';
+          } else {
+            counterMsg = '⚔️ 针锋相对！正面刀剑交锋！';
+          }
         } else if (this.enemy.intent.keyword === 'dragon') {
-          this.heroBlock += 8;
-          this.drawCards(1);
-          counterMsg = '🐉 黑龙破空 (Dragon)！借力翻腾，获 8 护甲并多摸 1 张牌！';
+          if (card.type === 'defense') {
+            this.heroBlock += 6;
+            this.drawCards(1);
+            counterMsg = '🐉 抵挡黑龙狂澜 (Dragon)！获 6 护甲并多摸 1 张牌！';
+          } else {
+            counterMsg = '🐉 迎战独眼黑龙！绝不退缩！';
+          }
         } else {
-          this.heroBlock += 5;
-          counterMsg = '✨ 完美看破敌意！获得 +5 军心护甲！';
+          if (card.type === 'defense') {
+            this.heroBlock += 3;
+            counterMsg = '✨ 完美看破敌意！获得 +3 军心护甲！';
+          } else {
+            counterMsg = '✨ 完美看破敌将破绽！';
+          }
         }
       }
     }
@@ -1496,8 +1758,8 @@ class CardBattleEngine {
       });
     }
 
-    // 结算卡牌基础效果
-    this.applyCardEffects(card);
+    // 结算卡牌基础效果 (杀戮尖塔流派深度计算)
+    this.applyCardEffects(card, spentEnergy);
 
     // 触发语义克制反馈
     if (isCounter) {
@@ -1524,22 +1786,35 @@ class CardBattleEngine {
   }
 
   /**
-   * 结算卡牌战斗效果
+   * 结算卡牌战斗效果 (深度融入力量、敏捷、易伤、虚弱、金属化、剧毒)
    */
-  applyCardEffects(card) {
+  applyCardEffects(card, spentEnergy = 1) {
     // 1. 伤害效果 (Attack)
     if (card.dmg) {
-      const hits = card.hits || 1;
+      const hits = card.isXCost ? spentEnergy : (card.hits || 1);
       for (let h = 0; h < hits; h++) {
-        let actualDmg = card.dmg + this.heroStrength;
+        let baseDmg = card.dmg + (this.heroStrength * (card.strengthMultiplier || 1));
+        if (card.vulnerableBonus && this.enemy.vulnerable > 0) {
+          baseDmg += card.vulnerableBonus;
+        }
+        // 虚弱削弱我方攻击输出 -25%
+        if (this.heroWeak > 0) {
+          baseDmg = Math.floor(baseDmg * 0.75);
+        }
+        // 易伤增加敌方受到伤害 +50%
+        if (this.enemy.vulnerable > 0) {
+          baseDmg = Math.floor(baseDmg * 1.5);
+        }
         // 羁绊信物：伊达政宗金弦月兜盔 (穿甲与爆发伤害额外 +4)
         if (card.pierce && window.estateSystem?.hasRelic('relic-masamune-crescent')) {
-          actualDmg += 4;
+          baseDmg += 4;
         }
+
+        let actualDmg = Math.max(1, baseDmg);
         if (card.pierce) {
           // 破甲直接扣生命
           this.enemy.hp = Math.max(0, this.enemy.hp - actualDmg);
-          this.showFloatingNumber(this.getEnemyElem(), `-${actualDmg} 🏹`, 'fct-pierce');
+          this.showFloatingNumber(this.getEnemyElem(), `-${actualDmg} 🏹穿甲`, 'fct-pierce');
         } else {
           // 先扣护甲再扣生命
           if (this.enemy.block > 0) {
@@ -1555,7 +1830,8 @@ class CardBattleEngine {
           }
           if (actualDmg > 0) {
             this.enemy.hp = Math.max(0, this.enemy.hp - actualDmg);
-            this.showFloatingNumber(this.getEnemyElem(), `-${actualDmg} ⚔️`, 'fct-damage');
+            const isCrit = (this.enemy.vulnerable > 0) || card.vulnerableBonus;
+            this.showFloatingNumber(this.getEnemyElem(), `-${actualDmg} ⚔️${isCrit ? '暴击' : ''}`, isCrit ? 'fct-crit' : 'fct-damage');
           }
         }
       }
@@ -1576,8 +1852,9 @@ class CardBattleEngine {
 
     // 2. 护甲效果 (Defense)
     if (card.block) {
-      this.heroBlock += card.block;
-      this.showFloatingNumber(this.getHeroElem(), `+${card.block} 🛡️`, 'fct-defense');
+      const gainBlock = card.block + (this.heroDexterity || 0);
+      this.heroBlock += gainBlock;
+      this.showFloatingNumber(this.getHeroElem(), `+${gainBlock} 🛡️`, 'fct-defense');
       if (card.vfx === 'wood') {
         if (window.audioEngine?.playWoodHammer) window.audioEngine.playWoodHammer();
         this.triggerVfx('vfx-wood');
@@ -1586,8 +1863,56 @@ class CardBattleEngine {
         this.triggerVfx('vfx-shield');
       }
     }
+    if (card.doubleBlock) {
+      const bonus = this.heroBlock;
+      this.heroBlock *= 2;
+      this.showFloatingNumber(this.getHeroElem(), `护甲翻倍 +${bonus} 🛡️`, 'fct-defense');
+      if (window.audioEngine?.playShieldBlock) window.audioEngine.playShieldBlock();
+      this.triggerVfx('vfx-shield');
+    }
 
-    // 3. 治愈效果 (Heal)
+    // 3. 施加敌方负面状态 (Debuffs)
+    if (card.applyVulnerable) {
+      this.enemy.vulnerable = (this.enemy.vulnerable || 0) + card.applyVulnerable;
+      this.showFloatingNumber(this.getEnemyElem(), `+${card.applyVulnerable} 易伤 💢`, 'fct-debuff');
+    }
+    if (card.applyWeak) {
+      this.enemy.weak = (this.enemy.weak || 0) + card.applyWeak;
+      this.showFloatingNumber(this.getEnemyElem(), `+${card.applyWeak} 虚弱 🥀`, 'fct-debuff');
+    }
+    if (card.applyPoison) {
+      this.enemy.poison = (this.enemy.poison || 0) + card.applyPoison;
+      this.showFloatingNumber(this.getEnemyElem(), `+${card.applyPoison} 剧毒 🧪`, 'fct-poison');
+    }
+    if (card.disarm) {
+      this.enemy.strength = Math.max(0, (this.enemy.strength || 0) - card.disarm);
+      this.showFloatingNumber(this.getEnemyElem(), `-${card.disarm} 敌将力量`, 'fct-debuff');
+    }
+
+    // 4. 获得自身增益状态 (Buffs)
+    if (card.applyStrength) {
+      this.heroStrength += card.applyStrength;
+      this.showFloatingNumber(this.getHeroElem(), `+${card.applyStrength} 力量 💪`, 'fct-buff');
+    }
+    if (card.applyDexterity) {
+      this.heroDexterity += card.applyDexterity;
+      this.showFloatingNumber(this.getHeroElem(), `+${card.applyDexterity} 敏捷 🏃`, 'fct-buff');
+    }
+    if (card.applyThorns) {
+      this.heroThorns += card.applyThorns;
+      this.showFloatingNumber(this.getHeroElem(), `+${card.applyThorns} 荆棘 🌵`, 'fct-buff');
+    }
+    if (card.applyMetallicize) {
+      this.heroMetallicize += card.applyMetallicize;
+      this.showFloatingNumber(this.getHeroElem(), `+${card.applyMetallicize} 金属化 🛡️`, 'fct-buff');
+    }
+    if (card.cleanse) {
+      this.heroVulnerable = 0;
+      this.heroWeak = 0;
+      this.showFloatingNumber(this.getHeroElem(), '净化全部负面状态 ✨', 'fct-heal');
+    }
+
+    // 5. 治愈效果 (Heal)
     if (card.heal) {
       const prev = this.heroHp;
       this.heroHp = Math.min(this.heroMaxHp, this.heroHp + card.heal);
@@ -1597,21 +1922,15 @@ class CardBattleEngine {
       this.triggerVfx('vfx-heal');
     }
 
-    // 4. 摸牌效果 (Draw)
+    // 6. 摸牌效果 (Draw)
     if (card.draw) {
       this.drawCards(card.draw);
     }
 
-    // 5. 气力恢复 (Energy)
+    // 7. 气力恢复 (Energy)
     if (card.energy) {
       this.heroEnergy = Math.min(this.heroMaxEnergy + 2, this.heroEnergy + card.energy);
       if (window.audioEngine?.playEnergyCharge) window.audioEngine.playEnergyCharge();
-    }
-
-    // 6. 攻击力增益 (Strength)
-    if (card.strength) {
-      this.heroStrength += card.strength;
-      this.showFloatingNumber(this.getHeroElem(), `+${card.strength} 战力!`, 'fct-buff');
     }
   }
 
@@ -1697,7 +2016,9 @@ class CardBattleEngine {
 
     let valText = '';
     if (skill.type === 'attack') {
-      const dmg = skill.baseVal + enemyAtk;
+      let dmg = skill.baseVal + enemyAtk;
+      if (this.enemy && this.enemy.weak > 0) dmg = Math.floor(dmg * 0.75);
+      if (this.heroVulnerable > 0) dmg = Math.floor(dmg * 1.5);
       valText = skill.hits > 1 ? `⚔️ ${dmg} x ${skill.hits}` : `⚔️ ${dmg}${skill.pierce ? ' 破甲' : ''}`;
     } else if (skill.type === 'defend') {
       valText = `🛡️ +${skill.baseVal}`;
@@ -1752,6 +2073,32 @@ class CardBattleEngine {
   }
 
   /**
+   * 渲染我方英雄状态药丸 (Status Pills)
+   */
+  renderHeroStatusRow() {
+    const pills = [];
+    if (this.heroStrength > 0) pills.push(`<span class="status-pill is-strength">💪 力量 [${this.heroStrength}]</span>`);
+    if (this.heroDexterity > 0) pills.push(`<span class="status-pill is-dexterity">🏃 敏捷 [${this.heroDexterity}]</span>`);
+    if (this.heroVulnerable > 0) pills.push(`<span class="status-pill is-vulnerable">💢 易伤 [${this.heroVulnerable}]</span>`);
+    if (this.heroWeak > 0) pills.push(`<span class="status-pill is-weak">🥀 虚弱 [${this.heroWeak}]</span>`);
+    if (this.heroThorns > 0) pills.push(`<span class="status-pill is-thorns">🌵 荆棘 [${this.heroThorns}]</span>`);
+    if (this.heroMetallicize > 0) pills.push(`<span class="status-pill is-metallicize">🛡️ 金属化 [${this.heroMetallicize}]</span>`);
+    return pills.join('');
+  }
+
+  /**
+   * 渲染敌方大将状态药丸 (Status Pills)
+   */
+  renderEnemyStatusRow() {
+    const pills = [];
+    if (this.enemy.strength > 0) pills.push(`<span class="status-pill is-strength">💪 力量 [${this.enemy.strength}]</span>`);
+    if (this.enemy.vulnerable > 0) pills.push(`<span class="status-pill is-vulnerable">💢 易伤 [${this.enemy.vulnerable}]</span>`);
+    if (this.enemy.weak > 0) pills.push(`<span class="status-pill is-weak">🥀 虚弱 [${this.enemy.weak}]</span>`);
+    if (this.enemy.poison > 0) pills.push(`<span class="status-pill is-poison">🧪 中毒 [${this.enemy.poison}]</span>`);
+    return pills.join('');
+  }
+
+  /**
    * 实时平滑刷新双方血条、血量文字与护甲药丸
    */
   updateHpAndBlockBars() {
@@ -1763,6 +2110,10 @@ class CardBattleEngine {
     if (heroFill) heroFill.style.width = `${heroHpPct}%`;
     const heroHpLabel = document.querySelector('#siege-side-hero .card-hp-label');
     if (heroHpLabel) heroHpLabel.textContent = `❤️ ${this.heroHp}/${this.heroMaxHp}`;
+
+    // 主角状态药丸栏
+    const heroStatusRow = document.getElementById('hero-status-row');
+    if (heroStatusRow) heroStatusRow.innerHTML = this.renderHeroStatusRow();
 
     // 主角护甲光晕
     const heroAvatar = document.getElementById('siege-hero-avatar');
@@ -1786,6 +2137,10 @@ class CardBattleEngine {
     const enemyHpLabel = document.querySelector('#siege-side-enemy .card-hp-label');
     if (enemyHpLabel) enemyHpLabel.textContent = `❤️ ${this.enemy.hp}/${this.enemy.maxHp}`;
 
+    // 敌人状态药丸栏
+    const enemyStatusRow = document.getElementById('enemy-status-row');
+    if (enemyStatusRow) enemyStatusRow.innerHTML = this.renderEnemyStatusRow();
+
     // 敌人护甲药丸
     const enemyStatGroup = document.querySelector('#siege-side-enemy .card-stat-bar-group');
     if (enemyStatGroup) {
@@ -1804,13 +2159,16 @@ class CardBattleEngine {
   }
 
   /**
-   * 执行敌方意图技能 (杀戮尖塔风格：出牌展开 + TTS战吼 + 冲锋打击 + 受击闪红 + 血条平滑缩减)
+   * 执行敌方意图技能 (杀戮尖塔风格：出牌展开 + TTS战吼 + 冲锋打击 + 严厉真实伤害 + 荆棘反伤 + 状态结算)
    */
   executeEnemyAction() {
     if (!this.isActive) return;
 
     const skill = this.enemy.currentSkill || ENEMY_SKILL_DATABASE[this.enemy.intent?.skillId] || ENEMY_SKILL_DATABASE.strike;
     const enemyAtk = this.enemy.strength || 0;
+
+    // 清除敌方上回合残存护甲 (杀戮尖塔规则：行动初清空旧护甲)
+    this.enemy.block = 0;
 
     // 1. 战场正中央具象化弹出敌方技能卡
     this.showEnemySkillCard(skill, enemyAtk);
@@ -1825,11 +2183,20 @@ class CardBattleEngine {
       this.animateEnemyLunge();
 
       // 4. 结算技能数值效果
-      let finalDmg = 0;
       if (skill.type === 'attack') {
         const hits = skill.hits || 1;
-        const perHitDmg = (skill.baseVal + enemyAtk);
-        finalDmg = perHitDmg * hits;
+        let perHitDmg = skill.baseVal + enemyAtk;
+        // 敌方虚弱削弱输出 -25%
+        if (this.enemy.weak > 0) {
+          perHitDmg = Math.floor(perHitDmg * 0.75);
+        }
+        // 我方易伤加重受创 +50%
+        if (this.heroVulnerable > 0) {
+          perHitDmg = Math.floor(perHitDmg * 1.5);
+        }
+        perHitDmg = Math.max(1, perHitDmg);
+
+        const finalDmg = perHitDmg * hits;
 
         // 特效与打击音效
         this.triggerVfx(skill.vfx || 'vfx-slash');
@@ -1841,7 +2208,7 @@ class CardBattleEngine {
           if (window.audioEngine?.playKatanaSlash) window.audioEngine.playKatanaSlash();
         }
 
-        // 玩家护甲抵挡伤害
+        // 玩家护甲抵挡伤害 (没挡住的部分重扣英雄生命！)
         let actualDmg = finalDmg;
         if (!skill.pierce && this.heroBlock > 0) {
           if (this.heroBlock >= actualDmg) {
@@ -1863,6 +2230,22 @@ class CardBattleEngine {
           this.shakeElement(this.getHeroElem());
           this.flashDamageScreen();
         }
+
+        // 荆棘反弹伤害 (Hero Thorns reflect damage back to enemy)
+        if (this.heroThorns > 0) {
+          this.enemy.hp = Math.max(0, this.enemy.hp - this.heroThorns);
+          this.showFloatingNumber(this.getEnemyElem(), `-${this.heroThorns} 🌵荆棘`, 'fct-damage');
+        }
+
+        // 附带负面状态 (如 Intimidate 施加虚弱, Fire 施加易伤)
+        if (skill.weak) {
+          this.heroWeak += skill.weak;
+          this.showFloatingNumber(this.getHeroElem(), `+${skill.weak} 虚弱 🥀`, 'fct-debuff');
+        }
+        if (skill.vulnerable) {
+          this.heroVulnerable += skill.vulnerable;
+          this.showFloatingNumber(this.getHeroElem(), `+${skill.vulnerable} 易伤 💢`, 'fct-debuff');
+        }
       } else if (skill.type === 'defend') {
         const gainBlock = skill.baseVal;
         this.enemy.block += gainBlock;
@@ -1881,12 +2264,24 @@ class CardBattleEngine {
         if (window.audioEngine?.playEnergyCharge) window.audioEngine.playEnergyCharge();
       }
 
-      // 实时平滑刷新双方血条与护甲
+      // 敌方负面状态回合衰减
+      if (this.enemy.vulnerable > 0) this.enemy.vulnerable--;
+      if (this.enemy.weak > 0) this.enemy.weak--;
+
+      // 实时平滑刷新双方血条、护甲与状态栏
       this.updateHpAndBlockBars();
 
       // 5. 1100ms 后收回技能卡，检查是否阵亡，或进入我方下一回合
       setTimeout(() => {
         this.dismissEnemySkillCard();
+
+        // 检查敌方是否被荆棘反伤致死
+        if (this.enemy.hp <= 0) {
+          this.enemy.hp = 0;
+          this.updateHpAndBlockBars();
+          setTimeout(() => this.handleVictory(), 450);
+          return;
+        }
 
         // 检查我方阵亡与饭团复活
         if (this.heroHp <= 0) {
@@ -1973,10 +2368,10 @@ class CardBattleEngine {
       'meet', 'friend', 'nice', 'book', 'ruler', 'pencil', 'water', 'apple', 'look',
       'run', 'jump', 'fly', 'swim'
     ];
-    // 进阶战术卡池
+    // 进阶战术卡池 (杀戮尖塔经典流派卡牌)
     const tacticalCards = [
-      'double_slash', 'iron_wall', 'war_cry', 'piercing_arrow',
-      'heavy_strike', 'dodge', 'first_aid', 'focus', 'poison_blade', 'strike'
+      'bash', 'crush', 'heavy', 'whirlwind', 'quick', 'shrug', 'counter', 'entrench',
+      'power', 'armor', 'disarm', 'pierce', 'double_slash', 'iron_wall', 'poison_blade', 'strike', 'dodge'
     ];
 
     // 特殊关卡加入名物限定神卡
@@ -2010,7 +2405,7 @@ class CardBattleEngine {
             const c = this.cardDatabase[cid];
             return `
               <div class="tactical-card draft-card-item is-${c.type}" onclick="window.audioEngine?.speak('${c.en}')">
-                <div class="card-cost-badge">${c.cost} ⚡</div>
+                <div class="card-cost-badge">${c.isXCost ? 'X' : c.cost} ⚡</div>
                 <div class="card-crest-icon">${c.icon}</div>
                 <div class="card-title-en">${c.en}</div>
                 ${c.phonetic ? `<div class="card-phonetic-badge">${c.phonetic}</div>` : ''}
@@ -2092,7 +2487,7 @@ class CardBattleEngine {
             const c = this.cardDatabase[cid] || { en: cid, cn: cid, type: 'attack', cost: 1, icon: '⚔️', desc: '', phonetic: '' };
             return `
               <div class="tactical-card viewer-card-item is-${c.type}">
-                <div class="card-cost-badge">${c.cost} ⚡</div>
+                <div class="card-cost-badge">${c.isXCost ? 'X' : c.cost} ⚡</div>
                 <div class="card-stack-badge">x${count}</div>
                 ${c.isTextbook ? '<div class="card-origin-pill">课本词</div>' : (c.isCompanion ? '<div class="card-origin-pill is-comp">家臣</div>' : '')}
                 <div class="card-crest-icon">${c.icon}</div>
@@ -2171,12 +2566,16 @@ class CardBattleEngine {
             ${this.heroBlock > 0 ? `<div class="hero-shield-aura">🛡️ ${this.heroBlock}</div>` : ''}
           </div>
           <div class="hero-meta-card">
-            <div class="hero-battle-name">木下藤吉郎 ${this.heroStrength > 0 ? `<span class="buff-badge">⚔️+${this.heroStrength}</span>` : ''}</div>
+            <div class="hero-battle-name">木下藤吉郎</div>
             <div class="card-stat-bar-group">
               <div class="card-hp-bar">
                 <div class="card-hp-fill is-hero" style="width: ${heroHpPct}%;"></div>
                 <span class="card-hp-label">❤️ ${this.heroHp}/${this.heroMaxHp}</span>
               </div>
+            </div>
+            <!-- 杀戮尖塔主角状态药丸栏 -->
+            <div class="battle-status-row hero-status-row" id="hero-status-row">
+              ${this.renderHeroStatusRow()}
             </div>
             <!-- 随行家臣助战标牌 -->
             <div class="companion-battle-tag-strip" title="随行家臣助战">
@@ -2228,6 +2627,10 @@ class CardBattleEngine {
               </div>
               ${this.enemy.block > 0 ? `<div class="enemy-block-pill">🛡️ 护甲: ${this.enemy.block}</div>` : ''}
             </div>
+            <!-- 杀戮尖塔敌方状态药丸栏 -->
+            <div class="battle-status-row enemy-status-row" id="enemy-status-row">
+              ${this.renderEnemyStatusRow()}
+            </div>
           </div>
           <div class="enemy-avatar-wrap" id="siege-enemy-avatar">
             <img src="${this.enemy.avatar}" class="enemy-battle-sprite" id="siege-enemy-img" alt="敌将">
@@ -2243,7 +2646,9 @@ class CardBattleEngine {
       // 检查是否有任何手牌可以打出，智能引导点击【结束回合】
       const hasPlayableCard = this.hand.some(cid => {
         const c = this.cardDatabase[cid];
-        return c && this.heroEnergy >= c.cost;
+        if (!c) return false;
+        if (c.isXCost) return this.heroEnergy > 0;
+        return this.heroEnergy >= c.cost;
       });
       const shouldUrgeEndTurn = (!hasPlayableCard || this.heroEnergy === 0) && !this.isEnemyActing;
 
@@ -2277,13 +2682,13 @@ class CardBattleEngine {
             ${this.hand.map((cid, idx) => {
               const c = this.cardDatabase[cid];
               if (!c) return '';
-              const canPlay = !this.isEnemyActing && this.heroEnergy >= c.cost;
+              const canPlay = !this.isEnemyActing && (c.isXCost ? this.heroEnergy > 0 : this.heroEnergy >= c.cost);
               const isCounter = this.enemy.intent && Array.isArray(this.enemy.intent.counterWords) && this.enemy.intent.counterWords.includes(cid);
               return `
                 <div class="tactical-card hand-card-item is-${c.type} ${canPlay ? 'can-play' : 'no-energy'} ${isCounter ? 'is-counter-ready' : ''}" 
                      onclick="window.cardBattle.playCard(${idx})"
                      title="${c.desc}">
-                  <div class="card-cost-badge">${c.cost} ⚡</div>
+                  <div class="card-cost-badge">${c.isXCost ? 'X' : c.cost} ⚡</div>
                   ${isCounter ? `<div class="card-counter-sparkle-badge">⚡ 克制</div>` : ''}
                   <div class="card-crest-icon">${c.icon}</div>
                   <div class="card-title-en">${c.en}</div>
@@ -2304,7 +2709,9 @@ class CardBattleEngine {
   checkEndTurnGuidance() {
     const hasPlayableCard = this.hand.some(cid => {
       const c = this.cardDatabase[cid];
-      return c && this.heroEnergy >= c.cost;
+      if (!c) return false;
+      if (c.isXCost) return this.heroEnergy > 0;
+      return this.heroEnergy >= c.cost;
     });
     const btn = document.querySelector('.btn-end-turn');
     if (btn && (!hasPlayableCard || this.heroEnergy === 0) && !this.isEnemyActing) {
@@ -2320,13 +2727,21 @@ class CardBattleEngine {
 
   getCardBadgeVal(c) {
     if (!c) return '✨ 战术';
+    if (c.isXCost) return '🌪️ X段斩';
+    if (c.doubleBlock) return '🏰 护甲x2';
+    if (c.applyVulnerable) return `💢 易伤${c.applyVulnerable}`;
+    if (c.applyWeak) return `🥀 虚弱${c.applyWeak}`;
+    if (c.applyPoison) return `🧪 剧毒${c.applyPoison}`;
+    if (c.applyStrength) return `💪 力量+${c.applyStrength}`;
+    if (c.applyMetallicize) return `🛡️ 金属+${c.applyMetallicize}`;
+    if (c.applyThorns) return `🌵 荆棘+${c.applyThorns}`;
+    if (c.disarm) return `✋ 缴械-${c.disarm}`;
     if (c.dmg && c.block) return `⚔️${c.dmg + this.heroStrength} 🛡️${c.block}`;
     if (c.heal && c.block) return `💚${c.heal} 🛡️${c.block}`;
     if (c.dmg) return `⚔️ ${c.dmg + this.heroStrength}${c.pierce ? ' 破甲' : ''}`;
     if (c.block) return `🛡️ +${c.block}`;
     if (c.heal) return `💚 +${c.heal}`;
     if (c.draw) return `🎴 +${c.draw}`;
-    if (c.strength) return `💪 +${c.strength}`;
     return '✨ 战术';
   }
 

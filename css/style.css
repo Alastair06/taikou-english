@@ -7926,6 +7926,73 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
   margin-left: 4px;
 }
 
+/* 杀戮尖塔风格状态状态药丸栏 (Status Pills) */
+.battle-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+.status-pill {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.status-pill.is-strength {
+  background: rgba(220, 38, 38, 0.25);
+  color: #fca5a5;
+  border: 1px solid rgba(220, 38, 38, 0.5);
+}
+
+.status-pill.is-dexterity {
+  background: rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.status-pill.is-vulnerable {
+  background: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  border: 1px solid #ef4444;
+  animation: pulseVulnerable 1.2s infinite ease-in-out alternate;
+}
+
+.status-pill.is-weak {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fde047;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.status-pill.is-poison {
+  background: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.status-pill.is-thorns {
+  background: rgba(168, 85, 247, 0.25);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.status-pill.is-metallicize {
+  background: rgba(14, 165, 233, 0.25);
+  color: #7dd3fc;
+  border: 1px solid rgba(14, 165, 233, 0.5);
+}
+
+@keyframes pulseVulnerable {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.05); filter: brightness(1.2); }
+}
+
 /* 敌方意图皇冠与指示气泡 */
 .enemy-intent-crown {
   position: absolute;
@@ -8220,6 +8287,16 @@ body:has(#scene-siege-battle:not(.hidden)) .orientation-toast {
 .fct-pierce {
   color: #e879f9;
   text-shadow: 0 0 8px rgba(232, 121, 249, 0.8), 0 2px 4px #000;
+}
+
+.fct-debuff {
+  color: #fb923c;
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.8), 0 2px 4px #000;
+}
+
+.fct-poison {
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.8), 0 2px 4px #000;
 }
 
 /* 震动受击与气力预警动画 */
